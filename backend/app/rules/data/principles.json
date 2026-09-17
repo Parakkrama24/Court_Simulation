@@ -1,0 +1,67 @@
+[
+  {
+    "rule_id": "P001",
+    "name": "Presumption of Innocence",
+    "category": "principle",
+    "description": "A defendant is presumed innocent until the prosecution establishes the required elements of an offense according to the applicable standard.",
+    "conditions": [],
+    "effect": "defendant_presumed_innocent",
+    "jurisdiction": "Republic of Arandia",
+    "metadata": {
+      "fundamental": true,
+      "applies_to": "all_criminal_cases"
+    }
+  },
+  {
+    "rule_id": "P002",
+    "name": "Burden of Proof",
+    "category": "principle",
+    "description": "The prosecution carries the burden of establishing the required elements of the charged offense.",
+    "conditions": [],
+    "effect": "prosecution_has_burden",
+    "jurisdiction": "Republic of Arandia",
+    "metadata": {
+      "fundamental": true,
+      "applies_to": "all_criminal_cases"
+    }
+  },
+  {
+    "rule_id": "P003",
+    "name": "Evidence Requirement",
+    "category": "principle",
+    "description": "A claim cannot be treated as an established fact solely because an agent states it.",
+    "conditions": [],
+    "effect": "claims_require_evidence",
+    "jurisdiction": "Republic of Arandia",
+    "metadata": {
+      "fundamental": true,
+      "applies_to": "all_cases"
+    }
+  },
+  {
+    "rule_id": "P004",
+    "name": "Reasonable Doubt",
+    "category": "principle",
+    "description": "If substantial uncertainty remains regarding an essential element of the offense, the defendant should not be convicted.",
+    "conditions": [],
+    "effect": "doubt_favors_defendant",
+    "jurisdiction": "Republic of Arandia",
+    "metadata": {
+      "fundamental": true,
+      "applies_to": "all_criminal_cases"
+    }
+  },
+  {
+    "rule_id": "P005",
+    "name": "Evidence Consistency",
+    "category": "principle",
+    "description": "Contradictory evidence must be explicitly identified and considered.",
+    "conditions": [],
+    "effect": "contradictions_must_be_addressed",
+    "jurisdiction": "Republic of Arandia",
+    "metadata": {
+      "fundamental": true,
+      "applies_to": "all_cases"
+    }
+  }
+]

@@ -1,0 +1,112 @@
+[
+  {
+    "rule_id": "E001",
+    "name": "Direct Evidence",
+    "category": "evidence_rule",
+    "description": "Direct evidence may establish a fact when sufficiently reliable.",
+    "conditions": [
+      {
+        "id": "C1",
+        "description": "Evidence directly establishes the fact",
+        "required": true
+      },
+      {
+        "id": "C2",
+        "description": "Evidence source is reliable",
+        "required": true
+      }
+    ],
+    "effect": "fact_may_be_established",
+    "jurisdiction": "Republic of Arandia",
+    "metadata": {
+      "evidentiary_weight": "high"
+    }
+  },
+  {
+    "rule_id": "E002",
+    "name": "Circumstantial Evidence",
+    "category": "evidence_rule",
+    "description": "Circumstantial evidence may support reasonable inference.",
+    "conditions": [
+      {
+        "id": "C1",
+        "description": "Evidence supports logical inference",
+        "required": true
+      },
+      {
+        "id": "C2",
+        "description": "Inference is reasonable",
+        "required": true
+      }
+    ],
+    "effect": "inference_may_be_drawn",
+    "jurisdiction": "Republic of Arandia",
+    "metadata": {
+      "evidentiary_weight": "moderate"
+    }
+  },
+  {
+    "rule_id": "E003",
+    "name": "Witness Reliability",
+    "category": "evidence_rule",
+    "description": "Witness testimony can be challenged based on various reliability factors.",
+    "conditions": [
+      {
+        "id": "C1",
+        "description": "Witness has opportunity to observe",
+        "required": false
+      },
+      {
+        "id": "C2",
+        "description": "Witness has no apparent bias",
+        "required": false
+      },
+      {
+        "id": "C3",
+        "description": "Testimony is consistent",
+        "required": false
+      },
+      {
+        "id": "C4",
+        "description": "Witness has good memory",
+        "required": false
+      }
+    ],
+    "effect": "witness_reliability_determined",
+    "jurisdiction": "Republic of Arandia",
+    "metadata": {
+      "challenge_grounds": ["contradiction", "memory_limitations", "bias", "opportunity_to_observe", "personal_interest"]
+    }
+  },
+  {
+    "rule_id": "E004",
+    "name": "Conflicting Evidence",
+    "category": "evidence_rule",
+    "description": "Conflicting evidence must be explicitly identified and resolved.",
+    "conditions": [
+      {
+        "id": "C1",
+        "description": "Two or more pieces of evidence contradict",
+        "required": true
+      }
+    ],
+    "effect": "conflict_must_be_addressed",
+    "jurisdiction": "Republic of Arandia",
+    "metadata": {
+      "resolution_methods": ["credibility_assessment", "corroboration", "weight_of_evidence"]
+    }
+  },
+  {
+    "rule_id": "E005",
+    "name": "Fabricated Evidence",
+    "category": "evidence_rule",
+    "description": "No agent may create evidence that is not present in the case database.",
+    "conditions": [],
+    "effect": "fabricated_evidence_prohibited",
+    "jurisdiction": "Republic of Arandia",
+    "metadata": {
+      "violation_severity": "critical",
+      "enforcement": "automatic_rejection"
+    }
+  }
+]

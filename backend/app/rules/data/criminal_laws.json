@@ -1,0 +1,192 @@
+[
+  {
+    "rule_id": "LAW_101",
+    "name": "Assault",
+    "category": "offense",
+    "description": "Unlawful intentional application of physical force against another person.",
+    "conditions": [
+      {
+        "id": "C1",
+        "description": "Intentional physical force",
+        "required": true
+      },
+      {
+        "id": "C2",
+        "description": "Physical contact",
+        "required": true
+      },
+      {
+        "id": "C3",
+        "description": "Unlawfulness",
+        "required": true
+      }
+    ],
+    "effect": "assault_offense_established",
+    "jurisdiction": "Republic of Arandia",
+    "metadata": {
+      "severity": "misdemeanor",
+      "category": "violent_crime"
+    }
+  },
+  {
+    "rule_id": "LAW_102",
+    "name": "Aggravated Assault",
+    "category": "offense",
+    "description": "Assault that results in serious bodily injury.",
+    "conditions": [
+      {
+        "id": "C1",
+        "description": "Assault",
+        "required": true
+      },
+      {
+        "id": "C2",
+        "description": "Serious bodily injury",
+        "required": true
+      }
+    ],
+    "effect": "aggravated_assault_offense_established",
+    "jurisdiction": "Republic of Arandia",
+    "metadata": {
+      "severity": "felony",
+      "category": "violent_crime"
+    }
+  },
+  {
+    "rule_id": "LAW_103",
+    "name": "Theft",
+    "category": "offense",
+    "description": "Intentional taking of property belonging to another without authorization.",
+    "conditions": [
+      {
+        "id": "C1",
+        "description": "Intentional taking of property",
+        "required": true
+      },
+      {
+        "id": "C2",
+        "description": "Property belongs to another",
+        "required": true
+      },
+      {
+        "id": "C3",
+        "description": "Taking occurred without authorization",
+        "required": true
+      },
+      {
+        "id": "C4",
+        "description": "Intent to permanently deprive owner",
+        "required": true
+      }
+    ],
+    "effect": "theft_offense_established",
+    "jurisdiction": "Republic of Arandia",
+    "metadata": {
+      "severity": "misdemeanor_or_felony",
+      "category": "property_crime"
+    }
+  },
+  {
+    "rule_id": "LAW_104",
+    "name": "Burglary",
+    "category": "offense",
+    "description": "Unauthorized entry into a building with intent to commit a criminal offense inside.",
+    "conditions": [
+      {
+        "id": "C1",
+        "description": "Unauthorized entry into a building",
+        "required": true
+      },
+      {
+        "id": "C2",
+        "description": "Intent to commit a criminal offense inside",
+        "required": true
+      }
+    ],
+    "effect": "burglary_offense_established",
+    "jurisdiction": "Republic of Arandia",
+    "metadata": {
+      "severity": "felony",
+      "category": "property_crime"
+    }
+  },
+  {
+    "rule_id": "LAW_201",
+    "name": "Self Defense",
+    "category": "defense",
+    "description": "A person may use reasonable force to defend against an unlawful attack.",
+    "conditions": [
+      {
+        "id": "C1",
+        "description": "Reasonable belief of unlawful physical attack",
+        "required": true
+      },
+      {
+        "id": "C2",
+        "description": "Force was necessary",
+        "required": true
+      },
+      {
+        "id": "C3",
+        "description": "Force was proportionate to the threat",
+        "required": true
+      }
+    ],
+    "effect": "self_defense_may_apply",
+    "jurisdiction": "Republic of Arandia",
+    "metadata": {
+      "type": "justification_defense"
+    }
+  },
+  {
+    "rule_id": "LAW_202",
+    "name": "Excessive Defensive Force",
+    "category": "defense",
+    "description": "If defensive force substantially exceeds the immediate threat, self-defense protection may be reduced or rejected.",
+    "conditions": [
+      {
+        "id": "C1",
+        "description": "Defensive force was used",
+        "required": true
+      },
+      {
+        "id": "C2",
+        "description": "Force substantially exceeded the threat",
+        "required": true
+      }
+    ],
+    "effect": "self_defense_weakened_or_rejected",
+    "jurisdiction": "Republic of Arandia",
+    "metadata": {
+      "type": "defense_limitation"
+    }
+  },
+  {
+    "rule_id": "LAW_301",
+    "name": "Attempt",
+    "category": "offense",
+    "description": "Taking a substantial step toward committing an offense that is not completed.",
+    "conditions": [
+      {
+        "id": "C1",
+        "description": "Intent to commit an offense",
+        "required": true
+      },
+      {
+        "id": "C2",
+        "description": "Substantial step toward committing the offense",
+        "required": true
+      },
+      {
+        "id": "C3",
+        "description": "Offense was not completed",
+        "required": true
+      }
+    ],
+    "effect": "attempt_offense_established",
+    "jurisdiction": "Republic of Arandia",
+    "metadata": {
+      "severity": "lesser_than_completed_offense"
+    }
+  }
+]
