@@ -4,10 +4,15 @@ These Pydantic models represent the core domain entities.
 They are separate from database models and LLM interactions.
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 from typing import Any, Dict, List, Optional
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
+
+
+def utc_now() -> datetime:
+    """Current time as a timezone-aware UTC datetime"""
+    return datetime.now(timezone.utc)
 
 
 # ============================================================================
@@ -82,8 +87,8 @@ class Fact(BaseModel):
         default_factory=dict, description="Additional metadata about the fact"
     )
 
-    class Config:
-        json_schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "fact_id": "F001",
                 "description": "Alex entered David's house at 11:45 PM",
@@ -92,6 +97,7 @@ class Fact(BaseModel):
                 "metadata": {"timestamp": "2024-01-15T23:45:00"},
             }
         }
+    )
 
 
 class Evidence(BaseModel):
@@ -118,8 +124,8 @@ class Evidence(BaseModel):
         default_factory=dict, description="Additional metadata about the evidence"
     )
 
-    class Config:
-        json_schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "evidence_id": "E001",
                 "type": "physical",
@@ -131,6 +137,7 @@ class Evidence(BaseModel):
                 "metadata": {"collected_by": "Officer Johnson", "date": "2024-01-16"},
             }
         }
+    )
 
 
 class Witness(BaseModel):
@@ -154,8 +161,8 @@ class Witness(BaseModel):
         default_factory=dict, description="Additional metadata about the witness"
     )
 
-    class Config:
-        json_schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "witness_id": "W001",
                 "name": "David Thompson",
@@ -169,6 +176,7 @@ class Witness(BaseModel):
                 "metadata": {"interviewed_date": "2024-01-16"},
             }
         }
+    )
 
 
 class Condition(BaseModel):
@@ -181,15 +189,23 @@ class Condition(BaseModel):
     id: str = Field(..., description="Condition identifier")
     description: str = Field(..., description="Description of what must be satisfied")
     required: bool = Field(default=True, description="Whether this condition is required")
+    depends_on_rule: Optional[str] = Field(
+        default=None,
+        description=(
+            "Rule ID whose satisfaction determines this condition "
+            "(e.g. LAW_102 'Assault' element depends on LAW_101)"
+        ),
+    )
 
-    class Config:
-        json_schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "id": "C1",
                 "description": "Defendant reasonably believed they faced unlawful physical attack",
                 "required": True,
             }
         }
+    )
 
 
 class LegalRule(BaseModel):
@@ -214,8 +230,8 @@ class LegalRule(BaseModel):
         default_factory=dict, description="Additional metadata about the rule"
     )
 
-    class Config:
-        json_schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "rule_id": "LAW_201",
                 "name": "Self Defense",
@@ -238,6 +254,7 @@ class LegalRule(BaseModel):
                 "jurisdiction": "Republic of Arandia",
             }
         }
+    )
 
 
 class Argument(BaseModel):
@@ -263,11 +280,11 @@ class Argument(BaseModel):
     confidence: float = Field(
         default=0.5, ge=0.0, le=1.0, description="Confidence in the argument (0.0 to 1.0)"
     )
-    timestamp: datetime = Field(default_factory=datetime.utcnow, description="When argument was made")
+    timestamp: datetime = Field(default_factory=utc_now, description="When argument was made")
     metadata: Dict[str, Any] = Field(default_factory=dict, description="Additional metadata")
 
-    class Config:
-        json_schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "argument_id": "ARG001",
                 "agent_id": "prosecution_agent",
@@ -279,6 +296,7 @@ class Argument(BaseModel):
                 "confidence": 0.85,
             }
         }
+    )
 
 
 class Verdict(BaseModel):
@@ -304,11 +322,11 @@ class Verdict(BaseModel):
     confidence: float = Field(
         default=0.5, ge=0.0, le=1.0, description="Confidence in the verdict (0.0 to 1.0)"
     )
-    timestamp: datetime = Field(default_factory=datetime.utcnow, description="When verdict was made")
+    timestamp: datetime = Field(default_factory=utc_now, description="When verdict was made")
     metadata: Dict[str, Any] = Field(default_factory=dict, description="Additional metadata")
 
-    class Config:
-        json_schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "verdict_id": "V001",
                 "case_id": "CASE_001",
@@ -322,6 +340,7 @@ class Verdict(BaseModel):
                 "confidence": 0.75,
             }
         }
+    )
 
 
 class AuditReport(BaseModel):
@@ -349,11 +368,11 @@ class AuditReport(BaseModel):
         default_factory=list, description="Detected hallucinations (invented IDs/facts)"
     )
     final_assessment: str = Field(..., description="Overall assessment of simulation quality")
-    timestamp: datetime = Field(default_factory=datetime.utcnow, description="When audit was performed")
+    timestamp: datetime = Field(default_factory=utc_now, description="When audit was performed")
     metadata: Dict[str, Any] = Field(default_factory=dict, description="Additional metadata")
 
-    class Config:
-        json_schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "audit_id": "AUD001",
                 "case_id": "CASE_001",
@@ -367,6 +386,7 @@ class AuditReport(BaseModel):
                 "final_assessment": "Simulation completed with high integrity. Minor reasoning issue detected but did not affect outcome.",
             }
         }
+    )
 
 
 class Case(BaseModel):
@@ -395,12 +415,12 @@ class Case(BaseModel):
         default_factory=list, description="Legal rule IDs that may apply"
     )
     status: CaseStatus = Field(default=CaseStatus.INITIALIZED, description="Current case status")
-    created_at: datetime = Field(default_factory=datetime.utcnow, description="Case creation time")
-    updated_at: datetime = Field(default_factory=datetime.utcnow, description="Last update time")
+    created_at: datetime = Field(default_factory=utc_now, description="Case creation time")
+    updated_at: datetime = Field(default_factory=utc_now, description="Last update time")
     metadata: Dict[str, Any] = Field(default_factory=dict, description="Additional metadata")
 
-    class Config:
-        json_schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "case_id": "CASE_001",
                 "title": "The Night Intruder",
@@ -414,3 +434,64 @@ class Case(BaseModel):
                 "status": "initialized",
             }
         }
+    )
+
+
+# ============================================================================
+# Rule Evaluation Inputs
+# ============================================================================
+
+
+class BindingStance(str, Enum):
+    """Whether a binding supports or contradicts a legal condition"""
+
+    SUPPORTS = "supports"
+    CONTRADICTS = "contradicts"
+
+
+class ElementBinding(BaseModel):
+    """Links case facts and evidence to a single condition of a legal rule
+
+    Bindings are the bridge between the case record and the legal rules.
+    They say *which* facts and evidence bear on a legal element, but never
+    whether the element is satisfied - that conclusion belongs to the rule
+    engine, which weighs the referenced material deterministically.
+
+    In later phases an agent may propose bindings, but the engine always
+    validates the referenced IDs and computes the outcome itself.
+    """
+
+    binding_id: str = Field(..., description="Unique identifier for the binding")
+    case_id: str = Field(..., description="Case this binding belongs to")
+    rule_id: str = Field(..., description="Legal rule the condition belongs to")
+    condition_id: str = Field(..., description="Condition within the rule")
+    subject: str = Field(
+        ..., description="Party whose conduct is being evaluated (e.g. 'Alex Johnson')"
+    )
+    stance: BindingStance = Field(
+        ..., description="Whether the referenced material supports or contradicts the condition"
+    )
+    fact_ids: List[str] = Field(default_factory=list, description="Fact IDs referenced")
+    evidence_ids: List[str] = Field(default_factory=list, description="Evidence IDs referenced")
+    note: str = Field(default="", description="Short explanation of the link")
+    source: str = Field(
+        default="case_file", description="Who produced this binding (case_file, agent id, ...)"
+    )
+    metadata: Dict[str, Any] = Field(default_factory=dict, description="Additional metadata")
+
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "binding_id": "B001",
+                "case_id": "CASE_001",
+                "rule_id": "LAW_104",
+                "condition_id": "C1",
+                "subject": "Alex Johnson",
+                "stance": "supports",
+                "fact_ids": ["F001", "F002"],
+                "evidence_ids": ["E001", "E002"],
+                "note": "Entry through a broken window without permission",
+                "source": "case_file",
+            }
+        }
+    )

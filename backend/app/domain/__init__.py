@@ -1,6 +1,7 @@
 """Domain models for the Court Simulation System"""
 
 from .models import (
+    utc_now,
     Fact,
     FactStatus,
     Evidence,
@@ -15,9 +16,12 @@ from .models import (
     Case,
     CaseStatus,
     CaseType,
+    BindingStance,
+    ElementBinding,
 )
 
 __all__ = [
+    "utc_now",
     "Fact",
     "FactStatus",
     "Evidence",
@@ -32,4 +36,6 @@ __all__ = [
     "Case",
     "CaseStatus",
     "CaseType",
+    "BindingStance",
+    "ElementBinding",
 ]

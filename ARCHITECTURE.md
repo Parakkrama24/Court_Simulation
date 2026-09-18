@@ -116,20 +116,41 @@ The system maintains strict separation between:
 
 ### Layer 3: Rules Engine
 
-**Location**: `backend/app/rules/`
+**Location**: `backend/app/rules/` (implemented in Phase 2)
 
 **Purpose**: Deterministic legal rule evaluation
 
 **Components**:
-- Rule loader (JSON → LegalRule models)
-- Condition evaluator
-- Rule applicability checker
-- Reference validator
+- `registry.py` - indexed, read-only access to the jurisdiction's rules
+- `evaluator.py` - condition evaluation and witness reliability (E003)
+- `engine.py` - rule and case evaluation, conflict detection (E004)
+- `validator.py` - reference validation (anti-hallucination gate)
+- `models.py` - evaluation results and the tunable `EvaluationPolicy`
 
 **Workflow**:
 ```
-Facts + Evidence → Evaluate Conditions → Determine Applicable Rules
+Facts + Evidence --(element bindings)--> Conditions --> Rule status --> Effects
 ```
+
+**Element bindings**: conditions are natural language, so an `ElementBinding`
+states which facts and evidence bear on a given condition, for a given party.
+Bindings are *input* to the engine - they never carry a conclusion. An agent
+may propose them (Phase 5), the validator checks their IDs, and the engine
+computes the outcome. This keeps the authoritative legal layer deterministic
+while leaving interpretation to the LLM.
+
+**Statuses**:
+- Condition: `satisfied` / `disputed` / `unsatisfied` / `unsupported`
+- Rule: `satisfied` / `not_satisfied` / `indeterminate` / `unconditional`
+
+`unsupported` and `indeterminate` are deliberately distinct from
+`unsatisfied`: an element nobody addressed is not an element that was
+disproved, and the burden of proof (P002) and reasonable doubt (P004) both
+turn on that difference.
+
+**Rule dependencies**: a condition may declare `depends_on_rule` (LAW_102's
+assault element resolves through LAW_101 for the same subject). Cycles are
+detected and reported rather than recursed.
 
 ### Layer 4: LLM Abstraction Layer
 
@@ -393,10 +414,10 @@ def validate_argument(argument: Argument, case: Case) -> ValidationResult:
 
 ## Scalability Considerations
 
-### Current Phase (Phase 1)
-- In-memory case data
+### Current Phase (Phase 2)
+- In-memory case data and evaluations
 - No database required
-- Single-threaded execution
+- Single-threaded, deterministic execution
 
 ### Future Phases
 - PostgreSQL for case storage

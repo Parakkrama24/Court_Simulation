@@ -1,15 +1,15 @@
 # Quick Start Guide
 
-## Phase 1 Complete ✅
+## Phase 2 Complete ✅
 
-This guide will help you get started with the Court Simulation System. Currently, Phase 1 (Domain Models & Seed Data) is complete.
+This guide will help you get started with the Court Simulation System. Currently, Phase 1 (Domain Models & Seed Data) and Phase 2 (Legal Rule Engine) are complete.
 
 ## What's Working Now
 
 - ✅ Complete domain models (Pydantic)
 - ✅ Structured legal rules (JSON)
 - ✅ CASE_001 seed data with facts, evidence, and witnesses
-- ✅ 38 passing unit tests
+- ✅ 143 passing unit tests
 - ✅ Configuration management
 - ✅ Project structure
 
@@ -51,7 +51,7 @@ pytest
 
 Expected output:
 ```
-38 tests passed ✅
+143 tests passed ✅
 ```
 
 ### Run Specific Tests
@@ -62,6 +62,9 @@ pytest tests/test_domain/test_models.py -v
 
 # Seed data tests
 pytest tests/test_domain/test_seed_data.py -v
+
+# Rule engine tests
+pytest tests/test_rules -v
 ```
 
 ### Run with Coverage
@@ -145,6 +148,7 @@ backend/
 │   └── test_domain/
 │       ├── test_models.py      # ✅ 18 tests
 │       └── test_seed_data.py   # ✅ 20 tests
+│   └── test_rules/             # ✅ 105 tests
 ├── requirements.txt
 ├── pyproject.toml
 └── pytest.ini
@@ -264,12 +268,32 @@ Alex Johnson entered David Thompson's home at 11:45 PM through a broken window. 
    cat ARCHITECTURE.md
    ```
 
-## Next Phases (Coming Soon)
+## Using the Rule Engine
 
-### Phase 2: Legal Rule Engine
-- Deterministic condition evaluation
-- Rule applicability determination
-- Evidence-to-condition mapping
+```python
+from app.seed import get_case_by_id, get_case_001_bindings
+from app.rules import ReferenceValidator, RuleEngine
+
+case = get_case_by_id("CASE_001")
+bindings = get_case_001_bindings()
+
+# Nothing is evaluated before its references are verified
+assert ReferenceValidator(case).validate_bindings(bindings).valid
+
+evaluation = RuleEngine().evaluate_case(case, bindings)
+
+for result in evaluation.rule_evaluations:
+    print(f"{result.rule_id} [{result.subject}] -> {result.status.value}")
+    for condition in result.conditions:
+        print(f"   {condition.condition_id} {condition.status.value}: {condition.reasoning}")
+
+print("Effects triggered:", evaluation.applied_effects)
+print("Conflicts to address:", len(evaluation.conflicting_evidence))
+```
+
+See `README.md` for the weighting model and what CASE_001 evaluates to.
+
+## Next Phases (Coming Soon)
 
 ### Phase 3: Single Agent
 - LLM abstraction layer
@@ -332,7 +356,7 @@ When implementing new phases:
 
 ## Summary
 
-**Phase 1 Status**: ✅ Complete and tested
+**Phase 1 & 2 Status**: ✅ Complete and tested
 
 You now have:
 - Clean domain models
@@ -341,7 +365,7 @@ You now have:
 - Comprehensive tests
 - Solid foundation for multi-agent system
 
-**Next Step**: Implement Phase 2 (Legal Rule Engine) to deterministically evaluate legal rule conditions against facts and evidence.
+**Next Step**: Implement Phase 3 (Single Agent) - Case → Judge Agent → Decision - to validate the LLM integration against the engine's deterministic conclusions.
 
 ---
 

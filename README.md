@@ -19,18 +19,23 @@ The Court Simulation System uses multiple specialized AI agents to simulate cour
 
 ## Project Status
 
-**Current Phase**: Phase 1 - Domain Models & Seed Data ✅
+**Current Phase**: Phase 2 - Legal Rule Engine ✅
 
 ### Completed
 - ✅ Domain models (Case, Fact, Evidence, Witness, LegalRule, Argument, Verdict, AuditReport)
 - ✅ Seed data for legal principles, criminal laws, and evidence rules
 - ✅ CASE_001: "The Night Intruder" - Complete with facts, evidence, and witnesses
+- ✅ Legal rule registry with indexed, read-only access to all 17 rules
+- ✅ Deterministic rule engine: facts + evidence → conditions → rule status → effects
+- ✅ Element bindings linking CASE_001 material to individual legal elements
+- ✅ Witness reliability scoring under evidence rule E003
+- ✅ Conflict detection under evidence rule E004
+- ✅ Reference validator rejecting fabricated evidence/fact/witness/law IDs
 - ✅ Comprehensive unit tests
 - ✅ Project structure and configuration
 
 ### Upcoming Phases
-- 🔄 Phase 2: Legal Rule Engine (deterministic rule evaluation)
-- ⏳ Phase 3: Single Agent (basic LLM integration)
+- 🔄 Phase 3: Single Agent (basic LLM integration)
 - ⏳ Phase 4: Two-Agent Adversarial System
 - ⏳ Phase 5: Evidence Agent
 - ⏳ Phase 6: Jury System
@@ -72,8 +77,14 @@ Court_Simulation/
 │   │   │   └── models.py        # Case, Fact, Evidence, etc.
 │   │   ├── seed/                # Seed data loaders
 │   │   │   ├── cases.py         # Test cases
+│   │   │   ├── element_bindings.py  # Case material ↔ legal elements
 │   │   │   └── legal_data.py    # Legal rules
-│   │   ├── rules/               # Legal rule engine (Phase 2)
+│   │   ├── rules/               # Legal rule engine
+│   │   │   ├── engine.py        # Rule + case evaluation
+│   │   │   ├── evaluator.py     # Condition evaluation, witness reliability
+│   │   │   ├── registry.py      # Indexed legal rule lookup
+│   │   │   ├── validator.py     # Reference validation (anti-hallucination)
+│   │   │   ├── models.py        # Evaluation results and policy
 │   │   │   └── data/            # JSON legal rules
 │   │   │       ├── principles.json
 │   │   │       ├── criminal_laws.json
@@ -83,7 +94,8 @@ Court_Simulation/
 │   │   ├── llm/                 # LLM abstraction (Future)
 │   │   └── config.py            # Configuration management
 │   ├── tests/
-│   │   └── test_domain/         # Domain model tests
+│   │   ├── test_domain/         # Domain model tests
+│   │   └── test_rules/          # Rule engine tests
 │   ├── requirements.txt
 │   ├── pyproject.toml
 │   └── pytest.ini
@@ -142,15 +154,20 @@ pytest --cov=app --cov-report=term-missing
 
 # Run specific test file
 pytest tests/test_domain/test_models.py -v
-pytest tests/test_domain/test_seed_data.py -v
+pytest tests/test_rules/test_engine.py -v
 ```
 
 ### Current Test Results
 
 ```
-Phase 1 Tests: 38/38 passing ✅
+All Tests: 143/143 passing ✅
 - Domain Models: 18 tests
 - Seed Data: 20 tests
+- Rule Registry: 13 tests
+- Condition Evaluator: 20 tests
+- Rule Engine: 27 tests
+- Reference Validator: 17 tests
+- CASE_001 Evaluation: 28 tests
 ```
 
 ## Domain Models
@@ -190,6 +207,84 @@ Phase 1 Tests: 38/38 passing ✅
 - E003: Witness Reliability
 - E004: Conflicting Evidence
 - E005: Fabricated Evidence
+
+## Legal Rule Engine
+
+The rule engine evaluates structured legal rules against a case record without
+any LLM involvement. Agents may later propose *which* material bears on a legal
+element, but the engine always computes the conclusion itself.
+
+```
+Facts + Evidence --(element bindings)--> Conditions --> Rule status --> Effects
+```
+
+### Usage
+
+```python
+from app.seed import get_case_by_id, get_case_001_bindings
+from app.rules import ReferenceValidator, RuleEngine
+
+case = get_case_by_id("CASE_001")
+bindings = get_case_001_bindings()
+
+# 1. Nothing is evaluated before its references are verified
+assert ReferenceValidator(case).validate_bindings(bindings).valid
+
+# 2. Evaluate every applicable law, per party
+evaluation = RuleEngine().evaluate_case(case, bindings)
+
+for result in evaluation.rule_evaluations:
+    print(result.rule_id, result.subject, result.status.value)
+```
+
+### How conditions are decided
+
+Each referenced fact contributes a weight from its status (established 1.0,
+disputed 0.5, unknown 0.25) and each evidence item contributes
+`reliability × type factor` (physical/forensic/digital/documentary 1.0,
+testimonial 0.85, circumstantial 0.7). A condition's strength is that of its
+strongest single reference on each side, then:
+
+| Support ≥ 0.6 | Contradiction ≥ 0.4 | Condition status |
+|---|---|---|
+| yes | no  | `satisfied` |
+| yes | yes | `disputed` |
+| no  | yes | `unsatisfied` |
+| no  | no  | `unsupported` |
+
+A rule is `satisfied` when every required condition is satisfied,
+`not_satisfied` when any required condition is contradicted, and
+`indeterminate` while a required condition stays disputed or unsupported.
+Rules that state no conditions (the principles) are `unconditional`. All
+thresholds and weights live in `EvaluationPolicy`, so experiments can vary
+strictness without touching the evaluation logic.
+
+### What CASE_001 evaluates to
+
+| Rule | Subject | Status | Why |
+|---|---|---|---|
+| LAW_104 Burglary | Alex Johnson | indeterminate | Entry established (E001, E002); no evidence of intent to commit an offence inside |
+| LAW_101 Assault | Alex Johnson | not_satisfied | Alleged attack rests on disputed F004 and is contradicted by E007 |
+| LAW_101 Assault | David Thompson | indeterminate | Force and contact established; unlawfulness disputed |
+| LAW_102 Aggravated Assault | David Thompson | indeterminate | Serious injury established (E004); assault element inherited from LAW_101 |
+| LAW_201 Self Defense | David Thompson | not_satisfied | Reasonable belief established, but necessity and proportionality are contradicted |
+| LAW_202 Excessive Force | David Thompson | indeterminate | Force used is established; whether it exceeded the threat is contested |
+| P001–P005 | case-wide | unconditional | Principles apply to every criminal case |
+
+No offense or defense effect is triggered on the seeded record - the engine
+reports open questions rather than resolving them, which is what later agent
+phases exist to argue about.
+
+### Other engine outputs
+
+- **Witness reliability (E003)**: deterministic scores from declared factors -
+  Margaret Foster 0.95, David Thompson 0.65, Alex Johnson 0.15, each with its
+  challenge grounds listed.
+- **Conflicts (E004)**: contested legal elements and facts that evidence both
+  supports and contradicts.
+- **Reference validation**: every evidence, fact, witness, and law ID cited by
+  an agent is checked against the case and registry; failures come back as
+  audit-report-shaped violation records, never silent acceptance.
 
 ## Test Cases
 

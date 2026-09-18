@@ -37,7 +37,8 @@
       {
         "id": "C1",
         "description": "Assault",
-        "required": true
+        "required": true,
+        "depends_on_rule": "LAW_101"
       },
       {
         "id": "C2",
