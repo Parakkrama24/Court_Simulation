@@ -129,3 +129,93 @@ def decision_with() -> Callable[..., Dict[str, Any]]:
         return decision
 
     return build
+
+
+# ============================================================================
+# Advocate turns
+# ============================================================================
+
+
+def prosecution_turn(responds_to=None) -> Dict[str, Any]:
+    """A well-formed prosecution turn for CASE_001"""
+    responds_to = list(responds_to or [])
+    return {
+        "statement": "The evidence proves Alex broke into the home and attacked David.",
+        "arguments": [
+            {
+                "charges": ["burglary"],
+                "elements": [{"rule_id": "LAW_104", "condition_id": "C1"}],
+                "claim": "Alex entered David's home without permission through a broken window.",
+                "fact_ids": ["F001", "F002"],
+                "evidence_ids": ["E001", "E002"],
+                "witness_ids": [],
+                "law_ids": ["LAW_104"],
+                "responds_to": responds_to,
+                "assumptions": [],
+                "reasoning": "Glass inside the kitchen and Alex's footprints at the window.",
+                "confidence": 0.9,
+            },
+            {
+                "charges": ["assault"],
+                "elements": [
+                    {"rule_id": "LAW_101", "condition_id": "C1"},
+                    {"rule_id": "LAW_101", "condition_id": "C2"},
+                ],
+                "claim": "Alex came at David aggressively inside the house.",
+                "fact_ids": ["F004"],
+                "evidence_ids": ["E006"],
+                "witness_ids": ["W001"],
+                "law_ids": [],
+                "responds_to": responds_to,
+                "assumptions": ["David's account of the confrontation is accurate."],
+                "reasoning": "David's statement and the neighbour hearing a struggle.",
+                "confidence": 0.6,
+            },
+        ],
+    }
+
+
+def defense_turn(responds_to=None) -> Dict[str, Any]:
+    """A well-formed defense turn for CASE_001"""
+    responds_to = list(responds_to or [])
+    return {
+        "statement": "Nothing proves Alex intended a crime, and nothing proves he attacked.",
+        "arguments": [
+            {
+                "charges": ["burglary"],
+                "elements": [{"rule_id": "LAW_104", "condition_id": "C2"}],
+                "claim": "No evidence shows Alex intended to commit an offense inside.",
+                "fact_ids": ["F001"],
+                "evidence_ids": [],
+                "witness_ids": ["W003"],
+                "law_ids": ["LAW_104", "P002"],
+                "responds_to": responds_to,
+                "assumptions": ["Alex's account of confusing the address may be true."],
+                "reasoning": "The record is silent on intent; the burden is the prosecution's.",
+                "confidence": 0.8,
+            },
+            {
+                "charges": ["assault"],
+                "elements": [{"rule_id": "LAW_101", "condition_id": "C1"}],
+                "claim": "The absence of defensive wounds contradicts any attack by Alex.",
+                "fact_ids": [],
+                "evidence_ids": ["E007"],
+                "witness_ids": [],
+                "law_ids": ["P004"],
+                "responds_to": responds_to,
+                "assumptions": [],
+                "reasoning": "E007 is forensic and reliable; F004 is disputed.",
+                "confidence": 0.75,
+            },
+        ],
+    }
+
+
+@pytest.fixture
+def pro_turn() -> Callable[..., Dict[str, Any]]:
+    return prosecution_turn
+
+
+@pytest.fixture
+def def_turn() -> Callable[..., Dict[str, Any]]:
+    return defense_turn

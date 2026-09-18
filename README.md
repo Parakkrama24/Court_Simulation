@@ -19,7 +19,7 @@ The Court Simulation System uses multiple specialized AI agents to simulate cour
 
 ## Project Status
 
-**Current Phase**: Phase 3 - Single Agent (Judge) ✅
+**Current Phase**: Phase 4 - Two-Agent Adversarial System ✅
 
 ### Completed
 - ✅ Domain models (Case, Fact, Evidence, Witness, LegalRule, Argument, Verdict, AuditReport)
@@ -35,12 +35,15 @@ The Court Simulation System uses multiple specialized AI agents to simulate cour
 - ✅ Judge Agent: Case → Judge → Decision with validated, structured output
 - ✅ Reject-and-regenerate loop for fabricated references and incomplete decisions
 - ✅ Every LLM call logged (agent, prompt version, model, input, output, tokens, latency, validation)
+- ✅ Prosecution and Defense agents with evidence-grounded, validated arguments
+- ✅ Adversarial trial: openings → arguments → rebuttals → closings → judge
+- ✅ Structured agent messages (`CourtMessage`) - no free-form chat
+- ✅ Judge must weigh both sides; advocates must separate assumptions from facts
 - ✅ Comprehensive unit tests
 - ✅ Project structure and configuration
 
 ### Upcoming Phases
-- 🔄 Phase 4: Two-Agent Adversarial System
-- ⏳ Phase 5: Evidence Agent
+- 🔄 Phase 5: Evidence Agent
 - ⏳ Phase 6: Jury System
 - ⏳ Phase 7: Legal Process Auditor
 - ⏳ Phase 8: Full LangGraph Workflow
@@ -93,17 +96,21 @@ Court_Simulation/
 │   │   │       ├── criminal_laws.json
 │   │   │       └── evidence_rules.json
 │   │   ├── agents/
-│   │   │   └── judge/           # Judge Agent: prompts, schema, validation, loop
+│   │   │   ├── base.py          # Shared generate → validate → regenerate loop
+│   │   │   ├── record.py        # The case record every agent sees
+│   │   │   ├── advocate/        # Prosecution + Defense agents
+│   │   │   └── judge/           # Judge Agent: prompts, schema, validation
 │   │   ├── workflow/
-│   │   │   └── judge_only.py    # Case → Judge → Decision pipeline
+│   │   │   ├── judge_only.py    # Case → Judge → Decision
+│   │   │   └── adversarial.py   # Prosecution ↔ Defense → Judge
 │   │   ├── llm/                 # Provider-agnostic LLM layer + interaction log
-│   │   ├── cli.py               # python -m app.cli judge CASE_001
+│   │   ├── cli.py               # python -m app.cli judge|trial CASE_001
 │   │   └── config.py            # Configuration management
 │   ├── tests/
 │   │   ├── test_domain/         # Domain model tests
 │   │   ├── test_rules/          # Rule engine tests
 │   │   ├── test_llm/            # LLM layer tests (no network)
-│   │   └── test_agents/         # Judge Agent + workflow tests
+│   │   └── test_agents/         # Judge, advocate, and trial tests
 │   ├── requirements.txt
 │   ├── pyproject.toml
 │   └── pytest.ini
@@ -168,19 +175,21 @@ pytest tests/test_rules/test_engine.py -v
 ### Current Test Results
 
 ```
-All Tests: 228/228 passing ✅ (no network or API key needed)
-- Domain Models: 18 tests
+All Tests: 291/291 passing ✅ (no network or API key needed)
+- Domain Models: 21 tests
 - Seed Data: 20 tests
 - Rule Registry: 13 tests
 - Condition Evaluator: 20 tests
 - Rule Engine: 27 tests
-- Reference Validator: 17 tests
+- Reference Validator: 18 tests
 - CASE_001 Evaluation: 28 tests
 - LLM Providers: 16 tests
 - LLM Support (schema, log, factory): 22 tests
-- Judge Validation: 19 tests
+- Judge Validation: 22 tests
 - Judge Agent: 17 tests
 - Judge Workflow + CLI: 11 tests
+- Prosecution + Defense Agents: 33 tests
+- Adversarial Trial + CLI: 23 tests
 ```
 
 ## Domain Models
@@ -328,6 +337,39 @@ A rejected decision goes back to the model with the exact reasons. After
 `LLM_MAX_ATTEMPTS` rejections the run fails loudly - an unvalidated decision is
 never returned. Every call, rejected or accepted, is appended to
 `logs/llm_interactions.jsonl`.
+
+## Adversarial Trial (Phase 4)
+
+**Prosecution ↔ Defense → Judge**.
+
+```bash
+cd backend
+python -m app.cli trial CASE_001 --show-prompt              # prosecution opening prompt
+python -m app.cli trial CASE_001 --provider anthropic       # full trial (8 turns + judge)
+python -m app.cli trial CASE_001 --provider anthropic --quick   # openings + closings
+```
+
+| Stage | Speaker | Must |
+|---|---|---|
+| `PROSECUTION_OPENING` | prosecution | map evidence to each element |
+| `DEFENSE_OPENING` | defense | set out reasonable doubt |
+| `PROSECUTION_ARGUMENT` | prosecution | argue element by element |
+| `DEFENSE_ARGUMENT` | defense | challenge evidence and inferences |
+| `PROSECUTION_REBUTTAL` | prosecution | answer defense arguments by ID |
+| `DEFENSE_REBUTTAL` | defense | answer prosecution arguments by ID |
+| `CLOSING_ARGUMENTS` | both | summarise |
+| `JUDGE_DECISION` | judge | decide, weighing at least one argument from each side |
+
+Every argument names its charges and legal elements, cites facts, evidence,
+or witnesses (at least one), lists its **assumptions** separately from facts,
+and names the opposing arguments it answers. The court - not the model -
+assigns argument IDs (`PR-OPEN-1`, `DF-REB-2`, ...), so every reference in the
+debate resolves. A turn that cites anything outside the record, invents a
+charge, answers its own side, or rebuts nothing is rejected and regenerated.
+
+Each turn is recorded as one structured `CourtMessage` (sender, recipient,
+type, stage, argument IDs, evidence IDs, law IDs) - agents never exchange
+free-form chat.
 
 ### LLM providers
 

@@ -160,3 +160,40 @@ class TestEngineDivergence:
         )
         report = validate(case, evaluation, decision)
         assert report.divergences[0].kind == "disputed_fact_treated_as_established"
+
+
+class TestBothSidesConsidered:
+    """With a debate on the record, the judge must weigh each party"""
+
+    def _arguments(self):
+        return [
+            Argument(
+                argument_id=argument_id,
+                agent_id=agent_id,
+                claim="claim",
+                evidence_ids=["E001"],
+                reasoning="reasoning",
+            )
+            for argument_id, agent_id in [
+                ("PR-OPEN-1", "prosecution_agent"),
+                ("PR-OPEN-2", "prosecution_agent"),
+                ("DF-OPEN-1", "defense_agent"),
+            ]
+        ]
+
+    def _considering(self, decision_with, ids):
+        return decision_with(lambda d: d.__setitem__("arguments_considered", ids))
+
+    def test_both_sides_weighed_passes(self, case, evaluation, decision_with):
+        decision = self._considering(decision_with, ["PR-OPEN-2", "DF-OPEN-1"])
+        assert validate(case, evaluation, decision, arguments=self._arguments()).valid
+
+    def test_ignoring_the_defense_is_rejected(self, case, evaluation, decision_with):
+        decision = self._considering(decision_with, ["PR-OPEN-1", "PR-OPEN-2"])
+        report = validate(case, evaluation, decision, arguments=self._arguments())
+        assert any("No argument from defense_agent" in e for e in report.structural_errors)
+
+    def test_ignoring_everything_names_both_parties(self, case, evaluation, valid_decision):
+        report = validate(case, evaluation, valid_decision, arguments=self._arguments())
+        parties = " ".join(report.structural_errors)
+        assert "prosecution_agent" in parties and "defense_agent" in parties

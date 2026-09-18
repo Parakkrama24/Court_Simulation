@@ -9,17 +9,14 @@ what was wrong, and it is asked to regenerate. After ``max_attempts``
 rejections the agent fails loudly - it never returns an unvalidated decision.
 """
 
-import json
 from typing import List, Optional, Sequence, Tuple
 
-from pydantic import BaseModel, Field, ValidationError as PydanticValidationError
+from pydantic import BaseModel, Field
 
 from app.domain import Argument, Case, Verdict
 from app.llm import (
     InteractionLog,
-    LLMError,
     LLMMessage,
-    LLMOutputError,
     LLMProvider,
     LLMRequest,
     MessageRole,
@@ -28,6 +25,7 @@ from app.llm import (
 )
 from app.rules import CaseEvaluation, LegalRuleRegistry
 
+from ..base import AgentAttempt, AgentError, generate_validated, parse_model_output
 from .prompts import PROMPT_VERSION, SYSTEM_PROMPT, build_correction_prompt, build_user_prompt
 from .schema import JudgeDecisionOutput
 from .validation import EngineDivergence, JudgeOutputValidator
@@ -38,13 +36,8 @@ DISCLAIMER = (
 )
 
 
-class JudgeAttempt(BaseModel):
-    """One generation attempt and why it was accepted or rejected"""
-
-    attempt: int
-    accepted: bool
-    errors: List[str] = Field(default_factory=list)
-    output: str = ""
+# Kept as a name for callers written against Phase 3.
+JudgeAttempt = AgentAttempt
 
 
 class JudgeResult(BaseModel):
@@ -64,12 +57,8 @@ class JudgeResult(BaseModel):
         return sum(1 for a in self.attempts if not a.accepted)
 
 
-class JudgeAgentError(Exception):
+class JudgeAgentError(AgentError):
     """The judge could not produce a valid decision"""
-
-    def __init__(self, message: str, attempts: Optional[List[JudgeAttempt]] = None) -> None:
-        super().__init__(message)
-        self.attempts = attempts or []
 
 
 class JudgeAgent:
@@ -131,90 +120,42 @@ class JudgeAgent:
             strict_engine_alignment=self.strict_engine_alignment,
         )
         request = self.build_request(case, evaluation, arguments)
-        attempts: List[JudgeAttempt] = []
-        usage = TokenUsage()
 
-        for number in range(1, self.max_attempts + 1):
-            try:
-                response = self.provider.generate(request)
-            except LLMError as exc:
-                self.log.record(
-                    agent_id=self.agent_id,
-                    prompt_version=PROMPT_VERSION,
-                    request=request,
-                    case_id=case.case_id,
-                    attempt=number,
-                    error=f"{type(exc).__name__}: {exc}",
-                )
-                attempts.append(JudgeAttempt(attempt=number, accepted=False, errors=[str(exc)]))
-                raise JudgeAgentError(
-                    f"Model call failed on attempt {number}: {exc}", attempts
-                ) from exc
+        def parse(
+            text: str,
+        ) -> Tuple[Optional[Tuple[JudgeDecisionOutput, List[EngineDivergence]]], List[str]]:
+            output, errors = parse_model_output(text, JudgeDecisionOutput)
+            if output is None:
+                return None, errors
+            report = validator.validate(output)
+            return (output, report.divergences), report.messages
 
-            usage = _add_usage(usage, response.usage)
-            output, errors, divergences = self._parse_and_validate(response.text, validator)
-
-            self.log.record(
-                agent_id=self.agent_id,
-                prompt_version=PROMPT_VERSION,
-                request=request,
-                response=response,
-                case_id=case.case_id,
-                attempt=number,
-                validation_passed=not errors,
-                validation_errors=errors,
-            )
-            attempts.append(
-                JudgeAttempt(
-                    attempt=number, accepted=not errors, errors=errors, output=response.text
-                )
-            )
-
-            if output is not None and not errors:
-                return JudgeResult(
-                    verdict=self._to_verdict(case, output, divergences, number, response.model),
-                    decision=output,
-                    divergences=divergences,
-                    attempts=attempts,
-                    provider=response.provider,
-                    model=response.model,
-                    usage=usage,
-                )
-
-            # Rejected: show the model its own output and exactly what was wrong.
-            request = request.model_copy(
-                update={
-                    "messages": request.messages
-                    + [
-                        LLMMessage(role=MessageRole.ASSISTANT, content=response.text),
-                        LLMMessage(role=MessageRole.USER, content=build_correction_prompt(errors)),
-                    ]
-                }
-            )
-
-        raise JudgeAgentError(
-            f"No valid decision after {self.max_attempts} attempt(s); "
-            f"last errors: {'; '.join(attempts[-1].errors)}",
-            attempts,
+        generation = generate_validated(
+            provider=self.provider,
+            log=self.log,
+            agent_id=self.agent_id,
+            prompt_version=PROMPT_VERSION,
+            case_id=case.case_id,
+            request=request,
+            parse=parse,
+            max_attempts=self.max_attempts,
+            correction=build_correction_prompt,
+            error_cls=JudgeAgentError,
+            task="decision",
         )
-
-    @staticmethod
-    def _parse_and_validate(
-        text: str, validator: JudgeOutputValidator
-    ) -> Tuple[Optional[JudgeDecisionOutput], List[str], List[EngineDivergence]]:
-        """Parse model text; return (output, rejection reasons, divergences)"""
-        try:
-            output = JudgeDecisionOutput.model_validate(json.loads(text))
-        except json.JSONDecodeError as exc:
-            return None, [str(LLMOutputError(f"Output is not valid JSON: {exc}"))], []
-        except PydanticValidationError as exc:
-            problems = "; ".join(
-                f"{'.'.join(str(p) for p in e['loc'])}: {e['msg']}" for e in exc.errors()
-            )
-            return None, [f"Output does not match the required schema: {problems}"], []
-
-        report = validator.validate(output)
-        return output, report.messages, report.divergences
+        output, divergences = generation.output
+        response = generation.response
+        return JudgeResult(
+            verdict=self._to_verdict(
+                case, output, divergences, len(generation.attempts), response.model
+            ),
+            decision=output,
+            divergences=divergences,
+            attempts=generation.attempts,
+            provider=response.provider,
+            model=response.model,
+            usage=generation.usage,
+        )
 
     def _to_verdict(
         self,
@@ -252,10 +193,3 @@ class JudgeAgent:
             },
         )
 
-
-def _add_usage(total: TokenUsage, extra: TokenUsage) -> TokenUsage:
-    return TokenUsage(
-        input_tokens=total.input_tokens + extra.input_tokens,
-        output_tokens=total.output_tokens + extra.output_tokens,
-        cache_read_input_tokens=total.cache_read_input_tokens + extra.cache_read_input_tokens,
-    )

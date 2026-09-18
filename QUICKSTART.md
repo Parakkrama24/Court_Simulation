@@ -1,15 +1,15 @@
 # Quick Start Guide
 
-## Phase 3 Complete ✅
+## Phase 4 Complete ✅
 
-This guide will help you get started with the Court Simulation System. Currently, Phase 1 (Domain Models & Seed Data), Phase 2 (Legal Rule Engine), and Phase 3 (Judge Agent) are complete.
+This guide will help you get started with the Court Simulation System. Currently, Phase 1 (Domain Models & Seed Data), Phase 2 (Legal Rule Engine), Phase 3 (Judge Agent), and Phase 4 (Prosecution ↔ Defense → Judge) are complete.
 
 ## What's Working Now
 
 - ✅ Complete domain models (Pydantic)
 - ✅ Structured legal rules (JSON)
 - ✅ CASE_001 seed data with facts, evidence, and witnesses
-- ✅ 228 passing unit tests
+- ✅ 291 passing unit tests
 - ✅ Configuration management
 - ✅ Project structure
 
@@ -51,7 +51,7 @@ pytest
 
 Expected output:
 ```
-228 tests passed ✅
+291 tests passed ✅
 ```
 
 ### Run Specific Tests
@@ -310,12 +310,15 @@ python -m app.cli judge CASE_001 --json > run.json
 
 Every model call is appended to `logs/llm_interactions.jsonl`.
 
-## Next Phases (Coming Soon)
+## Running an Adversarial Trial
 
-### Phase 4: Two-Agent System
-- Prosecution Agent
-- Defense Agent
-- Adversarial debate
+```bash
+python -m app.cli trial CASE_001 --show-prompt   # the prosecution's opening prompt
+python -m app.cli trial CASE_001 --quick         # openings + closings, then judge (5 calls)
+python -m app.cli trial CASE_001                 # full debate, then judge (9 calls)
+```
+
+## Next Phases (Coming Soon)
 
 ### Phase 5+
 - Evidence Agent
@@ -368,7 +371,7 @@ When implementing new phases:
 
 ## Summary
 
-**Phase 1-3 Status**: ✅ Complete and tested
+**Phase 1-4 Status**: ✅ Complete and tested
 
 You now have:
 - Clean domain models
@@ -377,7 +380,7 @@ You now have:
 - Comprehensive tests
 - Solid foundation for multi-agent system
 
-**Next Step**: Implement Phase 4 (Two-Agent Adversarial System) - Prosecution ↔ Defense → Judge.
+**Next Step**: Implement Phase 5 (Evidence Agent) - neutral evidence analysis.
 
 ---
 

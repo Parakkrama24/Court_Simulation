@@ -308,3 +308,47 @@ class TestCase:
         assert len(case.witnesses) == 1
         assert len(case.charges) == 2
         assert len(case.applicable_laws) == 2
+
+
+class TestCourtMessage:
+    """Structured agent communication (spec section 18)"""
+
+    def test_create_message(self):
+        from app.domain import CourtMessage, CourtStage, MessageType
+
+        message = CourtMessage(
+            message_id="MSG-1",
+            case_id="CASE_001",
+            sender="prosecution_agent",
+            recipient="judge_agent",
+            message_type=MessageType.ARGUMENT,
+            stage=CourtStage.PROSECUTION_ARGUMENT,
+            claim="The entry was unauthorized",
+            argument_ids=["PR-ARG-1"],
+            evidence_ids=["E001"],
+            law_ids=["LAW_104"],
+        )
+        assert message.timestamp.tzinfo is not None
+        assert message.model_dump(mode="json")["stage"] == "PROSECUTION_ARGUMENT"
+
+    def test_court_stages_follow_the_specified_procedure(self):
+        from app.domain import CourtStage
+
+        stages = [s.value for s in CourtStage]
+        assert stages[0] == "CASE_INITIALIZATION"
+        assert stages[-1] == "CASE_COMPLETE"
+        assert stages.index("PROSECUTION_OPENING") < stages.index("DEFENSE_OPENING")
+        assert stages.index("CLOSING_ARGUMENTS") < stages.index("JUDGE_DECISION")
+        assert len(stages) == 17
+
+    def test_argument_carries_fact_and_witness_citations(self):
+        argument = Argument(
+            argument_id="A1",
+            agent_id="defense_agent",
+            claim="claim",
+            reasoning="reasoning",
+            fact_ids=["F001"],
+            witness_ids=["W003"],
+        )
+        assert argument.fact_ids == ["F001"]
+        assert argument.witness_ids == ["W003"]

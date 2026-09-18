@@ -162,3 +162,25 @@ class TestBindingValidation:
             binding("RULE_A", "C1", fact_ids=["F1"], subject=f"{SUBJECT} (alias)")
         )
         assert result.valid
+
+
+class TestArgumentFactAndWitnessCitations:
+    """Arguments may cite facts and witnesses directly (Phase 4)"""
+
+    def test_fabricated_fact_and_witness_are_rejected(
+        self, case: Case, registry: LegalRuleRegistry
+    ):
+        argument = Argument(
+            argument_id="ARG2",
+            agent_id="defense_agent",
+            claim="claim",
+            fact_ids=["F1", "F404"],
+            witness_ids=["WT1", "WT9"],
+            reasoning="reasoning",
+        )
+        result = ReferenceValidator(case, registry).validate_argument(argument)
+        assert {e.reference_id for e in result.errors} == {"F404", "WT9"}
+        assert {e.reference_type for e in result.errors} == {
+            ReferenceType.FACT,
+            ReferenceType.WITNESS,
+        }

@@ -194,7 +194,17 @@ validation outcome - to memory and optionally to a JSON Lines file.
 
 ### Layer 5: Agent Layer
 
-**Location**: `backend/app/agents/` (Judge Agent implemented in Phase 3)
+**Location**: `backend/app/agents/` (Judge in Phase 3; Prosecution and Defense in Phase 4)
+
+**Implemented design**: every agent runs through one loop in `agents/base.py` -
+generate structured JSON, parse, validate against the record, and on failure
+show the model its own output with the exact reasons and regenerate. After
+`max_attempts` rejections the agent raises; unvalidated output is never
+returned. All agents see the same record, rendered by `agents/record.py`.
+
+Prosecution and Defense are one `AdvocateAgent` class configured by role.
+Arguments get court-assigned IDs after validation, and each turn becomes a
+`CourtMessage` - the structured communication format of spec section 18.
 
 **Purpose**: Specialized reasoning agents
 
@@ -429,7 +439,7 @@ def validate_argument(argument: Argument, case: Case) -> ValidationResult:
 
 ## Scalability Considerations
 
-### Current Phase (Phase 3)
+### Current Phase (Phase 4)
 - In-memory case data and evaluations
 - No database required
 - Single-threaded, deterministic execution

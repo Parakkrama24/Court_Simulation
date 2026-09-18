@@ -6,7 +6,8 @@ Three layers of checks, in decreasing severity:
    does not exist. Always rejected (anti-hallucination, rule E005).
 2. **Structural errors** - the decision is incomplete or incoherent: a charge
    left undecided or invented, a required element not assessed, a conviction
-   on an element the judge itself did not find established. Always rejected.
+   on an element the judge itself did not find established, or a party's
+   arguments ignored entirely. Always rejected.
 3. **Engine divergences** - the judge's view differs from the deterministic
    rule engine. Recorded for evaluation, not rejected by default: the engine
    weighs authored bindings with fixed thresholds, and a judge may reasonably
@@ -80,12 +81,16 @@ class JudgeOutputValidator:
         self.registry = registry or LegalRuleRegistry()
         self.references = ReferenceValidator(case, self.registry)
         self.argument_ids = [a.argument_id for a in arguments]
+        self.arguments_by_party: Dict[str, List[str]] = {}
+        for argument in arguments:
+            self.arguments_by_party.setdefault(argument.agent_id, []).append(argument.argument_id)
         self.strict_engine_alignment = strict_engine_alignment
         self._facts = {fact.fact_id: fact for fact in case.facts}
 
     def validate(self, output: JudgeDecisionOutput) -> JudgeValidationReport:
         report = JudgeValidationReport()
         self._check_references(output, report)
+        self._check_both_sides(output, report)
         self._check_charges(output, report)
         self._check_engine_alignment(output, report)
         return report
@@ -122,6 +127,18 @@ class JudgeOutputValidator:
     # ------------------------------------------------------------------
     # 2. Structure
     # ------------------------------------------------------------------
+
+    def _check_both_sides(
+        self, output: JudgeDecisionOutput, report: JudgeValidationReport
+    ) -> None:
+        """The judge must weigh every party that presented arguments"""
+        considered = set(output.arguments_considered)
+        for party, argument_ids in self.arguments_by_party.items():
+            if not considered.intersection(argument_ids):
+                report.structural_errors.append(
+                    f"No argument from {party} is listed in arguments_considered; the "
+                    f"court must weigh both sides (presented: {', '.join(argument_ids)})."
+                )
 
     def _check_charges(self, output: JudgeDecisionOutput, report: JudgeValidationReport) -> None:
         errors = report.structural_errors

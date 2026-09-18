@@ -158,6 +158,8 @@ class ReferenceValidator:
         location = f"argument {argument.argument_id}"
         result = self.validate_references(
             evidence_ids=argument.evidence_ids,
+            fact_ids=argument.fact_ids,
+            witness_ids=argument.witness_ids,
             law_ids=argument.law_ids,
             location=location,
             subject_id=argument.argument_id,

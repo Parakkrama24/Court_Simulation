@@ -65,6 +65,38 @@ class CaseType(str, Enum):
     CIVIL = "civil"
 
 
+class CourtStage(str, Enum):
+    """Stages of court procedure, in order (spec section 14)"""
+
+    CASE_INITIALIZATION = "CASE_INITIALIZATION"
+    EVIDENCE_ANALYSIS = "EVIDENCE_ANALYSIS"
+    PROSECUTION_OPENING = "PROSECUTION_OPENING"
+    DEFENSE_OPENING = "DEFENSE_OPENING"
+    PROSECUTION_ARGUMENT = "PROSECUTION_ARGUMENT"
+    DEFENSE_ARGUMENT = "DEFENSE_ARGUMENT"
+    CROSS_EXAMINATION = "CROSS_EXAMINATION"
+    EVIDENCE_REVIEW = "EVIDENCE_REVIEW"
+    JUDGE_QUESTIONS = "JUDGE_QUESTIONS"
+    PROSECUTION_REBUTTAL = "PROSECUTION_REBUTTAL"
+    DEFENSE_REBUTTAL = "DEFENSE_REBUTTAL"
+    CLOSING_ARGUMENTS = "CLOSING_ARGUMENTS"
+    JURY_INDEPENDENT_DELIBERATION = "JURY_INDEPENDENT_DELIBERATION"
+    JURY_DELIBERATION = "JURY_DELIBERATION"
+    JUDGE_DECISION = "JUDGE_DECISION"
+    LEGAL_PROCESS_AUDIT = "LEGAL_PROCESS_AUDIT"
+    CASE_COMPLETE = "CASE_COMPLETE"
+
+
+class MessageType(str, Enum):
+    """Kinds of structured message exchanged in court"""
+
+    OPENING_STATEMENT = "opening_statement"
+    ARGUMENT = "argument"
+    REBUTTAL = "rebuttal"
+    CLOSING_STATEMENT = "closing_statement"
+    DECISION = "decision"
+
+
 # ============================================================================
 # Core Domain Models
 # ============================================================================
@@ -269,6 +301,12 @@ class Argument(BaseModel):
     claim: str = Field(..., description="The claim being made")
     evidence_ids: List[str] = Field(
         default_factory=list, description="Evidence IDs supporting this argument"
+    )
+    fact_ids: List[str] = Field(
+        default_factory=list, description="Fact IDs this argument relies on"
+    )
+    witness_ids: List[str] = Field(
+        default_factory=list, description="Witness IDs whose testimony this argument relies on"
     )
     law_ids: List[str] = Field(
         default_factory=list, description="Legal rule IDs referenced in this argument"
@@ -492,6 +530,54 @@ class ElementBinding(BaseModel):
                 "evidence_ids": ["E001", "E002"],
                 "note": "Entry through a broken window without permission",
                 "source": "case_file",
+            }
+        }
+    )
+
+
+# ============================================================================
+# Agent Communication
+# ============================================================================
+
+
+class CourtMessage(BaseModel):
+    """A structured message between agents (spec section 18)
+
+    Agents never exchange free-form chat. Each turn in court is one message
+    with a sender, a recipient, a type, the stage it belongs to, and explicit
+    references to the arguments, evidence, and laws it carries.
+    """
+
+    message_id: str = Field(..., description="Unique identifier for the message")
+    case_id: str = Field(..., description="Case the message belongs to")
+    sender: str = Field(..., description="Agent that sent the message")
+    recipient: str = Field(..., description="Agent the message is addressed to")
+    message_type: MessageType = Field(..., description="Kind of message")
+    stage: CourtStage = Field(..., description="Court stage in which it was sent")
+    claim: str = Field(..., description="The message's central statement")
+    argument_ids: List[str] = Field(
+        default_factory=list, description="Arguments carried by this message"
+    )
+    evidence_ids: List[str] = Field(default_factory=list, description="Evidence cited")
+    law_ids: List[str] = Field(default_factory=list, description="Legal rules cited")
+    reasoning: str = Field(default="", description="Concise rationale")
+    timestamp: datetime = Field(default_factory=utc_now, description="When it was sent")
+    metadata: Dict[str, Any] = Field(default_factory=dict, description="Additional metadata")
+
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "message_id": "MSG-PR-OPEN",
+                "case_id": "CASE_001",
+                "sender": "prosecution_agent",
+                "recipient": "judge_agent",
+                "message_type": "opening_statement",
+                "stage": "PROSECUTION_OPENING",
+                "claim": "The evidence proves unlawful entry into the home.",
+                "argument_ids": ["PR-OPEN-1"],
+                "evidence_ids": ["E001", "E002"],
+                "law_ids": ["LAW_104"],
+                "reasoning": "E001 and E002 place Alex at the broken window.",
             }
         }
     )
