@@ -194,7 +194,8 @@ validation outcome - to memory and optionally to a JSON Lines file.
 
 ### Layer 5: Agent Layer
 
-**Location**: `backend/app/agents/` (Judge in Phase 3; Prosecution and Defense in Phase 4)
+**Location**: `backend/app/agents/` (Judge in Phase 3; Prosecution and Defense in Phase 4;
+Evidence in Phase 5; Jury in Phase 6)
 
 **Implemented design**: every agent runs through one loop in `agents/base.py` -
 generate structured JSON, parse, validate against the record, and on failure
@@ -205,6 +206,18 @@ returned. All agents see the same record, rendered by `agents/record.py`.
 Prosecution and Defense are one `AdvocateAgent` class configured by role.
 Arguments get court-assigned IDs after validation, and each turn becomes a
 `CourtMessage` - the structured communication format of spec section 18.
+
+The Evidence Agent's analysis and argument reviews are passed into the shared
+record as plain data (`evidence_context`), so every later speaker sees them
+without the agents depending on one another. Anything that is a fact about
+the record rather than an interpretation - evidence provenance, the E003
+witness scores - is computed in code and given to the model, never asked of it.
+
+Jury independence is structural: a juror's independent-round request is
+built from the trial record alone, with no parameter through which another
+juror's decision could enter. The verdict engine (`jury/aggregation.py`)
+that turns votes into a verdict is deterministic code, and only the judge
+receives the jury's result.
 
 **Purpose**: Specialized reasoning agents
 
@@ -439,7 +452,7 @@ def validate_argument(argument: Argument, case: Case) -> ValidationResult:
 
 ## Scalability Considerations
 
-### Current Phase (Phase 4)
+### Current Phase (Phase 6)
 - In-memory case data and evaluations
 - No database required
 - Single-threaded, deterministic execution

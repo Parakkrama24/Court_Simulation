@@ -9,7 +9,7 @@ what was wrong, and it is asked to regenerate. After ``max_attempts``
 rejections the agent fails loudly - it never returns an unvalidated decision.
 """
 
-from typing import List, Optional, Sequence, Tuple
+from typing import Any, Dict, List, Optional, Sequence, Tuple
 
 from pydantic import BaseModel, Field
 
@@ -90,6 +90,8 @@ class JudgeAgent:
         case: Case,
         evaluation: CaseEvaluation,
         arguments: Sequence[Argument] = (),
+        evidence_context: Optional[Dict[str, Any]] = None,
+        jury_context: Optional[Dict[str, Any]] = None,
     ) -> LLMRequest:
         """The initial request for a case (also useful to inspect the prompt)"""
         return LLMRequest(
@@ -97,7 +99,9 @@ class JudgeAgent:
             messages=[
                 LLMMessage(
                     role=MessageRole.USER,
-                    content=build_user_prompt(case, evaluation, self.registry, arguments),
+                    content=build_user_prompt(
+                        case, evaluation, self.registry, arguments, evidence_context, jury_context
+                    ),
                 )
             ],
             json_schema=self.output_schema,
@@ -110,6 +114,8 @@ class JudgeAgent:
         case: Case,
         evaluation: CaseEvaluation,
         arguments: Sequence[Argument] = (),
+        evidence_context: Optional[Dict[str, Any]] = None,
+        jury_context: Optional[Dict[str, Any]] = None,
     ) -> JudgeResult:
         """Decide every charge, regenerating until the output validates"""
         validator = JudgeOutputValidator(
@@ -119,7 +125,9 @@ class JudgeAgent:
             arguments=arguments,
             strict_engine_alignment=self.strict_engine_alignment,
         )
-        request = self.build_request(case, evaluation, arguments)
+        request = self.build_request(
+            case, evaluation, arguments, evidence_context, jury_context
+        )
 
         def parse(
             text: str,

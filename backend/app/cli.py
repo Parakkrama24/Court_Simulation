@@ -9,6 +9,12 @@
     python -m app.cli trial CASE_001                      # Prosecution <-> Defense -> Judge
     python -m app.cli trial CASE_001 --quick              # openings and closings only
     python -m app.cli trial CASE_001 --show-prompt        # prosecution opening prompt
+    python -m app.cli trial CASE_001 --no-evidence        # without the Evidence Agent
+    python -m app.cli trial CASE_001 --no-jury            # without the jury
+    python -m app.cli trial CASE_001 --jurors 5 --jury-rule majority --no-deliberation
+
+    python -m app.cli evidence CASE_001                   # evidence analysis only
+    python -m app.cli evidence CASE_001 --show-prompt
 
 Research simulation only. This system does not provide legal advice or
 determine real legal rights or obligations.
@@ -19,7 +25,7 @@ import os
 import sys
 from typing import Any, List, Optional
 
-from app.agents import AdvocateAgent, AdvocateRole, AgentError
+from app.agents import AdvocateAgent, AdvocateRole, AgentError, EvidenceAgent, JuryRule
 from app.agents.judge import DISCLAIMER, JudgeAgent
 from app.domain import CourtStage
 from app.llm import (
@@ -38,6 +44,7 @@ from app.workflow import (
     QUICK_DEBATE_STAGES,
     WorkflowError,
     run_adversarial_trial,
+    run_evidence_analysis,
     run_judge_only,
 )
 
@@ -105,13 +112,104 @@ def _print_summary(run: Any) -> None:
     print(f"\n{DISCLAIMER}")
 
 
+def _print_analysis(analysis: Any) -> None:
+    output = analysis.output
+    rejected = f", {analysis.rejected_attempts} rejected" if analysis.rejected_attempts else ""
+    print(f"\n[EVIDENCE_ANALYSIS] evidence_agent ({analysis.model}{rejected})")
+    print(f"  {output.summary}")
+    print("\n  CLAIMS")
+    for claim in output.claims:
+        support = ", ".join(claim.supporting_evidence_ids + claim.supporting_witness_ids)
+        contra = ", ".join(claim.contradicting_evidence_ids + claim.contradicting_witness_ids)
+        print(f"    [{claim.status.value:<11}] {claim.claim}")
+        print(f"        for: {support or '-'}   against: {contra or '-'}")
+    if output.contradictions:
+        print("\n  CONTRADICTIONS")
+        for c in output.contradictions:
+            items = ", ".join(c.evidence_ids + c.witness_ids + c.fact_ids)
+            print(f"    - {c.description} ({items})")
+    print("\n  WITNESSES")
+    for w in output.witnesses:
+        grounds = "; ".join(w.grounds) or "no challenge grounds"
+        print(f"    {w.witness_id} {w.rating.value:<9} {grounds}")
+    if output.missing_evidence:
+        print("\n  MISSING EVIDENCE")
+        for m in output.missing_evidence:
+            elements = ", ".join(f"{e.rule_id}.{e.condition_id}" for e in m.elements)
+            print(f"    - {m.description} [{elements}]")
+    gaps = [p for p in analysis.provenance if p.gaps]
+    if gaps:
+        print("\n  PROVENANCE GAPS (from the record)")
+        for p in gaps:
+            print(f"    {p.evidence_id}: {'; '.join(p.gaps)}")
+    for flag in analysis.flags:
+        print(f"  flag ({flag.kind}): {flag.detail}")
+
+
+def _print_review(review: Any) -> None:
+    rejected = f", {review.rejected_attempts} rejected" if review.rejected_attempts else ""
+    print(f"\n[EVIDENCE_REVIEW] evidence_agent ({review.model}{rejected})")
+    print(f"  {review.output.summary}")
+    for r in review.output.reviews:
+        print(f"  {r.argument_id}: {r.support.value}")
+        for issue in r.issues:
+            print(f"      issue: {issue}")
+    for flag in review.flags:
+        print(f"  flag ({flag.kind}): {flag.detail}")
+
+
+def _print_jury(run: Any) -> None:
+    rounds = [("JURY_INDEPENDENT_DELIBERATION", run.jury_independent)]
+    if run.jury_deliberation:
+        rounds.append(("JURY_DELIBERATION", run.jury_deliberation))
+    for stage, decisions in rounds:
+        print(f"\n[{stage}]")
+        for d in decisions:
+            rejected = f", {d.rejected_attempts} rejected" if d.rejected_attempts else ""
+            changed = f"  (changed: {', '.join(d.changed_charges)})" if d.changed_charges else ""
+            print(f"  {d.juror_id} ({d.model}{rejected}): {d.verdict.decision}{changed}")
+            for v in d.output.charge_verdicts:
+                cited = ", ".join(v.fact_ids + v.evidence_ids + v.witness_ids) or "none"
+                print(f"      {v.charge}: {v.verdict.value} ({v.confidence:.2f}) cites: {cited}")
+            for uncertainty in d.output.uncertainties:
+                print(f"      unsure: {uncertainty}")
+
+    result = run.jury_result
+    print(f"\n[JURY VERDICT] rule: {result.rule.value}")
+    for tally in result.final:
+        print(
+            f"  {tally.charge}: {tally.outcome.value.upper()} "
+            f"({len(tally.guilty)} guilty / {len(tally.not_guilty)} not guilty)"
+        )
+    line = f"  agreement: {result.independent_agreement:.2f} independent"
+    if result.deliberated:
+        line += (
+            f" -> {result.final_agreement:.2f} after deliberation "
+            f"({len(result.vote_changes)} vote change(s))"
+        )
+    print(line)
+
+
 def _print_trial(run: Any) -> None:
     print(f"\n{run.case.case_id} - {run.case.title}")
     print(f"Defendant: {run.case.defendant}")
     usage = run.usage
     print(f"Tokens: {usage.input_tokens} in / {usage.output_tokens} out")
 
-    for turn in run.turns:
+    if run.evidence_analysis is not None:
+        _print_analysis(run.evidence_analysis)
+
+    # Walk the event history so reviews print where they happened in the debate.
+    reviews = iter(run.evidence_reviews)
+    turn_index = 0
+    for entry in run.event_history:
+        if entry["event_type"] == "EVIDENCE_REVIEWED":
+            _print_review(next(reviews))
+            continue
+        if entry["event_type"] != "AGENT_ARGUMENT":
+            continue
+        turn = run.turns[turn_index]
+        turn_index += 1
         rejected = f", {turn.rejected_attempts} rejected" if turn.rejected_attempts else ""
         print(f"\n[{turn.stage.value}] {turn.agent_id} ({turn.model}{rejected})")
         print(f"  {turn.statement}")
@@ -129,10 +227,16 @@ def _print_trial(run: Any) -> None:
         for flag in turn.flags:
             print(f"  flag (argument {flag.argument_index}): {flag.detail}")
 
+    if run.jury_result is not None:
+        _print_jury(run)
+
     judgment = run.judgment
     rejected = f", {judgment.rejected_attempts} rejected" if judgment.rejected_attempts else ""
     print(f"\n[JUDGE_DECISION] judge_agent ({judgment.model}{rejected})")
     _print_judgment(judgment)
+    for row in run.judge_jury_agreement:
+        verdict = "agrees with" if row["agrees"] else "differs from"
+        print(f"  {row['charge']}: judge {verdict} jury ({row['judge']} vs {row['jury']})")
     print(f"\n{DISCLAIMER}")
 
 
@@ -190,6 +294,8 @@ def _judge(args: argparse.Namespace) -> int:
 def _trial(args: argparse.Namespace) -> int:
     settings = _load_settings()
     stages = QUICK_DEBATE_STAGES if args.quick else DEFAULT_DEBATE_STAGES
+    if args.no_evidence:
+        stages = [s for s in stages if s != CourtStage.EVIDENCE_REVIEW]
 
     if args.show_prompt:
         case = get_case_by_id(args.case_id)
@@ -221,6 +327,11 @@ def _trial(args: argparse.Namespace) -> int:
             provider,
             log=log,
             stages=stages,
+            evidence=not args.no_evidence,
+            jury=not args.no_jury,
+            jurors=args.jurors,
+            deliberation=not args.no_deliberation,
+            jury_rule=JuryRule(args.jury_rule),
             max_attempts=max_attempts,
             strict_engine_alignment=args.strict,
         )
@@ -234,6 +345,51 @@ def _trial(args: argparse.Namespace) -> int:
         print(run.model_dump_json(indent=2))
     else:
         _print_trial(run)
+        if log_path:
+            print(f"Interactions logged to {log_path}")
+    return 0
+
+
+def _evidence(args: argparse.Namespace) -> int:
+    settings = _load_settings()
+
+    if args.show_prompt:
+        case = get_case_by_id(args.case_id)
+        if case is None:
+            print(f"Unknown case '{args.case_id}'", file=sys.stderr)
+            return 2
+        evaluation = RuleEngine().evaluate_case(case, get_bindings_for_case(case.case_id))
+        request = EvidenceAgent(ScriptedProvider([])).build_analysis_request(case, evaluation)
+        print("=== SYSTEM ===\n" + request.system)
+        print("\n=== USER ===\n" + request.messages[0].content)
+        return 0
+
+    try:
+        provider = _build_provider(args, settings)
+    except LLMError as exc:
+        print(f"Provider error: {exc}", file=sys.stderr)
+        return 2
+
+    log_path = args.log_file
+    if log_path is None and settings is not None:
+        log_path = settings.llm_log_path
+    log = InteractionLog(log_path)
+    max_attempts = args.max_attempts or (settings.llm_max_attempts if settings else 3)
+
+    try:
+        run = run_evidence_analysis(args.case_id, provider, log=log, max_attempts=max_attempts)
+    except (WorkflowError, AgentError) as exc:
+        print(f"Simulation failed: {exc}", file=sys.stderr)
+        for attempt in getattr(exc, "attempts", []):
+            print(f"  attempt {attempt.attempt}: {'; '.join(attempt.errors)}", file=sys.stderr)
+        return 1
+
+    if args.json:
+        print(run.model_dump_json(indent=2))
+    else:
+        print(f"\n{run.case.case_id} - {run.case.title}")
+        _print_analysis(run.analysis)
+        print(f"\n{DISCLAIMER}")
         if log_path:
             print(f"Interactions logged to {log_path}")
     return 0
@@ -267,7 +423,29 @@ def main(argv: Optional[List[str]] = None) -> int:
     trial.add_argument(
         "--quick", action="store_true", help="Openings and closings only (4 advocate calls)"
     )
+    trial.add_argument(
+        "--no-evidence",
+        action="store_true",
+        help="Skip the Evidence Agent (no EVIDENCE_ANALYSIS or EVIDENCE_REVIEW)",
+    )
+    trial.add_argument("--no-jury", action="store_true", help="Skip the jury")
+    trial.add_argument("--jurors", type=int, default=3, help="Number of jurors (default 3)")
+    trial.add_argument(
+        "--no-deliberation",
+        action="store_true",
+        help="Independent jury verdicts only; no deliberation round",
+    )
+    trial.add_argument(
+        "--jury-rule",
+        choices=[r.value for r in JuryRule],
+        default=JuryRule.UNANIMOUS.value,
+        help="How votes become a verdict (default unanimous; a split is a hung jury)",
+    )
     trial.set_defaults(handler=_trial)
+
+    evidence = commands.add_parser("evidence", help="Run the Evidence Agent's analysis only")
+    _add_run_options(evidence)
+    evidence.set_defaults(handler=_evidence)
 
     args = parser.parse_args(argv)
     return int(args.handler(args))

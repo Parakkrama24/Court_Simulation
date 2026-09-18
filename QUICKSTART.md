@@ -1,15 +1,15 @@
 # Quick Start Guide
 
-## Phase 4 Complete ✅
+## Phase 6 Complete ✅
 
-This guide will help you get started with the Court Simulation System. Currently, Phase 1 (Domain Models & Seed Data), Phase 2 (Legal Rule Engine), Phase 3 (Judge Agent), and Phase 4 (Prosecution ↔ Defense → Judge) are complete.
+This guide will help you get started with the Court Simulation System. Currently, Phase 1 (Domain Models & Seed Data), Phase 2 (Legal Rule Engine), Phase 3 (Judge Agent), Phase 4 (Prosecution ↔ Defense → Judge), Phase 5 (Evidence Agent), and Phase 6 (Jury) are complete.
 
 ## What's Working Now
 
 - ✅ Complete domain models (Pydantic)
 - ✅ Structured legal rules (JSON)
 - ✅ CASE_001 seed data with facts, evidence, and witnesses
-- ✅ 291 passing unit tests
+- ✅ 418 passing unit tests
 - ✅ Configuration management
 - ✅ Project structure
 
@@ -51,7 +51,7 @@ pytest
 
 Expected output:
 ```
-291 tests passed ✅
+418 tests passed ✅
 ```
 
 ### Run Specific Tests
@@ -314,8 +314,11 @@ Every model call is appended to `logs/llm_interactions.jsonl`.
 
 ```bash
 python -m app.cli trial CASE_001 --show-prompt   # the prosecution's opening prompt
-python -m app.cli trial CASE_001 --quick         # openings + closings, then judge (5 calls)
-python -m app.cli trial CASE_001                 # full debate, then judge (9 calls)
+python -m app.cli evidence CASE_001              # Evidence Agent only (1 call)
+python -m app.cli trial CASE_001 --quick         # analysis, openings, closings, jury, judge (12 calls)
+python -m app.cli trial CASE_001                 # the full trial (17 calls)
+python -m app.cli trial CASE_001 --no-jury       # the Phase 5 trial (11 calls)
+python -m app.cli trial CASE_001 --no-jury --no-evidence   # the Phase 4 trial (9 calls)
 ```
 
 ## Next Phases (Coming Soon)
@@ -371,7 +374,7 @@ When implementing new phases:
 
 ## Summary
 
-**Phase 1-4 Status**: ✅ Complete and tested
+**Phase 1-6 Status**: ✅ Complete and tested
 
 You now have:
 - Clean domain models
@@ -380,7 +383,7 @@ You now have:
 - Comprehensive tests
 - Solid foundation for multi-agent system
 
-**Next Step**: Implement Phase 5 (Evidence Agent) - neutral evidence analysis.
+**Next Step**: Implement Phase 7 (Legal Process Auditor).
 
 ---
 

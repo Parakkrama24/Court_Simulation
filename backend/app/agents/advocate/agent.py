@@ -6,7 +6,7 @@ the debate so far, and regenerated on rejection - then converted into domain
 ``Argument`` objects with court-assigned IDs and a structured ``CourtMessage``.
 """
 
-from typing import Iterable, List, Optional, Sequence, Tuple
+from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple
 
 from pydantic import BaseModel, Field
 
@@ -92,6 +92,7 @@ class AdvocateAgent:
         evaluation: CaseEvaluation,
         stage: CourtStage,
         prior_arguments: Sequence[Argument] = (),
+        evidence_context: Optional[Dict[str, Any]] = None,
     ) -> LLMRequest:
         """The initial request for one turn (also useful to inspect the prompt)"""
         self._check_stage(stage)
@@ -101,7 +102,13 @@ class AdvocateAgent:
                 LLMMessage(
                     role=MessageRole.USER,
                     content=build_user_prompt(
-                        case, evaluation, self.registry, self.role, stage, prior_arguments
+                        case,
+                        evaluation,
+                        self.registry,
+                        self.role,
+                        stage,
+                        prior_arguments,
+                        evidence_context,
                     ),
                 )
             ],
@@ -117,9 +124,12 @@ class AdvocateAgent:
         stage: CourtStage,
         prior_arguments: Sequence[Argument] = (),
         id_prefix: Optional[str] = None,
+        evidence_context: Optional[Dict[str, Any]] = None,
     ) -> AdvocateTurn:
         """Produce one validated turn at ``stage``"""
-        request = self.build_request(case, evaluation, stage, prior_arguments)
+        request = self.build_request(
+            case, evaluation, stage, prior_arguments, evidence_context
+        )
         validator = AdvocateTurnValidator(
             case, self.role, stage, prior_arguments, registry=self.registry
         )

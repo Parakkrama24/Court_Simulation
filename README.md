@@ -19,7 +19,7 @@ The Court Simulation System uses multiple specialized AI agents to simulate cour
 
 ## Project Status
 
-**Current Phase**: Phase 4 - Two-Agent Adversarial System ✅
+**Current Phase**: Phase 6 - Jury ✅
 
 ### Completed
 - ✅ Domain models (Case, Fact, Evidence, Witness, LegalRule, Argument, Verdict, AuditReport)
@@ -39,13 +39,16 @@ The Court Simulation System uses multiple specialized AI agents to simulate cour
 - ✅ Adversarial trial: openings → arguments → rebuttals → closings → judge
 - ✅ Structured agent messages (`CourtMessage`) - no free-form chat
 - ✅ Judge must weigh both sides; advocates must separate assumptions from facts
+- ✅ Neutral Evidence Agent: claim status, contradictions, witnesses, missing evidence
+- ✅ Evidence review of every argument - unsupported claims detected mid-trial
+- ✅ Evidence provenance traced deterministically from the record
+- ✅ Three independent jurors, then an optional controlled deliberation round
+- ✅ Deterministic verdict engine: unanimous or majority rule, hung juries, agreement metrics
 - ✅ Comprehensive unit tests
 - ✅ Project structure and configuration
 
 ### Upcoming Phases
-- 🔄 Phase 5: Evidence Agent
-- ⏳ Phase 6: Jury System
-- ⏳ Phase 7: Legal Process Auditor
+- 🔄 Phase 7: Legal Process Auditor
 - ⏳ Phase 8: Full LangGraph Workflow
 - ⏳ Phase 9: FastAPI Backend
 - ⏳ Phase 10: Frontend Visualization
@@ -99,18 +102,21 @@ Court_Simulation/
 │   │   │   ├── base.py          # Shared generate → validate → regenerate loop
 │   │   │   ├── record.py        # The case record every agent sees
 │   │   │   ├── advocate/        # Prosecution + Defense agents
+│   │   │   ├── evidence/        # Evidence Agent + deterministic provenance
+│   │   │   ├── jury/            # Juror agents + deterministic verdict engine
 │   │   │   └── judge/           # Judge Agent: prompts, schema, validation
 │   │   ├── workflow/
 │   │   │   ├── judge_only.py    # Case → Judge → Decision
-│   │   │   └── adversarial.py   # Prosecution ↔ Defense → Judge
+│   │   │   ├── evidence_only.py # Case → Evidence Agent
+│   │   │   └── adversarial.py   # Evidence → Prosecution ↔ Defense → Jury → Judge
 │   │   ├── llm/                 # Provider-agnostic LLM layer + interaction log
-│   │   ├── cli.py               # python -m app.cli judge|trial CASE_001
+│   │   ├── cli.py               # python -m app.cli judge|trial|evidence CASE_001
 │   │   └── config.py            # Configuration management
 │   ├── tests/
 │   │   ├── test_domain/         # Domain model tests
 │   │   ├── test_rules/          # Rule engine tests
 │   │   ├── test_llm/            # LLM layer tests (no network)
-│   │   └── test_agents/         # Judge, advocate, and trial tests
+│   │   └── test_agents/         # Judge, advocate, evidence, jury, and trial tests
 │   ├── requirements.txt
 │   ├── pyproject.toml
 │   └── pytest.ini
@@ -175,7 +181,7 @@ pytest tests/test_rules/test_engine.py -v
 ### Current Test Results
 
 ```
-All Tests: 291/291 passing ✅ (no network or API key needed)
+All Tests: 418/418 passing ✅ (no network or API key needed)
 - Domain Models: 21 tests
 - Seed Data: 20 tests
 - Rule Registry: 13 tests
@@ -190,6 +196,10 @@ All Tests: 291/291 passing ✅ (no network or API key needed)
 - Judge Workflow + CLI: 11 tests
 - Prosecution + Defense Agents: 33 tests
 - Adversarial Trial + CLI: 23 tests
+- Evidence Agent: 46 tests
+- Evidence in the Trial + CLI: 25 tests
+- Jury Agents + Verdict Engine: 34 tests
+- Jury in the Trial + CLI: 22 tests
 ```
 
 ## Domain Models
@@ -338,26 +348,34 @@ A rejected decision goes back to the model with the exact reasons. After
 never returned. Every call, rejected or accepted, is appended to
 `logs/llm_interactions.jsonl`.
 
-## Adversarial Trial (Phase 4)
+## Adversarial Trial (Phases 4-6)
 
-**Prosecution ↔ Defense → Judge**.
+**Evidence → Prosecution ↔ Defense → Jury → Judge**.
 
 ```bash
 cd backend
 python -m app.cli trial CASE_001 --show-prompt              # prosecution opening prompt
-python -m app.cli trial CASE_001 --provider anthropic       # full trial (8 turns + judge)
+python -m app.cli trial CASE_001 --provider anthropic       # full trial (17 calls)
+python -m app.cli trial CASE_001 --no-jury                 # without the jury (11 calls)
+python -m app.cli trial CASE_001 --jurors 5 --jury-rule majority --no-deliberation
+python -m app.cli trial CASE_001 --no-evidence             # Phase 4 trial, no Evidence Agent
+python -m app.cli evidence CASE_001                        # evidence analysis only (1 call)
 python -m app.cli trial CASE_001 --provider anthropic --quick   # openings + closings
 ```
 
 | Stage | Speaker | Must |
 |---|---|---|
+| `EVIDENCE_ANALYSIS` | evidence | neutral analysis of the record, before anyone argues |
 | `PROSECUTION_OPENING` | prosecution | map evidence to each element |
 | `DEFENSE_OPENING` | defense | set out reasonable doubt |
 | `PROSECUTION_ARGUMENT` | prosecution | argue element by element |
 | `DEFENSE_ARGUMENT` | defense | challenge evidence and inferences |
+| `EVIDENCE_REVIEW` | evidence | check every argument so far against its citations |
 | `PROSECUTION_REBUTTAL` | prosecution | answer defense arguments by ID |
 | `DEFENSE_REBUTTAL` | defense | answer prosecution arguments by ID |
 | `CLOSING_ARGUMENTS` | both | summarise |
+| `JURY_INDEPENDENT_DELIBERATION` | each juror | verdict per charge, alone |
+| `JURY_DELIBERATION` | each juror | reconsider once, seeing the panel |
 | `JUDGE_DECISION` | judge | decide, weighing at least one argument from each side |
 
 Every argument names its charges and legal elements, cites facts, evidence,
@@ -370,6 +388,50 @@ charge, answers its own side, or rebuts nothing is rejected and regenerated.
 Each turn is recorded as one structured `CourtMessage` (sender, recipient,
 type, stage, argument IDs, evidence IDs, law IDs) - agents never exchange
 free-form chat.
+
+### The Evidence Agent (Phase 5)
+
+A neutral analyst working for the court, not either party. Before the debate
+it assesses the important claims - each **established** (supported, nothing
+contradicts it), **disputed** (both), or **unsupported** (nothing supports
+it) - along with every evidence item (direct or circumstantial), every
+contradiction, every witness under rule E003, and the evidence the record
+lacks. After the parties' main arguments it reviews each argument: do its
+citations actually support its claim?
+
+Its work goes into the record that every later speaker sees, so advocates can
+answer the weaknesses it finds and the judge can see which arguments overreach.
+
+A status that contradicts its own citations (an "established" claim with
+contradicting evidence, say) is rejected, as is skipping any evidence item,
+witness, disputed fact, or argument. Outcome language ("guilty", "acquit") is
+flagged as a neutrality breach. **Provenance** - who handled each item and
+when, which witness it came from, what the record leaves out - is traced from
+the record in code, not asked of the model.
+
+### The Jury (Phase 6)
+
+After closing arguments, three jurors each decide every charge **alone**. Each
+juror's input is the trial record and nothing else, so another juror's view
+cannot reach it: the three independent prompts are byte-identical. Each juror
+gives what spec §8 asks for: verdict, reasoning, evidence and legal rules
+relied on, uncertainties, and confidence.
+
+Then, optionally, **one controlled deliberation round**: each juror sees every
+juror's independent decision and gives a final verdict. A juror who changes a
+vote must cite the record for the new one; going along with the majority is
+rejected.
+
+The **verdict engine** - code, not a model - tallies each round. Under the
+default unanimous rule, any split is a **hung** jury; the majority rule needs
+more than half. It reports agreement before and after deliberation and every
+vote that changed: the "verdict agreement" metric of spec §23.
+
+The judge decides last. It sees the jury's result and must explain any
+departure from it, and every disagreement between judge and jury is recorded.
+Jurors can run on different models (`juror_providers`) or with research
+backgrounds (`juror_perspectives`); by default all three get identical
+instructions.
 
 ### LLM providers
 

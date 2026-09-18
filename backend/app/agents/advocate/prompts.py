@@ -7,7 +7,7 @@ Bump ``PROMPT_VERSION`` whenever the wording changes.
 """
 
 import json
-from typing import Dict, List, Sequence
+from typing import Any, Dict, List, Optional, Sequence
 
 from app.domain import Argument, Case, CourtStage
 from app.rules import CaseEvaluation, LegalRuleRegistry
@@ -15,7 +15,7 @@ from app.rules import CaseEvaluation, LegalRuleRegistry
 from ..record import render_case_record
 from .roles import AdvocateRole
 
-PROMPT_VERSION = "advocate.v1"
+PROMPT_VERSION = "advocate.v2"
 
 _GROUND_RULES = """\
 ## The record is the only source of truth
@@ -45,7 +45,11 @@ Quality beats quantity: a few well-grounded arguments persuade more than many th
 discount a claim the cited evidence does not support.
 
 The rule-engine evaluation is computed deterministically from the record with fixed \
-weighting thresholds. It is analysis you may contest, with evidence, not a ruling.
+weighting thresholds. It is analysis you may contest, with evidence, not a ruling. The \
+same holds for the court's neutral evidence analysis (evidence_analysis), when present: \
+it assesses claims, contradictions, witnesses, and missing evidence, and its \
+argument_reviews say where an argument's citations fall short - including yours. Answer \
+a weakness it identifies rather than repeating the argument unchanged.
 
 Write reasoning as concise, self-contained rationales a reader can check against the \
 record - not a transcript of your deliberation. Confidence values are numbers from 0.0 \
@@ -122,9 +126,10 @@ def build_user_prompt(
     role: AdvocateRole,
     stage: CourtStage,
     prior_arguments: Sequence[Argument] = (),
+    evidence_context: Optional[Dict[str, Any]] = None,
 ) -> str:
     """The record (with the debate so far), then the task for this stage"""
-    record = render_case_record(case, evaluation, registry, prior_arguments)
+    record = render_case_record(case, evaluation, registry, prior_arguments, evidence_context)
     opposing = [a.argument_id for a in prior_arguments if a.agent_id == role.opponent.agent_id]
     debate_note = (
         f"Opposing arguments you may answer: {', '.join(opposing)}."

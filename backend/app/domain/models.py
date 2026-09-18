@@ -94,6 +94,9 @@ class MessageType(str, Enum):
     ARGUMENT = "argument"
     REBUTTAL = "rebuttal"
     CLOSING_STATEMENT = "closing_statement"
+    EVIDENCE_ANALYSIS = "evidence_analysis"
+    EVIDENCE_REVIEW = "evidence_review"
+    JURY_VERDICT = "jury_verdict"
     DECISION = "decision"
 
 

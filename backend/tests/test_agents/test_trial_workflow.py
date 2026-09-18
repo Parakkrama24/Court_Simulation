@@ -1,4 +1,8 @@
-"""Integration tests: Prosecution <-> Defense -> Judge, and the trial CLI"""
+"""Integration tests: Prosecution <-> Defense -> Judge, and the trial CLI
+
+These pin the Phase 4 trial (``evidence=False, jury=False``); the Evidence Agent's part of
+the trial is covered in ``test_evidence_trial.py``.
+"""
 
 import json
 
@@ -54,6 +58,8 @@ def trial(decision_with):
         defense_provider=defense,
         judge_provider=judge,
         log=log,
+        evidence=False,
+        jury=False,
     )
     return run, prosecution, defense, judge, log
 
@@ -152,7 +158,11 @@ class TestTrialVariants:
             judge_step(decision_with, ["PR-OPEN-1", "DF-OPEN-1"]),
         ]
         run = run_adversarial_trial(
-            "CASE_001", ScriptedProvider(steps), stages=QUICK_DEBATE_STAGES
+            "CASE_001",
+            ScriptedProvider(steps),
+            stages=QUICK_DEBATE_STAGES,
+            evidence=False,
+            jury=False,
         )
         assert len(run.turns) == 4
         assert [a.argument_id for a in run.arguments][-2:] == ["DF-CLOSE-1", "DF-CLOSE-2"]
@@ -173,7 +183,9 @@ class TestTrialVariants:
             prosecution_turn(["DF-REB-1"]),
             judge_step(decision_with, ["PR-REB2-1", "DF-REB-1"]),
         ]
-        run = run_adversarial_trial("CASE_001", ScriptedProvider(steps), stages=stages)
+        run = run_adversarial_trial(
+            "CASE_001", ScriptedProvider(steps), stages=stages, evidence=False, jury=False
+        )
         assert run.turns[-1].arguments[0].argument_id == "PR-REB2-1"
 
     def test_judge_ignoring_one_side_is_rejected(self, decision_with):
@@ -186,7 +198,11 @@ class TestTrialVariants:
             judge_step(decision_with, ["PR-OPEN-1", "DF-OPEN-2"]),
         ]
         run = run_adversarial_trial(
-            "CASE_001", ScriptedProvider(steps), stages=QUICK_DEBATE_STAGES
+            "CASE_001",
+            ScriptedProvider(steps),
+            stages=QUICK_DEBATE_STAGES,
+            evidence=False,
+            jury=False,
         )
         attempts = run.judgment.attempts
         assert [a.accepted for a in attempts] == [False, True]
@@ -195,7 +211,10 @@ class TestTrialVariants:
     def test_advocate_failure_stops_the_trial(self):
         with pytest.raises(AdvocateAgentError):
             run_adversarial_trial(
-                "CASE_001", ScriptedProvider(["bad"] * 3), stages=QUICK_DEBATE_STAGES
+                "CASE_001",
+                ScriptedProvider(["bad"] * 3),
+                stages=QUICK_DEBATE_STAGES,
+                evidence=False, jury=False,
             )
 
     def test_missing_provider(self):
@@ -243,7 +262,9 @@ class TestTrialCli:
             "app.cli._build_provider", lambda args, settings: ScriptedProvider(steps)
         )
         log_file = tmp_path / "trial.jsonl"
-        assert main(["trial", "CASE_001", "--quick", "--log-file", str(log_file)]) == 0
+        args = ["trial", "CASE_001", "--quick", "--no-evidence", "--no-jury"]
+        args += ["--log-file", str(log_file)]
+        assert main(args) == 0
 
         out = capsys.readouterr().out
         assert "[PROSECUTION_OPENING] prosecution_agent" in out
@@ -258,6 +279,8 @@ class TestTrialCli:
         monkeypatch.setattr(
             "app.cli._build_provider", lambda args, settings: ScriptedProvider(["bad"] * 3)
         )
-        code = main(["trial", "CASE_001", "--quick", "--log-file", str(tmp_path / "l.jsonl")])
+        log_file = str(tmp_path / "l.jsonl")
+        args = ["trial", "CASE_001", "--quick", "--no-evidence", "--no-jury"]
+        code = main(args + ["--log-file", log_file])
         assert code == 1
         assert "Simulation failed" in capsys.readouterr().err

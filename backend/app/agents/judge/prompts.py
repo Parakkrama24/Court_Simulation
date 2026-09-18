@@ -8,14 +8,14 @@ comparable across experiments.
 """
 
 import json
-from typing import List, Sequence
+from typing import Any, Dict, List, Optional, Sequence
 
 from app.domain import Argument, Case
 from app.rules import CaseEvaluation, LegalRuleRegistry
 
 from ..record import render_case_record
 
-PROMPT_VERSION = "judge.v2"
+PROMPT_VERSION = "judge.v4"
 
 SYSTEM_PROMPT = """\
 You are the presiding judge in a court simulation set in the Republic of Arandia, a \
@@ -69,7 +69,16 @@ each party that presented arguments.
 
 The rule-engine evaluation is computed deterministically from the record with fixed \
 weighting thresholds. Treat it as careful analysis, not as a verdict: you may depart \
-from it, but when you do, say so and explain why with cited evidence.
+from it, but when you do, say so and explain why with cited evidence. The same applies \
+to the court's neutral evidence analysis (evidence_analysis), when present: its claim \
+statuses, contradictions, witness assessments, and missing-evidence list inform your \
+findings but do not replace them, and its argument_reviews tell you where an \
+argument's citations do not support its claim.
+
+When a jury has returned verdicts (jury), they are the considered view of independent \
+jurors who heard the same trial. Give them real weight, but your decision rests on the \
+record: if you reach a different conclusion from the jury on a charge, say so in the \
+analysis and explain why with cited evidence.
 
 Write reasoning as concise, self-contained rationales a reader can check against the \
 record - a few sentences each, not a transcript of your deliberation. Confidence values \
@@ -83,9 +92,13 @@ def build_user_prompt(
     evaluation: CaseEvaluation,
     registry: LegalRuleRegistry,
     arguments: Sequence[Argument] = (),
+    evidence_context: Optional[Dict[str, Any]] = None,
+    jury_context: Optional[Dict[str, Any]] = None,
 ) -> str:
     """The first user turn: the record, then the task"""
-    record = render_case_record(case, evaluation, registry, arguments)
+    record = render_case_record(
+        case, evaluation, registry, arguments, evidence_context, jury_context
+    )
     charges = ", ".join(case.charges) if case.charges else "(none)"
     argument_note = (
         "The arguments presented by the prosecution and the defense are under "
