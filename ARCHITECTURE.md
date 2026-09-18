@@ -154,32 +154,47 @@ detected and reported rather than recursed.
 
 ### Layer 4: LLM Abstraction Layer
 
-**Location**: `backend/app/llm/` (Future)
+**Location**: `backend/app/llm/` (implemented in Phase 3)
 
 **Purpose**: Provider-agnostic LLM interface
 
 **Design**:
 ```python
 class LLMProvider(ABC):
+    name: str
+    model: str
+
     @abstractmethod
-    def generate(self, prompt: str, **kwargs) -> str:
-        pass
-
-class OpenAIProvider(LLMProvider):
-    # OpenAI implementation
-
-class AnthropicProvider(LLMProvider):
-    # Anthropic implementation
+    def generate(self, request: LLMRequest) -> LLMResponse: ...
 ```
 
-**Benefits**:
-- Swap providers without changing agent code
-- A/B testing different models
-- Future support for local models
+`LLMRequest` carries the system prompt, the conversation, and an optional JSON
+schema; `LLMResponse` carries the final text (never hidden reasoning), token
+usage, latency, and the provider's request ID. Refusals and truncation are
+raised as typed errors (`LLMRefusalError`, `LLMTruncatedError`) rather than
+returned as if they were answers.
+
+**Providers**:
+- `AnthropicProvider` - Anthropic Messages API; structured output through
+  `output_config.format`; server-side refusal fallback on by default
+- `OpenAICompatibleProvider` - Chat Completions with strict `json_schema`;
+  with `base_url` it serves OpenAI and local servers (Ollama, vLLM, LM Studio);
+  `json_mode` for servers without schema-constrained output
+- `ScriptedProvider` - replays canned responses; powers every agent test
+
+`strict_json_schema()` turns a Pydantic model into the conservative schema
+dialect both vendors enforce (closed objects, all fields required, no refs).
+Range constraints are dropped from the provider schema but still enforced by
+Pydantic after parsing.
+
+**Interaction log** (`interaction_log.py`): every call records agent, case,
+prompt version, attempt, provider, model, timestamp, a SHA-256 of the full
+request, the request itself, the output, token usage, latency, and the
+validation outcome - to memory and optionally to a JSON Lines file.
 
 ### Layer 5: Agent Layer
 
-**Location**: `backend/app/agents/` (Future)
+**Location**: `backend/app/agents/` (Judge Agent implemented in Phase 3)
 
 **Purpose**: Specialized reasoning agents
 
@@ -414,7 +429,7 @@ def validate_argument(argument: Argument, case: Case) -> ValidationResult:
 
 ## Scalability Considerations
 
-### Current Phase (Phase 2)
+### Current Phase (Phase 3)
 - In-memory case data and evaluations
 - No database required
 - Single-threaded, deterministic execution

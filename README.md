@@ -19,7 +19,7 @@ The Court Simulation System uses multiple specialized AI agents to simulate cour
 
 ## Project Status
 
-**Current Phase**: Phase 2 - Legal Rule Engine ✅
+**Current Phase**: Phase 3 - Single Agent (Judge) ✅
 
 ### Completed
 - ✅ Domain models (Case, Fact, Evidence, Witness, LegalRule, Argument, Verdict, AuditReport)
@@ -31,12 +31,15 @@ The Court Simulation System uses multiple specialized AI agents to simulate cour
 - ✅ Witness reliability scoring under evidence rule E003
 - ✅ Conflict detection under evidence rule E004
 - ✅ Reference validator rejecting fabricated evidence/fact/witness/law IDs
+- ✅ Provider-agnostic LLM layer: Anthropic, OpenAI, and local OpenAI-compatible servers
+- ✅ Judge Agent: Case → Judge → Decision with validated, structured output
+- ✅ Reject-and-regenerate loop for fabricated references and incomplete decisions
+- ✅ Every LLM call logged (agent, prompt version, model, input, output, tokens, latency, validation)
 - ✅ Comprehensive unit tests
 - ✅ Project structure and configuration
 
 ### Upcoming Phases
-- 🔄 Phase 3: Single Agent (basic LLM integration)
-- ⏳ Phase 4: Two-Agent Adversarial System
+- 🔄 Phase 4: Two-Agent Adversarial System
 - ⏳ Phase 5: Evidence Agent
 - ⏳ Phase 6: Jury System
 - ⏳ Phase 7: Legal Process Auditor
@@ -89,13 +92,18 @@ Court_Simulation/
 │   │   │       ├── principles.json
 │   │   │       ├── criminal_laws.json
 │   │   │       └── evidence_rules.json
-│   │   ├── agents/              # Agent implementations (Future)
-│   │   ├── workflow/            # LangGraph workflow (Future)
-│   │   ├── llm/                 # LLM abstraction (Future)
+│   │   ├── agents/
+│   │   │   └── judge/           # Judge Agent: prompts, schema, validation, loop
+│   │   ├── workflow/
+│   │   │   └── judge_only.py    # Case → Judge → Decision pipeline
+│   │   ├── llm/                 # Provider-agnostic LLM layer + interaction log
+│   │   ├── cli.py               # python -m app.cli judge CASE_001
 │   │   └── config.py            # Configuration management
 │   ├── tests/
 │   │   ├── test_domain/         # Domain model tests
-│   │   └── test_rules/          # Rule engine tests
+│   │   ├── test_rules/          # Rule engine tests
+│   │   ├── test_llm/            # LLM layer tests (no network)
+│   │   └── test_agents/         # Judge Agent + workflow tests
 │   ├── requirements.txt
 │   ├── pyproject.toml
 │   └── pytest.ini
@@ -160,7 +168,7 @@ pytest tests/test_rules/test_engine.py -v
 ### Current Test Results
 
 ```
-All Tests: 143/143 passing ✅
+All Tests: 228/228 passing ✅ (no network or API key needed)
 - Domain Models: 18 tests
 - Seed Data: 20 tests
 - Rule Registry: 13 tests
@@ -168,6 +176,11 @@ All Tests: 143/143 passing ✅
 - Rule Engine: 27 tests
 - Reference Validator: 17 tests
 - CASE_001 Evaluation: 28 tests
+- LLM Providers: 16 tests
+- LLM Support (schema, log, factory): 22 tests
+- Judge Validation: 19 tests
+- Judge Agent: 17 tests
+- Judge Workflow + CLI: 11 tests
 ```
 
 ## Domain Models
@@ -285,6 +298,47 @@ phases exist to argue about.
 - **Reference validation**: every evidence, fact, witness, and law ID cited by
   an agent is checked against the case and registry; failures come back as
   audit-report-shaped violation records, never silent acceptance.
+
+## Judge Agent (Phase 3)
+
+The first LLM-backed stage: **Case → Judge Agent → Decision**.
+
+```bash
+cd backend
+python -m app.cli judge CASE_001 --show-prompt          # inspect the prompt, no API call
+python -m app.cli judge CASE_001 --provider anthropic   # needs ANTHROPIC_API_KEY
+python -m app.cli judge CASE_001 --provider openai      # needs OPENAI_API_KEY
+python -m app.cli judge CASE_001 --provider local --model llama3.1   # Ollama
+```
+
+The judge receives the full case record **and** the rule engine's evaluation,
+and must return structured JSON that keeps established facts, disputed facts,
+applicable rules, arguments, analysis, and decision separate. Every element of
+every charged offense must be assessed, with the facts and evidence it rests on.
+
+Before a decision is accepted it passes three checks:
+
+| Check | Examples | On failure |
+|---|---|---|
+| References | an evidence, fact, rule, or argument ID that doesn't exist | rejected, regenerated |
+| Structure | a charge undecided or invented, an element skipped, guilty on an element not found established | rejected, regenerated |
+| Engine alignment | judge convicts where the engine found the offense indeterminate | recorded as a divergence (rejected with `--strict`) |
+
+A rejected decision goes back to the model with the exact reasons. After
+`LLM_MAX_ATTEMPTS` rejections the run fails loudly - an unvalidated decision is
+never returned. Every call, rejected or accepted, is appended to
+`logs/llm_interactions.jsonl`.
+
+### LLM providers
+
+| `LLM_PROVIDER` | Backend | Default model |
+|---|---|---|
+| `anthropic` | Anthropic Messages API (structured outputs) | `claude-opus-5` |
+| `openai` | OpenAI Chat Completions (strict `json_schema`) | `gpt-4o` |
+| `local` | Any OpenAI-compatible server (Ollama, vLLM, LM Studio) | `llama3.1` |
+
+Agents depend only on the `LLMProvider` interface; vendor SDKs are imported
+lazily, so only the SDK for the provider you use needs to be installed.
 
 ## Test Cases
 

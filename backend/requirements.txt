@@ -9,6 +9,10 @@ sqlalchemy==2.0.35
 alembic==1.13.3
 psycopg2-binary==2.9.10
 
+# LLM provider SDKs (imported lazily - install the one you use)
+anthropic>=1,<2
+openai>=1.40,<3
+
 # LangGraph and AI
 langgraph==0.2.45
 langchain==0.3.7

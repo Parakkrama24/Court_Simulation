@@ -1,15 +1,15 @@
 # Quick Start Guide
 
-## Phase 2 Complete ✅
+## Phase 3 Complete ✅
 
-This guide will help you get started with the Court Simulation System. Currently, Phase 1 (Domain Models & Seed Data) and Phase 2 (Legal Rule Engine) are complete.
+This guide will help you get started with the Court Simulation System. Currently, Phase 1 (Domain Models & Seed Data), Phase 2 (Legal Rule Engine), and Phase 3 (Judge Agent) are complete.
 
 ## What's Working Now
 
 - ✅ Complete domain models (Pydantic)
 - ✅ Structured legal rules (JSON)
 - ✅ CASE_001 seed data with facts, evidence, and witnesses
-- ✅ 143 passing unit tests
+- ✅ 228 passing unit tests
 - ✅ Configuration management
 - ✅ Project structure
 
@@ -51,7 +51,7 @@ pytest
 
 Expected output:
 ```
-143 tests passed ✅
+228 tests passed ✅
 ```
 
 ### Run Specific Tests
@@ -293,12 +293,24 @@ print("Conflicts to address:", len(evaluation.conflicting_evidence))
 
 See `README.md` for the weighting model and what CASE_001 evaluates to.
 
-## Next Phases (Coming Soon)
+## Running the Judge Agent
 
-### Phase 3: Single Agent
-- LLM abstraction layer
-- Basic Judge Agent
-- Simple case → decision workflow
+```bash
+cd backend
+pip install -r requirements.txt
+
+# See exactly what the judge is given - no API key, no model call
+python -m app.cli judge CASE_001 --show-prompt
+
+# Run it (reads LLM_PROVIDER and keys from .env, or pass --provider)
+python -m app.cli judge CASE_001 --provider anthropic
+python -m app.cli judge CASE_001 --provider local --model llama3.1
+python -m app.cli judge CASE_001 --json > run.json
+```
+
+Every model call is appended to `logs/llm_interactions.jsonl`.
+
+## Next Phases (Coming Soon)
 
 ### Phase 4: Two-Agent System
 - Prosecution Agent
@@ -356,7 +368,7 @@ When implementing new phases:
 
 ## Summary
 
-**Phase 1 & 2 Status**: ✅ Complete and tested
+**Phase 1-3 Status**: ✅ Complete and tested
 
 You now have:
 - Clean domain models
@@ -365,7 +377,7 @@ You now have:
 - Comprehensive tests
 - Solid foundation for multi-agent system
 
-**Next Step**: Implement Phase 3 (Single Agent) - Case → Judge Agent → Decision - to validate the LLM integration against the engine's deterministic conclusions.
+**Next Step**: Implement Phase 4 (Two-Agent Adversarial System) - Prosecution ↔ Defense → Judge.
 
 ---
 
