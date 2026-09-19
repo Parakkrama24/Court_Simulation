@@ -17,7 +17,7 @@ from typing import Any, Dict, List, Optional, Sequence, Tuple
 
 from pydantic import BaseModel, Field
 
-from app.domain import Argument, Case, CourtMessage, CourtStage, MessageType
+from app.domain import Argument, Case, CourtMessage, CourtStage, JudgeQuestion, MessageType
 from app.llm import (
     InteractionLog,
     LLMMessage,
@@ -210,6 +210,7 @@ class EvidenceAgent:
         arguments: Sequence[Argument],
         under_review: Sequence[Argument],
         evidence_context: Optional[Dict[str, Any]] = None,
+        judge_questions: Sequence[JudgeQuestion] = (),
     ) -> LLMRequest:
         return LLMRequest(
             system=SYSTEM_PROMPT,
@@ -217,7 +218,13 @@ class EvidenceAgent:
                 LLMMessage(
                     role=MessageRole.USER,
                     content=build_review_prompt(
-                        case, evaluation, self.registry, arguments, under_review, evidence_context
+                        case,
+                        evaluation,
+                        self.registry,
+                        arguments,
+                        under_review,
+                        evidence_context,
+                        judge_questions,
                     ),
                 )
             ],
@@ -234,6 +241,7 @@ class EvidenceAgent:
         under_review: Optional[Sequence[Argument]] = None,
         message_id: str = "MSG-EVIDENCE-REVIEW",
         evidence_context: Optional[Dict[str, Any]] = None,
+        judge_questions: Sequence[JudgeQuestion] = (),
     ) -> EvidenceReview:
         """Check whether arguments' citations support their claims
 
@@ -262,7 +270,7 @@ class EvidenceAgent:
             prompt_version=PROMPT_VERSION,
             case_id=case.case_id,
             request=self.build_review_request(
-                case, evaluation, arguments, targets, evidence_context
+                case, evaluation, arguments, targets, evidence_context, judge_questions
             ),
             parse=parse,
             max_attempts=self.max_attempts,

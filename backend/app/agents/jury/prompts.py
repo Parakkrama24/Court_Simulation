@@ -9,7 +9,7 @@ deliberation prompt adds the panel's independent verdicts. Bump
 import json
 from typing import Any, Dict, List, Optional, Sequence
 
-from app.domain import Argument, Case
+from app.domain import Argument, Case, JudgeQuestion
 from app.rules import CaseEvaluation, LegalRuleRegistry
 
 from ..record import render_case_record
@@ -69,8 +69,11 @@ def _record_block(
     registry: LegalRuleRegistry,
     arguments: Sequence[Argument],
     evidence_context: Optional[Dict[str, Any]],
+    judge_questions: Sequence[JudgeQuestion] = (),
 ) -> str:
-    record = render_case_record(case, evaluation, registry, arguments, evidence_context)
+    record = render_case_record(
+        case, evaluation, registry, arguments, evidence_context, judge_questions=judge_questions
+    )
     return "<case_record>\n" + json.dumps(record, indent=2) + "\n</case_record>\n\n"
 
 
@@ -80,9 +83,11 @@ def build_independent_prompt(
     registry: LegalRuleRegistry,
     arguments: Sequence[Argument] = (),
     evidence_context: Optional[Dict[str, Any]] = None,
+    judge_questions: Sequence[JudgeQuestion] = (),
 ) -> str:
     """JURY_INDEPENDENT_DELIBERATION: the record, and nothing from other jurors"""
-    return _record_block(case, evaluation, registry, arguments, evidence_context) + (
+    record = _record_block(case, evaluation, registry, arguments, evidence_context, judge_questions)
+    return record + (
         f"Stage: JURY_INDEPENDENT_DELIBERATION. Decide each charge against "
         f"{case.defendant} ({', '.join(case.charges)}) on your own. You have not seen, "
         "and will not see before deciding, any other juror's view."
@@ -97,6 +102,7 @@ def build_deliberation_prompt(
     evidence_context: Optional[Dict[str, Any]],
     juror_id: str,
     panel: Dict[str, JurorVerdictOutput],
+    judge_questions: Sequence[JudgeQuestion] = (),
 ) -> str:
     """JURY_DELIBERATION: the record plus every juror's independent decision"""
     room = {
@@ -121,7 +127,7 @@ def build_deliberation_prompt(
         for other_id, decision in panel.items()
     }
     return (
-        _record_block(case, evaluation, registry, arguments, evidence_context)
+        _record_block(case, evaluation, registry, arguments, evidence_context, judge_questions)
         + "<jury_room>\n"
         + json.dumps(room, indent=2)
         + "\n</jury_room>\n\n"

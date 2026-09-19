@@ -34,6 +34,7 @@ STAGE_SPEAKERS: Dict[CourtStage, List[AdvocateRole]] = {
     CourtStage.DEFENSE_OPENING: [AdvocateRole.DEFENSE],
     CourtStage.PROSECUTION_ARGUMENT: [AdvocateRole.PROSECUTION],
     CourtStage.DEFENSE_ARGUMENT: [AdvocateRole.DEFENSE],
+    CourtStage.CROSS_EXAMINATION: [AdvocateRole.PROSECUTION, AdvocateRole.DEFENSE],
     CourtStage.PROSECUTION_REBUTTAL: [AdvocateRole.PROSECUTION],
     CourtStage.DEFENSE_REBUTTAL: [AdvocateRole.DEFENSE],
     CourtStage.CLOSING_ARGUMENTS: [AdvocateRole.PROSECUTION, AdvocateRole.DEFENSE],
@@ -44,6 +45,8 @@ STAGE_MESSAGE_TYPES: Dict[CourtStage, MessageType] = {
     CourtStage.DEFENSE_OPENING: MessageType.OPENING_STATEMENT,
     CourtStage.PROSECUTION_ARGUMENT: MessageType.ARGUMENT,
     CourtStage.DEFENSE_ARGUMENT: MessageType.ARGUMENT,
+    CourtStage.CROSS_EXAMINATION: MessageType.CROSS_EXAMINATION,
+    CourtStage.JUDGE_QUESTIONS: MessageType.ANSWER,
     CourtStage.PROSECUTION_REBUTTAL: MessageType.REBUTTAL,
     CourtStage.DEFENSE_REBUTTAL: MessageType.REBUTTAL,
     CourtStage.CLOSING_ARGUMENTS: MessageType.CLOSING_STATEMENT,
@@ -54,9 +57,15 @@ STAGE_CODES: Dict[CourtStage, str] = {
     CourtStage.DEFENSE_OPENING: "OPEN",
     CourtStage.PROSECUTION_ARGUMENT: "ARG",
     CourtStage.DEFENSE_ARGUMENT: "ARG",
+    CourtStage.CROSS_EXAMINATION: "CROSS",
+    CourtStage.JUDGE_QUESTIONS: "ANS",
     CourtStage.PROSECUTION_REBUTTAL: "REB",
     CourtStage.DEFENSE_REBUTTAL: "REB",
     CourtStage.CLOSING_ARGUMENTS: "CLOSE",
 }
 
 REBUTTAL_STAGES = {CourtStage.PROSECUTION_REBUTTAL, CourtStage.DEFENSE_REBUTTAL}
+
+# Answering the judge is not a scheduled debate stage: a party speaks at
+# JUDGE_QUESTIONS only when the judge has put a question to it.
+ANSWER_STAGE = CourtStage.JUDGE_QUESTIONS

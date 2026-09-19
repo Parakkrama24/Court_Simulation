@@ -14,11 +14,10 @@ anthropic>=1,<2
 openai>=1.40,<3
 
 # LangGraph and AI
-langgraph==0.2.45
-langchain==0.3.7
-langchain-core==0.3.15
-langchain-openai==0.2.8
-langchain-anthropic==0.2.4
+# The court procedure's state machine (app/workflow/graph.py). It brings in
+# langchain-core itself; the LLM layer talks to vendor SDKs directly, so no
+# other LangChain packages are needed.
+langgraph>=1.2,<2
 
 # Utilities
 python-dotenv==1.0.1

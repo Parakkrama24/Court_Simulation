@@ -81,12 +81,17 @@ class TestCleanRun:
         assert {f.severity for f in findings} == {Severity.INFO}
         assert all(f.finding_id.startswith("AUD-D-") for f in findings)
 
-    def test_stages_not_implemented_versus_skipped(self, decision_with):
+    def test_stages_left_out_of_the_plan(self, decision_with):
         findings = deterministic_findings(quick_run(quick_steps(decision_with)))
-        not_implemented = {f.stage for f in only(findings, "stage_not_implemented")}
-        assert not_implemented == {"CROSS_EXAMINATION", "JUDGE_QUESTIONS"}
+        assert "stage_not_implemented" not in checks(findings)  # every stage exists now
         skipped = {f.stage for f in only(findings, "stage_skipped")}
-        assert {"EVIDENCE_ANALYSIS", "JURY_DELIBERATION", "PROSECUTION_REBUTTAL"} <= skipped
+        assert {
+            "EVIDENCE_ANALYSIS",
+            "CROSS_EXAMINATION",
+            "JUDGE_QUESTIONS",
+            "JURY_DELIBERATION",
+            "PROSECUTION_REBUTTAL",
+        } <= skipped
         assert "PROSECUTION_OPENING" not in skipped
 
 
@@ -254,7 +259,7 @@ class TestAuditTrial:
         audit_trial(run, provider)
         content = provider.requests[0].messages[0].content
         assert '"transcript"' in content and '"judgment"' in content
-        assert '"check": "stage_not_implemented"' in content
+        assert '"check": "stage_skipped"' in content
 
     def test_saved_run_audits_identically(self, decision_with, tmp_path):
         run = quick_run(quick_steps(decision_with))
@@ -357,7 +362,7 @@ class TestAuditCli:
         out = capsys.readouterr().out
         assert "saved run:" in out
         assert "overall: CLEAN" in out
-        assert "stage_not_implemented" in out
+        assert "stage_skipped" in out
 
     def test_audit_a_saved_run_with_the_agent(self, monkeypatch, capsys, tmp_path, decision_with):
         path = tmp_path / "run.json"

@@ -15,13 +15,14 @@ Deterministic checks, by spec section 9 area:
 - Reasoning integrity - assumptions presented as facts; the judge or a juror
   not weighing both sides; judge and jury disagreeing; votes changed in
   deliberation.
-- Procedural integrity - spec section 14 stages not completed; a message sent
+- Procedural integrity - spec section 14 stages that did not run, with the
+  reason the workflow recorded when it has one; a message sent
   by an agent not allowed to speak at that stage; the Evidence Agent breaching
   neutrality; repeated rejections.
 """
 
 import re
-from typing import TYPE_CHECKING, Any, Dict, Iterable, List, Optional, Set, Tuple
+from typing import Any, Dict, Iterable, List, Optional, Set, Tuple
 
 from app.agents.advocate import STAGE_SPEAKERS, AdvocateRole
 from app.agents.auditor import (
@@ -37,18 +38,14 @@ from app.agents.auditor import (
 from app.agents.base import AgentAttempt
 from app.agents.evidence import EVIDENCE_AGENT_ID, ArgumentSupport, evidence_context
 from app.agents.jury import jury_context
-from app.agents.record import render_argument, render_case_record
+from app.agents.record import render_argument, render_case_record, render_question
 from app.domain import CourtStage, LegalCategory
 from app.llm import InteractionLog, LLMProvider
 from app.rules import LegalRuleRegistry, ReferenceValidator
 
-if TYPE_CHECKING:  # imported for typing only; the runner imports this module
-    from .adversarial import TrialRun
+from .run import TrialRun
 
 JUDGE_AGENT_ID = "judge_agent"
-
-# Stages of spec section 14 this simulation does not implement yet.
-NOT_IMPLEMENTED = {CourtStage.CROSS_EXAMINATION, CourtStage.JUDGE_QUESTIONS}
 
 # Validation messages that mean an agent tried to cite something that does not exist.
 _HALLUCINATION_MARKERS = (
@@ -92,7 +89,7 @@ class _Findings:
         )
 
 
-def _artifacts(run: "TrialRun") -> List[Tuple[str, str, List[AgentAttempt]]]:
+def _artifacts(run: TrialRun) -> List[Tuple[str, str, List[AgentAttempt]]]:
     """(agent, stage, attempts) for every agent task in the run"""
     items: List[Tuple[str, str, List[AgentAttempt]]] = []
     if run.evidence_analysis is not None:
@@ -103,6 +100,8 @@ def _artifacts(run: "TrialRun") -> List[Tuple[str, str, List[AgentAttempt]]]:
         items.append((turn.agent_id, turn.stage.value, turn.attempts))
     for decision in run.jury_independent + run.jury_deliberation:
         items.append((decision.juror_id, decision.stage.value, decision.attempts))
+    for question_round in run.judge_question_rounds:
+        items.append((JUDGE_AGENT_ID, "JUDGE_QUESTIONS", question_round.attempts))
     items.append((JUDGE_AGENT_ID, "JUDGE_DECISION", run.judgment.attempts))
     return items
 
@@ -112,7 +111,7 @@ def _artifacts(run: "TrialRun") -> List[Tuple[str, str, List[AgentAttempt]]]:
 # ============================================================================
 
 
-def _check_caught_hallucinations(run: "TrialRun", out: _Findings) -> None:
+def _check_caught_hallucinations(run: TrialRun, out: _Findings) -> None:
     for agent_id, stage, attempts in _artifacts(run):
         for attempt in attempts:
             if attempt.accepted:
@@ -131,11 +130,13 @@ def _check_caught_hallucinations(run: "TrialRun", out: _Findings) -> None:
 
 
 def _check_accepted_references(
-    run: "TrialRun", registry: LegalRuleRegistry, out: _Findings
+    run: TrialRun, registry: LegalRuleRegistry, out: _Findings
 ) -> None:
     """Defense in depth: re-validate every accepted output's citations"""
     validator = ReferenceValidator(run.case, registry)
+    # An answer to the judge responds to a question, not an argument.
     argument_ids = [a.argument_id for a in run.arguments]
+    argument_ids += [q.question_id for q in run.judge_questions]
     problems: List[Tuple[str, str, List[str]]] = []
 
     for turn in run.turns:
@@ -172,7 +173,7 @@ def _check_accepted_references(
             )
 
 
-def _check_argument_support(run: "TrialRun", out: _Findings) -> None:
+def _check_argument_support(run: TrialRun, out: _Findings) -> None:
     owner = {a.argument_id: a.agent_id for a in run.arguments}
     for review in run.evidence_reviews:
         for item in review.output.reviews:
@@ -221,7 +222,7 @@ def _check_argument_support(run: "TrialRun", out: _Findings) -> None:
 # ============================================================================
 
 
-def _check_engine_divergence(run: "TrialRun", out: _Findings) -> None:
+def _check_engine_divergence(run: TrialRun, out: _Findings) -> None:
     for d in run.judgment.divergences:
         where = " ".join(x for x in (d.charge, d.rule_id, d.condition_id) if x)
         out.add(
@@ -238,7 +239,7 @@ def _check_engine_divergence(run: "TrialRun", out: _Findings) -> None:
 
 
 def _check_defense_rule_party(
-    run: "TrialRun", registry: LegalRuleRegistry, out: _Findings
+    run: TrialRun, registry: LegalRuleRegistry, out: _Findings
 ) -> None:
     """A defense rule argued by the defense for a party it does not concern"""
     defendant = run.case.defendant
@@ -269,7 +270,7 @@ def _check_defense_rule_party(
 # ============================================================================
 
 
-def _check_assumptions(run: "TrialRun", out: _Findings) -> None:
+def _check_assumptions(run: TrialRun, out: _Findings) -> None:
     for turn in run.turns:
         for flag in turn.flags:
             argument = turn.arguments[flag.argument_index - 1]
@@ -284,7 +285,7 @@ def _check_assumptions(run: "TrialRun", out: _Findings) -> None:
             )
 
 
-def _check_both_sides(run: "TrialRun", out: _Findings) -> None:
+def _check_both_sides(run: TrialRun, out: _Findings) -> None:
     by_party: Dict[str, Set[str]] = {}
     for argument in run.arguments:
         by_party.setdefault(argument.agent_id, set()).add(argument.argument_id)
@@ -308,7 +309,7 @@ def _check_both_sides(run: "TrialRun", out: _Findings) -> None:
                 )
 
 
-def _check_jury(run: "TrialRun", out: _Findings) -> None:
+def _check_jury(run: TrialRun, out: _Findings) -> None:
     if run.jury_result is None:
         return
     for row in run.judge_jury_agreement:
@@ -348,12 +349,14 @@ def _allowed_senders(stage: CourtStage) -> Optional[Set[str]]:
         return {EVIDENCE_AGENT_ID}
     if stage == CourtStage.JUDGE_DECISION:
         return {JUDGE_AGENT_ID}
+    if stage == CourtStage.JUDGE_QUESTIONS:  # the judge asks; the parties answer
+        return {JUDGE_AGENT_ID} | {role.agent_id for role in AdvocateRole}
     if stage == CourtStage.LEGAL_PROCESS_AUDIT:
         return {AUDITOR_AGENT_ID}
     return None  # jury stages are checked by prefix
 
 
-def _check_roles(run: "TrialRun", out: _Findings) -> None:
+def _check_roles(run: TrialRun, out: _Findings) -> None:
     for message in run.messages:
         if message.stage in (
             CourtStage.JURY_INDEPENDENT_DELIBERATION,
@@ -376,20 +379,25 @@ def _check_roles(run: "TrialRun", out: _Findings) -> None:
             )
 
 
-def _check_stages(run: "TrialRun", out: _Findings) -> None:
-    seen = {e["stage"] for e in run.event_history}
+def _check_stages(run: TrialRun, out: _Findings) -> None:
+    """Every spec section 14 stage either ran or has a recorded reason it did not"""
+    ran = {e["stage"] for e in run.event_history if e["event_type"] != "STAGE_SKIPPED"}
+    reasons = {
+        e["stage"]: e.get("reason", "")
+        for e in run.event_history
+        if e["event_type"] == "STAGE_SKIPPED"
+    }
     for stage in CourtStage:
         if stage in (CourtStage.LEGAL_PROCESS_AUDIT, CourtStage.CASE_COMPLETE):
             continue  # this audit is itself the LEGAL_PROCESS_AUDIT stage
-        if stage.value in seen:
+        if stage.value in ran:
             continue
-        if stage in NOT_IMPLEMENTED:
+        if stage.value in reasons:
             out.add(
                 AuditCategory.PROCEDURAL,
                 Severity.INFO,
-                "stage_not_implemented",
-                f"{stage.value} is part of the specified court procedure but is not yet "
-                "implemented in this simulation.",
+                "stage_not_required",
+                f"{stage.value} did not take place: {reasons[stage.value]}.",
                 stage=stage.value,
             )
         else:
@@ -398,12 +406,12 @@ def _check_stages(run: "TrialRun", out: _Findings) -> None:
                 Severity.INFO,
                 "stage_skipped",
                 f"{stage.value} did not take place; it was left out of this run's "
-                "configuration.",
+                "stage plan.",
                 stage=stage.value,
             )
 
 
-def _check_rejections(run: "TrialRun", out: _Findings) -> None:
+def _check_rejections(run: TrialRun, out: _Findings) -> None:
     for agent_id, stage, attempts in _artifacts(run):
         rejected = sum(1 for a in attempts if not a.accepted)
         if rejected >= 2:
@@ -423,7 +431,7 @@ def _check_rejections(run: "TrialRun", out: _Findings) -> None:
 
 
 def deterministic_findings(
-    run: "TrialRun", registry: Optional[LegalRuleRegistry] = None
+    run: TrialRun, registry: Optional[LegalRuleRegistry] = None
 ) -> List[AuditFinding]:
     """Every deterministic check over a finished trial"""
     registry = registry or LegalRuleRegistry()
@@ -442,7 +450,7 @@ def deterministic_findings(
     return out.items
 
 
-def build_dossier(run: "TrialRun", registry: LegalRuleRegistry) -> Dict[str, Any]:
+def build_dossier(run: TrialRun, registry: LegalRuleRegistry) -> Dict[str, Any]:
     """Everything the auditor agent reviews, as plain data"""
     record = render_case_record(
         run.case,
@@ -473,24 +481,26 @@ def build_dossier(run: "TrialRun", registry: LegalRuleRegistry) -> Dict[str, Any
         }
         for d in run.jury_independent + run.jury_deliberation
     ]
+    record["judge_questions"] = [render_question(q) for q in run.judge_questions]
     record["judgment"] = run.judgment.decision.model_dump(mode="json")
     record["judge_engine_divergences"] = [d.model_dump() for d in run.judgment.divergences]
     record["judge_jury_agreement"] = run.judge_jury_agreement
     return record
 
 
-def _known_ids(run: "TrialRun", registry: LegalRuleRegistry) -> Set[str]:
+def _known_ids(run: TrialRun, registry: LegalRuleRegistry) -> Set[str]:
     ids = {f.fact_id for f in run.case.facts}
     ids |= {e.evidence_id for e in run.case.evidence}
     ids |= {w.witness_id for w in run.case.witnesses}
     ids |= set(registry.rule_ids)
     ids |= {a.argument_id for a in run.arguments}
     ids |= {m.message_id for m in run.messages}
+    ids |= {q.question_id for q in run.judge_questions}
     return ids
 
 
 def audit_trial(
-    run: "TrialRun",
+    run: TrialRun,
     provider: Optional[LLMProvider] = None,
     log: Optional[InteractionLog] = None,
     max_attempts: int = 3,

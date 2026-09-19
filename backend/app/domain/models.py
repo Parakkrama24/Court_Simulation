@@ -92,6 +92,9 @@ class MessageType(str, Enum):
 
     OPENING_STATEMENT = "opening_statement"
     ARGUMENT = "argument"
+    CROSS_EXAMINATION = "cross_examination"
+    JUDGE_QUESTION = "judge_question"
+    ANSWER = "answer"
     REBUTTAL = "rebuttal"
     CLOSING_STATEMENT = "closing_statement"
     EVIDENCE_ANALYSIS = "evidence_analysis"
@@ -585,3 +588,23 @@ class CourtMessage(BaseModel):
             }
         }
     )
+
+
+class JudgeQuestion(BaseModel):
+    """A question the judge puts to a party (spec section 14, JUDGE_QUESTIONS)
+
+    The judge asks when the evidence review finds an argument unsupported by
+    what it cites. The party must answer by citing the record - or narrow or
+    withdraw the claim.
+    """
+
+    question_id: str = Field(..., description="Court-assigned ID, e.g. JQ1-1")
+    case_id: str = Field(..., description="Case the question belongs to")
+    addressed_to: str = Field(..., description="Agent ID of the party that must answer")
+    argument_ids: List[str] = Field(
+        default_factory=list, description="Arguments the question is about"
+    )
+    question: str = Field(..., description="The question")
+    reason: str = Field(default="", description="Why the court is asking")
+    round: int = Field(default=1, ge=1, description="Questioning round")
+    timestamp: datetime = Field(default_factory=utc_now)

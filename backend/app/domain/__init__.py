@@ -21,6 +21,7 @@ from .models import (
     CourtStage,
     MessageType,
     CourtMessage,
+    JudgeQuestion,
 )
 
 __all__ = [
@@ -44,4 +45,5 @@ __all__ = [
     "CourtStage",
     "MessageType",
     "CourtMessage",
+    "JudgeQuestion",
 ]

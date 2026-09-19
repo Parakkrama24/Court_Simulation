@@ -13,7 +13,7 @@ from typing import Any, Dict, List, Optional, Sequence, Tuple
 
 from pydantic import BaseModel, Field
 
-from app.domain import Argument, Case, Verdict
+from app.domain import Argument, Case, JudgeQuestion, Verdict
 from app.llm import (
     InteractionLog,
     LLMMessage,
@@ -27,6 +27,7 @@ from app.rules import CaseEvaluation, LegalRuleRegistry
 
 from ..base import AgentAttempt, AgentError, generate_validated, parse_model_output
 from .prompts import PROMPT_VERSION, SYSTEM_PROMPT, build_correction_prompt, build_user_prompt
+from .questions import JudgeQuestionRound, ask_questions
 from .schema import JudgeDecisionOutput
 from .validation import EngineDivergence, JudgeOutputValidator
 
@@ -92,6 +93,7 @@ class JudgeAgent:
         arguments: Sequence[Argument] = (),
         evidence_context: Optional[Dict[str, Any]] = None,
         jury_context: Optional[Dict[str, Any]] = None,
+        judge_questions: Sequence[JudgeQuestion] = (),
     ) -> LLMRequest:
         """The initial request for a case (also useful to inspect the prompt)"""
         return LLMRequest(
@@ -100,7 +102,13 @@ class JudgeAgent:
                 LLMMessage(
                     role=MessageRole.USER,
                     content=build_user_prompt(
-                        case, evaluation, self.registry, arguments, evidence_context, jury_context
+                        case,
+                        evaluation,
+                        self.registry,
+                        arguments,
+                        evidence_context,
+                        jury_context,
+                        judge_questions,
                     ),
                 )
             ],
@@ -116,6 +124,7 @@ class JudgeAgent:
         arguments: Sequence[Argument] = (),
         evidence_context: Optional[Dict[str, Any]] = None,
         jury_context: Optional[Dict[str, Any]] = None,
+        judge_questions: Sequence[JudgeQuestion] = (),
     ) -> JudgeResult:
         """Decide every charge, regenerating until the output validates"""
         validator = JudgeOutputValidator(
@@ -126,7 +135,7 @@ class JudgeAgent:
             strict_engine_alignment=self.strict_engine_alignment,
         )
         request = self.build_request(
-            case, evaluation, arguments, evidence_context, jury_context
+            case, evaluation, arguments, evidence_context, jury_context, judge_questions
         )
 
         def parse(
@@ -163,6 +172,28 @@ class JudgeAgent:
             provider=response.provider,
             model=response.model,
             usage=generation.usage,
+        )
+
+    def ask_questions(
+        self,
+        case: Case,
+        evaluation: CaseEvaluation,
+        arguments: Sequence[Argument],
+        flagged: Sequence[str],
+        round_number: int = 1,
+        evidence_context: Optional[Dict[str, Any]] = None,
+        earlier_questions: Sequence[JudgeQuestion] = (),
+    ) -> JudgeQuestionRound:
+        """JUDGE_QUESTIONS: question the parties about arguments that lack evidence"""
+        return ask_questions(
+            self,
+            case,
+            evaluation,
+            arguments,
+            flagged,
+            round_number,
+            evidence_context,
+            earlier_questions,
         )
 
     def _to_verdict(

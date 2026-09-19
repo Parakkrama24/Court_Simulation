@@ -9,13 +9,13 @@ Bump ``PROMPT_VERSION`` whenever the wording changes.
 import json
 from typing import Any, Dict, List, Optional, Sequence
 
-from app.domain import Argument, Case, CourtStage
+from app.domain import Argument, Case, CourtStage, JudgeQuestion
 from app.rules import CaseEvaluation, LegalRuleRegistry
 
 from ..record import render_case_record
-from .roles import AdvocateRole
+from .roles import ANSWER_STAGE, AdvocateRole
 
-PROMPT_VERSION = "advocate.v2"
+PROMPT_VERSION = "advocate.v3"
 
 _GROUND_RULES = """\
 ## The record is the only source of truth
@@ -99,6 +99,21 @@ _STAGE_TASKS: Dict[CourtStage, str] = {
         "Defense argument. Challenge the prosecution's case element by element: the "
         "reliability of its evidence, gaps in proof, and alternative interpretations."
     ),
+    CourtStage.CROSS_EXAMINATION: (
+        "Cross-examination. Test the testimony the other side relies on. For each "
+        "witness whose account supports the other side, show where it is contradicted, "
+        "uncorroborated, or open to challenge on the E003 grounds (bias, memory, "
+        "consistency, opportunity to observe, personal interest). Every argument must "
+        "name the witness(es) it examines in witness_ids."
+    ),
+    CourtStage.JUDGE_QUESTIONS: (
+        "Answering the court. The judge has asked you the questions listed under "
+        "judge_questions that are addressed to you. Answer every one: put the question's "
+        "ID in responds_to of the argument that answers it, and cite what in the record "
+        "supports your answer. If the record does not support the argument the judge "
+        "asked about, say so plainly and narrow or withdraw the claim - conceding a gap "
+        "is better than repeating it."
+    ),
     CourtStage.PROSECUTION_REBUTTAL: (
         "Prosecution rebuttal. Answer the defense's arguments directly: every argument "
         "in this turn must respond to at least one defense argument by ID."
@@ -127,15 +142,21 @@ def build_user_prompt(
     stage: CourtStage,
     prior_arguments: Sequence[Argument] = (),
     evidence_context: Optional[Dict[str, Any]] = None,
+    questions: Sequence[JudgeQuestion] = (),
 ) -> str:
     """The record (with the debate so far), then the task for this stage"""
-    record = render_case_record(case, evaluation, registry, prior_arguments, evidence_context)
+    record = render_case_record(
+        case, evaluation, registry, prior_arguments, evidence_context, judge_questions=questions
+    )
     opposing = [a.argument_id for a in prior_arguments if a.agent_id == role.opponent.agent_id]
     debate_note = (
         f"Opposing arguments you may answer: {', '.join(opposing)}."
         if opposing
         else "The other side has not presented any arguments yet; responds_to must be empty."
     )
+    if stage == ANSWER_STAGE:
+        own = [q.question_id for q in questions if q.addressed_to == role.agent_id]
+        debate_note += f"\nQuestions the judge has put to you: {', '.join(own)}."
     return (
         "<case_record>\n"
         + json.dumps(record, indent=2, sort_keys=False)

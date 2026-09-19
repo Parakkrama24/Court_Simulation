@@ -19,7 +19,7 @@ The Court Simulation System uses multiple specialized AI agents to simulate cour
 
 ## Project Status
 
-**Current Phase**: Phase 7 - Legal Process Auditor ✅
+**Current Phase**: Phase 8 - Full LangGraph Workflow ✅
 
 ### Completed
 - ✅ Domain models (Case, Fact, Evidence, Witness, LegalRule, Argument, Verdict, AuditReport)
@@ -47,12 +47,14 @@ The Court Simulation System uses multiple specialized AI agents to simulate cour
 - ✅ Legal Process Auditor: deterministic integrity checks plus an auditor agent
 - ✅ AuditReport with evidence, legal, reasoning, procedural, and hallucination findings
 - ✅ Saved trials can be re-audited without re-running them
+- ✅ The full spec §14 procedure as a LangGraph state machine with conditional transitions
+- ✅ Cross-examination, and judge questions when an argument lacks evidence
+- ✅ Typed `CourtState` with every spec §17 field; live events as the court runs
 - ✅ Comprehensive unit tests
 - ✅ Project structure and configuration
 
 ### Upcoming Phases
-- 🔄 Phase 8: Full LangGraph Workflow
-- ⏳ Phase 9: FastAPI Backend
+- 🔄 Phase 9: FastAPI Backend
 - ⏳ Phase 10: Frontend Visualization
 - ⏳ Phase 11: Evaluation Framework
 - ⏳ Phase 12: Production Readiness
@@ -111,10 +113,13 @@ Court_Simulation/
 │   │   ├── workflow/
 │   │   │   ├── judge_only.py    # Case → Judge → Decision
 │   │   │   ├── evidence_only.py # Case → Evidence Agent
+│   │   │   ├── graph.py         # The full procedure: LangGraph state machine
+│   │   │   ├── steps.py         # Court stages shared by both runners
+│   │   │   ├── run.py           # TrialRun: everything a trial produced
 │   │   │   ├── audit.py         # Deterministic integrity checks over a trial
-│   │   │   └── adversarial.py   # Evidence → Debate → Jury → Judge → Audit
+│   │   │   └── adversarial.py   # Linear runner for custom stage plans
 │   │   ├── llm/                 # Provider-agnostic LLM layer + interaction log
-│   │   ├── cli.py               # python -m app.cli judge|trial|evidence CASE_001
+│   │   ├── cli.py               # python -m app.cli court|trial|judge|evidence|audit
 │   │   └── config.py            # Configuration management
 │   ├── tests/
 │   │   ├── test_domain/         # Domain model tests
@@ -185,7 +190,7 @@ pytest tests/test_rules/test_engine.py -v
 ### Current Test Results
 
 ```
-All Tests: 465/465 passing ✅ (no network or API key needed)
+All Tests: 517/517 passing ✅ (no network or API key needed)
 - Domain Models: 21 tests
 - Seed Data: 20 tests
 - Rule Registry: 13 tests
@@ -194,7 +199,7 @@ All Tests: 465/465 passing ✅ (no network or API key needed)
 - Reference Validator: 18 tests
 - CASE_001 Evaluation: 28 tests
 - LLM Providers: 16 tests
-- LLM Support (schema, log, factory): 22 tests
+- LLM Support (schema, log, factory): 24 tests
 - Judge Validation: 22 tests
 - Judge Agent: 17 tests
 - Judge Workflow + CLI: 11 tests
@@ -206,6 +211,8 @@ All Tests: 465/465 passing ✅ (no network or API key needed)
 - Jury in the Trial + CLI: 22 tests
 - Auditor Agent + Report: 21 tests
 - Audit of Trials + CLI: 26 tests
+- Judge Questions + Cross-Examination: 22 tests
+- Court Graph (LangGraph) + CLI: 28 tests
 ```
 
 ## Domain Models
@@ -353,6 +360,61 @@ A rejected decision goes back to the model with the exact reasons. After
 `LLM_MAX_ATTEMPTS` rejections the run fails loudly - an unvalidated decision is
 never returned. Every call, rejected or accepted, is appended to
 `logs/llm_interactions.jsonl`.
+
+## The Court Procedure (Phase 8)
+
+The full spec §14 procedure runs as a **LangGraph state machine**:
+
+```bash
+cd backend
+python -m app.cli court CASE_001 --show-graph   # the state machine, no model call
+python -m app.cli court CASE_001 --events       # watch every stage as it happens
+python -m app.cli court CASE_001 --json > run.json
+```
+
+```mermaid
+graph TD
+    init[CASE_INITIALIZATION] -->|evidence on| ea[EVIDENCE_ANALYSIS]
+    init -->|evidence off| po[PROSECUTION_OPENING]
+    ea --> po --> do[DEFENSE_OPENING] --> pa[PROSECUTION_ARGUMENT] --> da[DEFENSE_ARGUMENT]
+    da -->|enabled| cx[CROSS_EXAMINATION]
+    da -.->|otherwise| er
+    cx --> er[EVIDENCE_REVIEW]
+    er -->|an argument is unsupported| jq[JUDGE_QUESTIONS]
+    jq --> ans[the party answers] --> ar[review of the answers]
+    ar -->|still unsupported, rounds remain| jq
+    er -->|all supported| pr[PROSECUTION_REBUTTAL]
+    ar -->|done| pr
+    pr --> dr[DEFENSE_REBUTTAL] --> ca[CLOSING_ARGUMENTS]
+    ca -->|jury on| ji[JURY_INDEPENDENT_DELIBERATION]
+    ca -->|jury off| jd
+    ji -->|2+ jurors| jdel[JURY_DELIBERATION] --> jv[verdict engine]
+    ji -->|1 juror| jv
+    jv --> jd[JUDGE_DECISION]
+    jd -->|audit on| au[LEGAL_PROCESS_AUDIT] --> done[CASE_COMPLETE]
+    jd -->|audit off| done
+```
+
+**The judge requests more when an argument lacks evidence** (spec §14). When
+`EVIDENCE_REVIEW` finds an argument unsupported by what it cites, the judge
+puts questions to the party that made it. The party must answer each question
+by ID - citing the record, or narrowing or withdrawing the claim - and the
+Evidence Agent reviews the answers. The loop repeats while answers stay
+unsupported, up to `--question-rounds` (default 1).
+
+**Cross-examination**: each side tests the testimony the other relies on;
+every argument must name the witness it examines.
+
+The graph carries a typed `CourtState` with every field spec §17 lists -
+`case`, `current_stage`, `facts`, `evidence`, `applicable_laws`,
+`prosecution_arguments`, `defense_arguments`, `evidence_analysis`,
+`judge_questions`, `jury_decisions`, `judge_decision`, `audit_report`,
+`event_history`. A stage that does not run is recorded with the reason (for
+example, "the evidence review found no argument unsupported"), so the audit
+can tell "not needed" from "left out".
+
+`trial` still runs **custom stage plans** (any order, repeated stages, the
+Phase 4-7 trials exactly). Both runners execute the same steps.
 
 ## Adversarial Trial (Phases 4-7)
 

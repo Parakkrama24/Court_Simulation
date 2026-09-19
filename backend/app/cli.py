@@ -6,7 +6,12 @@
     python -m app.cli judge CASE_001 --show-prompt        # print the prompt, call nothing
     python -m app.cli judge CASE_001 --json               # full run as JSON
 
-    python -m app.cli trial CASE_001                      # Prosecution <-> Defense -> Judge
+    python -m app.cli court CASE_001                      # the full procedure (LangGraph)
+    python -m app.cli court CASE_001 --events             # watch each stage as it happens
+    python -m app.cli court CASE_001 --show-graph         # the state machine, as Mermaid
+    python -m app.cli court CASE_001 --question-rounds 2 --no-cross-examination
+
+    python -m app.cli trial CASE_001                      # a custom stage plan (linear)
     python -m app.cli trial CASE_001 --quick              # openings and closings only
     python -m app.cli trial CASE_001 --show-prompt        # prosecution opening prompt
     python -m app.cli trial CASE_001 --no-evidence        # without the Evidence Agent
@@ -49,7 +54,9 @@ from app.workflow import (
     audit_trial,
     QUICK_DEBATE_STAGES,
     WorkflowError,
+    court_graph_mermaid,
     run_adversarial_trial,
+    run_court,
     run_evidence_analysis,
     run_judge_only,
 )
@@ -217,6 +224,32 @@ def _print_audit(audit: Any) -> None:
     print(f"  assessment: {report.final_assessment}")
 
 
+def _print_questions(question_round: Any) -> None:
+    rejected = (
+        f", {question_round.rejected_attempts} rejected" if question_round.rejected_attempts else ""
+    )
+    print(
+        f"\n[JUDGE_QUESTIONS] judge_agent, round {question_round.round} "
+        f"({question_round.model}{rejected})"
+    )
+    print(f"  flagged as unsupported: {', '.join(question_round.flagged_argument_ids)}")
+    for question in question_round.questions:
+        about = ", ".join(question.argument_ids)
+        print(f"  {question.question_id} -> {question.addressed_to} (about {about})")
+        print(f"      {question.question}")
+
+
+def _print_event(entry: dict) -> None:
+    """One line per event, for --events"""
+    details = {
+        k: v
+        for k, v in entry.items()
+        if k not in ("stage", "event_type", "timestamp") and v not in ([], {}, None, "")
+    }
+    summary = ", ".join(f"{k}={v}" for k, v in list(details.items())[:4])
+    print(f"  {entry['stage']:<30} {entry['event_type']:<18} {summary}"[:160], flush=True)
+
+
 def _print_trial(run: Any) -> None:
     print(f"\n{run.case.case_id} - {run.case.title}")
     print(f"Defendant: {run.case.defendant}")
@@ -226,14 +259,18 @@ def _print_trial(run: Any) -> None:
     if run.evidence_analysis is not None:
         _print_analysis(run.evidence_analysis)
 
-    # Walk the event history so reviews print where they happened in the debate.
+    # Walk the event history so each stage prints where it happened.
     reviews = iter(run.evidence_reviews)
+    question_rounds = iter(run.judge_question_rounds)
     turn_index = 0
     for entry in run.event_history:
         if entry["event_type"] == "EVIDENCE_REVIEWED":
             _print_review(next(reviews))
             continue
-        if entry["event_type"] != "AGENT_ARGUMENT":
+        if entry["event_type"] == "JUDGE_QUESTION":
+            _print_questions(next(question_rounds))
+            continue
+        if entry["event_type"] not in ("AGENT_ARGUMENT", "AGENT_RESPONSE"):
             continue
         turn = run.turns[turn_index]
         turn_index += 1
@@ -381,6 +418,72 @@ def _trial(args: argparse.Namespace) -> int:
     return 0
 
 
+def _court(args: argparse.Namespace) -> int:
+    if args.show_graph:
+        print(court_graph_mermaid())
+        return 0
+
+    settings = _load_settings()
+    if args.show_prompt:
+        case = get_case_by_id(args.case_id)
+        if case is None:
+            print(f"Unknown case '{args.case_id}'", file=sys.stderr)
+            return 2
+        evaluation = RuleEngine().evaluate_case(case, get_bindings_for_case(case.case_id))
+        advocate = AdvocateAgent(AdvocateRole.PROSECUTION, ScriptedProvider([]))
+        request = advocate.build_request(case, evaluation, CourtStage.PROSECUTION_OPENING)
+        print("=== SYSTEM ===\n" + request.system)
+        print("\n=== USER ===\n" + request.messages[0].content)
+        return 0
+
+    try:
+        provider = _build_provider(args, settings)
+    except LLMError as exc:
+        print(f"Provider error: {exc}", file=sys.stderr)
+        return 2
+
+    log_path = args.log_file
+    if log_path is None and settings is not None:
+        log_path = settings.llm_log_path
+    log = InteractionLog(log_path)
+    max_attempts = args.max_attempts or (settings.llm_max_attempts if settings else 3)
+    if args.events:
+        print(f"{args.case_id}: the court is in session")
+
+    try:
+        run = run_court(
+            args.case_id,
+            provider,
+            evidence=not args.no_evidence,
+            cross_examination=not args.no_cross_examination,
+            judge_questions=not args.no_judge_questions,
+            max_question_rounds=args.question_rounds,
+            jury=not args.no_jury,
+            jurors=args.jurors,
+            deliberation=not args.no_deliberation,
+            jury_rule=JuryRule(args.jury_rule),
+            audit=not args.no_audit,
+            audit_agent=not args.deterministic_audit,
+            log=log,
+            max_attempts=max_attempts,
+            strict_engine_alignment=args.strict,
+            on_event=_print_event if args.events else None,
+        )
+    except (WorkflowError, AgentError) as exc:
+        print(f"Simulation failed: {exc}", file=sys.stderr)
+        for attempt in getattr(exc, "attempts", []):
+            print(f"  attempt {attempt.attempt}: {'; '.join(attempt.errors)}", file=sys.stderr)
+        return 1
+
+    if args.json:
+        print(run.model_dump_json(indent=2))
+    else:
+        _print_trial(run)
+        if log_path:
+            print(f"Interactions logged to {log_path}")
+    return 0
+
+
 def _evidence(args: argparse.Namespace) -> int:
     settings = _load_settings()
 
@@ -479,6 +582,34 @@ def _add_run_options(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--json", action="store_true", help="Print the full run as JSON")
 
 
+def _add_trial_options(parser: argparse.ArgumentParser) -> None:
+    """Options shared by `court` and `trial`"""
+    parser.add_argument(
+        "--no-evidence",
+        action="store_true",
+        help="Skip the Evidence Agent (no EVIDENCE_ANALYSIS or EVIDENCE_REVIEW)",
+    )
+    parser.add_argument("--no-jury", action="store_true", help="Skip the jury")
+    parser.add_argument("--jurors", type=int, default=3, help="Number of jurors (default 3)")
+    parser.add_argument(
+        "--no-deliberation",
+        action="store_true",
+        help="Independent jury verdicts only; no deliberation round",
+    )
+    parser.add_argument(
+        "--jury-rule",
+        choices=[r.value for r in JuryRule],
+        default=JuryRule.UNANIMOUS.value,
+        help="How votes become a verdict (default unanimous; a split is a hung jury)",
+    )
+    parser.add_argument("--no-audit", action="store_true", help="Skip LEGAL_PROCESS_AUDIT")
+    parser.add_argument(
+        "--deterministic-audit",
+        action="store_true",
+        help="Audit with deterministic checks only (no auditor agent call)",
+    )
+
+
 def main(argv: Optional[List[str]] = None) -> int:
     parser = argparse.ArgumentParser(prog="python -m app.cli", description=DISCLAIMER)
     commands = parser.add_subparsers(dest="command", required=True)
@@ -487,34 +618,38 @@ def main(argv: Optional[List[str]] = None) -> int:
     _add_run_options(judge)
     judge.set_defaults(handler=_judge)
 
-    trial = commands.add_parser("trial", help="Run Prosecution <-> Defense -> Judge")
+    court = commands.add_parser(
+        "court", help="Run the full court procedure (LangGraph state machine)"
+    )
+    _add_run_options(court)
+    _add_trial_options(court)
+    court.add_argument(
+        "--no-cross-examination", action="store_true", help="Skip CROSS_EXAMINATION"
+    )
+    court.add_argument(
+        "--no-judge-questions",
+        action="store_true",
+        help="The judge does not question parties about unsupported arguments",
+    )
+    court.add_argument(
+        "--question-rounds",
+        type=int,
+        default=1,
+        help="Most rounds of judge questions (default 1)",
+    )
+    court.add_argument(
+        "--events", action="store_true", help="Print each event live as the court runs"
+    )
+    court.add_argument(
+        "--show-graph", action="store_true", help="Print the state machine as Mermaid and exit"
+    )
+    court.set_defaults(handler=_court)
+
+    trial = commands.add_parser("trial", help="Run a custom stage plan (linear runner)")
     _add_run_options(trial)
+    _add_trial_options(trial)
     trial.add_argument(
         "--quick", action="store_true", help="Openings and closings only (4 advocate calls)"
-    )
-    trial.add_argument(
-        "--no-evidence",
-        action="store_true",
-        help="Skip the Evidence Agent (no EVIDENCE_ANALYSIS or EVIDENCE_REVIEW)",
-    )
-    trial.add_argument("--no-jury", action="store_true", help="Skip the jury")
-    trial.add_argument("--jurors", type=int, default=3, help="Number of jurors (default 3)")
-    trial.add_argument(
-        "--no-deliberation",
-        action="store_true",
-        help="Independent jury verdicts only; no deliberation round",
-    )
-    trial.add_argument(
-        "--jury-rule",
-        choices=[r.value for r in JuryRule],
-        default=JuryRule.UNANIMOUS.value,
-        help="How votes become a verdict (default unanimous; a split is a hung jury)",
-    )
-    trial.add_argument("--no-audit", action="store_true", help="Skip LEGAL_PROCESS_AUDIT")
-    trial.add_argument(
-        "--deterministic-audit",
-        action="store_true",
-        help="Audit with deterministic checks only (no auditor agent call)",
     )
     trial.set_defaults(handler=_trial)
 

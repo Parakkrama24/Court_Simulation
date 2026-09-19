@@ -3,6 +3,7 @@
 from .agent import AdvocateAgent, AdvocateAgentError, AdvocateTurn
 from .prompts import PROMPT_VERSION, build_system_prompt, build_user_prompt
 from .roles import (
+    ANSWER_STAGE,
     REBUTTAL_STAGES,
     STAGE_CODES,
     STAGE_MESSAGE_TYPES,
@@ -24,6 +25,7 @@ __all__ = [
     "PROMPT_VERSION",
     "build_system_prompt",
     "build_user_prompt",
+    "ANSWER_STAGE",
     "REBUTTAL_STAGES",
     "STAGE_CODES",
     "STAGE_MESSAGE_TYPES",

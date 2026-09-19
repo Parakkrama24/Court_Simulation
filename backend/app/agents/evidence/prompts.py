@@ -6,7 +6,7 @@ Bump ``PROMPT_VERSION`` whenever the wording changes.
 import json
 from typing import Any, Dict, List, Optional, Sequence
 
-from app.domain import Argument, Case
+from app.domain import Argument, Case, JudgeQuestion
 from app.rules import CaseEvaluation, LegalRuleRegistry
 
 from ..record import render_case_record
@@ -61,8 +61,11 @@ def _record_block(
     registry: LegalRuleRegistry,
     arguments: Sequence[Argument] = (),
     evidence_context: Optional[Dict[str, Any]] = None,
+    judge_questions: Sequence[JudgeQuestion] = (),
 ) -> str:
-    record = render_case_record(case, evaluation, registry, arguments, evidence_context)
+    record = render_case_record(
+        case, evaluation, registry, arguments, evidence_context, judge_questions=judge_questions
+    )
     if not (evidence_context and "provenance" in evidence_context):
         record["evidence_provenance"] = [p.model_dump() for p in trace_case_provenance(case)]
     return "<case_record>\n" + json.dumps(record, indent=2) + "\n</case_record>\n\n"
@@ -93,10 +96,14 @@ def build_review_prompt(
     arguments: Sequence[Argument],
     under_review: Sequence[Argument],
     evidence_context: Optional[Dict[str, Any]] = None,
+    judge_questions: Sequence[JudgeQuestion] = (),
 ) -> str:
     """User turn for EVIDENCE_REVIEW (your earlier analysis is under evidence_analysis)"""
     ids = ", ".join(a.argument_id for a in under_review)
-    return _record_block(case, evaluation, registry, arguments, evidence_context) + (
+    record = _record_block(
+        case, evaluation, registry, arguments, evidence_context, judge_questions
+    )
+    return record + (
         "Task: EVIDENCE_REVIEW. The parties' arguments are under party_arguments. Review "
         f"each of these arguments exactly once: {ids}.\n"
         "For each, decide whether the facts, evidence, and witnesses it cites actually "

@@ -11,7 +11,15 @@ from typing import Any, Dict, List, Optional, Sequence, Tuple, Type
 
 from pydantic import BaseModel, Field
 
-from app.domain import Argument, Case, CourtMessage, CourtStage, MessageType, Verdict
+from app.domain import (
+    Argument,
+    Case,
+    CourtMessage,
+    CourtStage,
+    JudgeQuestion,
+    MessageType,
+    Verdict,
+)
 from app.llm import (
     InteractionLog,
     LLMMessage,
@@ -110,10 +118,13 @@ class JurorAgent:
         evaluation: CaseEvaluation,
         arguments: Sequence[Argument] = (),
         evidence_context: Optional[Dict[str, Any]] = None,
+        judge_questions: Sequence[JudgeQuestion] = (),
     ) -> LLMRequest:
         """The independent-round request: built from the record alone"""
         return self._request(
-            build_independent_prompt(case, evaluation, self.registry, arguments, evidence_context),
+            build_independent_prompt(
+                case, evaluation, self.registry, arguments, evidence_context, judge_questions
+            ),
             JurorVerdictOutput,
             "juror_verdict",
         )
@@ -124,11 +135,14 @@ class JurorAgent:
         evaluation: CaseEvaluation,
         arguments: Sequence[Argument] = (),
         evidence_context: Optional[Dict[str, Any]] = None,
+        judge_questions: Sequence[JudgeQuestion] = (),
     ) -> JurorDecision:
         """Decide every charge without any view of the other jurors"""
         return self._run(
             case,
-            self.build_independent_request(case, evaluation, arguments, evidence_context),
+            self.build_independent_request(
+                case, evaluation, arguments, evidence_context, judge_questions
+            ),
             JurorVerdictOutput,
             JurorOutputValidator(case, arguments, self.registry),
             CourtStage.JURY_INDEPENDENT_DELIBERATION,
@@ -146,10 +160,18 @@ class JurorAgent:
         arguments: Sequence[Argument],
         evidence_context: Optional[Dict[str, Any]],
         panel: Dict[str, JurorVerdictOutput],
+        judge_questions: Sequence[JudgeQuestion] = (),
     ) -> LLMRequest:
         return self._request(
             build_deliberation_prompt(
-                case, evaluation, self.registry, arguments, evidence_context, self.juror_id, panel
+                case,
+                evaluation,
+                self.registry,
+                arguments,
+                evidence_context,
+                self.juror_id,
+                panel,
+                judge_questions,
             ),
             JurorDeliberationOutput,
             "juror_deliberation",
@@ -162,6 +184,7 @@ class JurorAgent:
         arguments: Sequence[Argument],
         evidence_context: Optional[Dict[str, Any]],
         panel: Dict[str, JurorVerdictOutput],
+        judge_questions: Sequence[JudgeQuestion] = (),
     ) -> JurorDecision:
         """Reconsider once, with every juror's independent decision in view"""
         if self.juror_id not in panel:
@@ -169,7 +192,9 @@ class JurorAgent:
         previous = panel[self.juror_id]
         return self._run(
             case,
-            self.build_deliberation_request(case, evaluation, arguments, evidence_context, panel),
+            self.build_deliberation_request(
+                case, evaluation, arguments, evidence_context, panel, judge_questions
+            ),
             JurorDeliberationOutput,
             JurorOutputValidator(case, arguments, self.registry, previous=previous),
             CourtStage.JURY_DELIBERATION,

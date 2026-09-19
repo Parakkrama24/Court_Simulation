@@ -10,8 +10,10 @@ Rejected (the advocate must regenerate):
 - **Scope**: a charge that is not in the case; an empty turn or one with more
   than ``MAX_ARGUMENTS_PER_TURN`` arguments.
 - **Debate references**: ``responds_to`` naming an argument that was never
-  presented, or the advocate's own side's argument; a rebuttal argument that
-  answers nothing.
+  presented, the advocate's own side's argument, or a question put to the
+  other party; a rebuttal argument that answers nothing.
+- **Cross-examination**: an argument that tests no witness's testimony.
+- **Answering the judge**: a question put to this party left unanswered.
 
 Recorded, not rejected (flags for the auditor):
 
@@ -23,10 +25,10 @@ from typing import Dict, List, Sequence
 
 from pydantic import BaseModel, Field
 
-from app.domain import Argument, Case, CourtStage, FactStatus
+from app.domain import Argument, Case, CourtStage, FactStatus, JudgeQuestion
 from app.rules import LegalRuleRegistry, ReferenceValidator
 
-from .roles import REBUTTAL_STAGES, AdvocateRole
+from .roles import ANSWER_STAGE, REBUTTAL_STAGES, AdvocateRole
 from .schema import AdvocateTurnOutput
 
 MAX_ARGUMENTS_PER_TURN = 8
@@ -61,6 +63,7 @@ class AdvocateTurnValidator:
         stage: CourtStage,
         prior_arguments: Sequence[Argument] = (),
         registry: LegalRuleRegistry | None = None,
+        questions: Sequence[JudgeQuestion] = (),
     ) -> None:
         self.case = case
         self.role = role
@@ -69,6 +72,10 @@ class AdvocateTurnValidator:
         self.references = ReferenceValidator(case, self.registry)
         self._party_of: Dict[str, str] = {a.argument_id: a.agent_id for a in prior_arguments}
         self._facts = {fact.fact_id: fact for fact in case.facts}
+        self._questions = {q.question_id: q for q in questions}
+        self._own_questions = [
+            q.question_id for q in questions if q.addressed_to == role.agent_id
+        ]
 
     def validate(self, output: AdvocateTurnOutput) -> AdvocateValidationReport:
         report = AdvocateValidationReport()
@@ -119,6 +126,14 @@ class AdvocateTurnValidator:
                 )
 
             for argument_id in draft.responds_to:
+                question = self._questions.get(argument_id)
+                if question is not None:
+                    if question.addressed_to != self.role.agent_id:
+                        errors.append(
+                            f"{where}: responds_to names question '{argument_id}', which the "
+                            "judge put to the other party."
+                        )
+                    continue
                 party = self._party_of.get(argument_id)
                 if party is None:
                     errors.append(
@@ -130,6 +145,12 @@ class AdvocateTurnValidator:
                         f"{where}: responds_to names '{argument_id}', your own side's "
                         "argument; responds_to may only name the opposing party's arguments."
                     )
+
+            if self.stage == CourtStage.CROSS_EXAMINATION and not draft.witness_ids:
+                errors.append(
+                    f"{where}: this is cross-examination; every argument must test the "
+                    "testimony of at least one witness (witness_ids), on the E003 grounds."
+                )
 
             if self.stage in REBUTTAL_STAGES and not draft.responds_to:
                 errors.append(
@@ -153,5 +174,14 @@ class AdvocateTurnValidator:
                         ),
                     )
                 )
+
+        if self.stage == ANSWER_STAGE:
+            answered = {rid for draft in output.arguments for rid in draft.responds_to}
+            for question_id in self._own_questions:
+                if question_id not in answered:
+                    errors.append(
+                        f"The judge's question {question_id} is not answered; put its ID in "
+                        "responds_to of the argument that answers it."
+                    )
 
         return report

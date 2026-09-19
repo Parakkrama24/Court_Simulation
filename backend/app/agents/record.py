@@ -10,7 +10,7 @@ analysis and its reviews of the arguments.
 
 from typing import Any, Dict, Optional, Sequence
 
-from app.domain import Argument, Case, LegalCategory
+from app.domain import Argument, Case, JudgeQuestion, LegalCategory
 from app.rules import CaseEvaluation, LegalRuleRegistry
 
 
@@ -42,6 +42,7 @@ def render_case_record(
     arguments: Sequence[Argument] = (),
     evidence_context: Optional[Dict[str, Any]] = None,
     jury_context: Optional[Dict[str, Any]] = None,
+    judge_questions: Sequence[JudgeQuestion] = (),
 ) -> Dict[str, Any]:
     """The case record as a JSON-serialisable dict, in a stable order
 
@@ -49,7 +50,8 @@ def render_case_record(
     ``app.agents.evidence.evidence_context``); it is added under
     ``evidence_analysis`` when present. ``jury_context`` is the jury's
     tallied result (see ``app.agents.jury.jury_context``), added under
-    ``jury`` - only the judge is ever given it.
+    ``jury`` - only the judge is ever given it. ``judge_questions`` are the
+    questions the judge has put to the parties, added when there are any.
     """
     rule_ids = list(case.applicable_laws)
     rule_ids += [r.rule_id for r in registry.by_category(LegalCategory.PRINCIPLE)]
@@ -124,7 +126,21 @@ def render_case_record(
         record["evidence_analysis"] = evidence_context
     if jury_context is not None:
         record["jury"] = jury_context
+    if judge_questions:
+        record["judge_questions"] = [render_question(q) for q in judge_questions]
     return record
+
+
+def render_question(question: JudgeQuestion) -> Dict[str, Any]:
+    """One question from the judge, as the parties and the court see it"""
+    return {
+        "question_id": question.question_id,
+        "round": question.round,
+        "addressed_to": question.addressed_to,
+        "about_arguments": list(question.argument_ids),
+        "question": question.question,
+        "reason": question.reason,
+    }
 
 
 def _render_evaluation(evaluation: CaseEvaluation) -> Dict[str, Any]:

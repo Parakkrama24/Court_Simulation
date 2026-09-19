@@ -440,3 +440,31 @@ def auditor_output(findings=None) -> Dict[str, Any]:
         ],
         "final_assessment": "The trial followed procedure; one minor reasoning issue.",
     }
+
+
+# ============================================================================
+# Full procedure (Phase 8)
+# ============================================================================
+
+
+def cross_turn(turn: Dict[str, Any], witness: str) -> Dict[str, Any]:
+    """A turn whose every argument tests a witness's testimony"""
+    turn = copy.deepcopy(turn)
+    for argument in turn["arguments"]:
+        argument["witness_ids"] = [witness]
+    return turn
+
+
+def questions_output(*questions) -> Dict[str, Any]:
+    """Judge questions: each item is (addressed_to, [argument ids])"""
+    return {
+        "questions": [
+            {
+                "addressed_to": party,
+                "argument_ids": list(argument_ids),
+                "question": f"What in the record supports {', '.join(argument_ids)}?",
+                "reason": "The evidence review found it unsupported.",
+            }
+            for party, argument_ids in questions
+        ]
+    }

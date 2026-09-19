@@ -10,7 +10,7 @@ from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple
 
 from pydantic import BaseModel, Field
 
-from app.domain import Argument, Case, CourtMessage, CourtStage
+from app.domain import Argument, Case, CourtMessage, CourtStage, JudgeQuestion
 from app.llm import (
     InteractionLog,
     LLMMessage,
@@ -24,7 +24,13 @@ from app.rules import CaseEvaluation, LegalRuleRegistry
 
 from ..base import AgentAttempt, AgentError, generate_validated, parse_model_output
 from .prompts import PROMPT_VERSION, build_correction_prompt, build_system_prompt, build_user_prompt
-from .roles import STAGE_CODES, STAGE_MESSAGE_TYPES, STAGE_SPEAKERS, AdvocateRole
+from .roles import (
+    ANSWER_STAGE,
+    STAGE_CODES,
+    STAGE_MESSAGE_TYPES,
+    STAGE_SPEAKERS,
+    AdvocateRole,
+)
 from .schema import AdvocateTurnOutput
 from .validation import AdvocacyFlag, AdvocateTurnValidator
 
@@ -82,7 +88,14 @@ class AdvocateAgent:
     def agent_id(self) -> str:
         return self.role.agent_id
 
-    def _check_stage(self, stage: CourtStage) -> None:
+    def _check_stage(self, stage: CourtStage, questions: Sequence[JudgeQuestion] = ()) -> None:
+        if stage == ANSWER_STAGE:
+            if not any(q.addressed_to == self.agent_id for q in questions):
+                raise ValueError(
+                    f"The {self.role.value} speaks at {stage.value} only to answer questions "
+                    "the judge has put to it"
+                )
+            return
         if self.role not in STAGE_SPEAKERS.get(stage, []):
             raise ValueError(f"The {self.role.value} does not speak at {stage.value}")
 
@@ -93,9 +106,10 @@ class AdvocateAgent:
         stage: CourtStage,
         prior_arguments: Sequence[Argument] = (),
         evidence_context: Optional[Dict[str, Any]] = None,
+        questions: Sequence[JudgeQuestion] = (),
     ) -> LLMRequest:
         """The initial request for one turn (also useful to inspect the prompt)"""
-        self._check_stage(stage)
+        self._check_stage(stage, questions)
         return LLMRequest(
             system=build_system_prompt(self.role),
             messages=[
@@ -109,6 +123,7 @@ class AdvocateAgent:
                         stage,
                         prior_arguments,
                         evidence_context,
+                        questions,
                     ),
                 )
             ],
@@ -125,13 +140,14 @@ class AdvocateAgent:
         prior_arguments: Sequence[Argument] = (),
         id_prefix: Optional[str] = None,
         evidence_context: Optional[Dict[str, Any]] = None,
+        questions: Sequence[JudgeQuestion] = (),
     ) -> AdvocateTurn:
         """Produce one validated turn at ``stage``"""
         request = self.build_request(
-            case, evaluation, stage, prior_arguments, evidence_context
+            case, evaluation, stage, prior_arguments, evidence_context, questions
         )
         validator = AdvocateTurnValidator(
-            case, self.role, stage, prior_arguments, registry=self.registry
+            case, self.role, stage, prior_arguments, registry=self.registry, questions=questions
         )
 
         def parse(
@@ -172,6 +188,26 @@ class AdvocateAgent:
             provider=generation.response.provider,
             model=generation.response.model,
             usage=generation.usage,
+        )
+
+    def answer(
+        self,
+        case: Case,
+        evaluation: CaseEvaluation,
+        questions: Sequence[JudgeQuestion],
+        prior_arguments: Sequence[Argument] = (),
+        id_prefix: Optional[str] = None,
+        evidence_context: Optional[Dict[str, Any]] = None,
+    ) -> AdvocateTurn:
+        """Answer every question the judge has put to this party (JUDGE_QUESTIONS)"""
+        return self.argue(
+            case,
+            evaluation,
+            ANSWER_STAGE,
+            prior_arguments,
+            id_prefix=id_prefix,
+            evidence_context=evidence_context,
+            questions=questions,
         )
 
     def _to_arguments(

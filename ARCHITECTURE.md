@@ -288,47 +288,69 @@ class BaseAgent(ABC):
 
 ### Layer 6: Workflow Layer
 
-**Location**: `backend/app/workflow/` (Future)
+**Location**: `backend/app/workflow/` (implemented in Phase 8)
 
-**Purpose**: LangGraph state machine for court procedure
+**Purpose**: The court procedure of spec section 14
 
-**State**:
+**Design**: three layers.
+
+- `steps.py` - each stage as one function: it runs the agents for that stage
+  and returns what they produced plus the events and messages to record. A
+  `Court` holds what does not change during a trial (case, evaluation,
+  agents, options); `open_court` checks the whole configuration before any
+  model is called.
+- `graph.py` - the full procedure as a LangGraph `StateGraph`. Each node runs
+  a step and returns only what it adds to the state; conditional edges choose
+  the branch (evidence on/off, cross-examination, judge questions, jury,
+  deliberation, audit).
+- `adversarial.py` - a linear runner over the same steps, for custom stage
+  plans (any order, repeated stages).
+
+Both produce a `TrialRun` (`run.py`), which the audit, the CLI, and saved JSON
+runs all work from.
+
+**State** (`CourtState`, a `TypedDict`): every spec section 17 field, plus
+the working state the steps need. Append-only fields use `operator.add`
+reducers, so a node returns just its additions:
+
 ```python
-class CourtState(TypedDict):
+class CourtState(TypedDict, total=False):
     case: Case
-    current_stage: CourtStage
+    current_stage: str
     facts: List[Fact]
     evidence: List[Evidence]
     applicable_laws: List[LegalRule]
-    prosecution_arguments: List[Argument]
-    defense_arguments: List[Argument]
-    evidence_analysis: Dict
-    jury_decisions: List[Verdict]
+    prosecution_arguments: Annotated[List[Argument], operator.add]
+    defense_arguments: Annotated[List[Argument], operator.add]
+    evidence_analysis: Optional[EvidenceAnalysis]
+    judge_questions: Annotated[List[JudgeQuestion], operator.add]
+    jury_decisions: Annotated[List[Verdict], operator.add]
     judge_decision: Optional[Verdict]
     audit_report: Optional[AuditReport]
-    event_history: List[Event]
+    event_history: Annotated[List[Dict[str, Any]], operator.add]
+    # ... plus arguments, turns, messages, reviews, question rounds,
+    #     jury rounds, judgment, audit
 ```
 
-**Workflow Stages**:
-```
-CASE_INITIALIZATION →
-EVIDENCE_ANALYSIS →
-PROSECUTION_OPENING →
-DEFENSE_OPENING →
-PROSECUTION_ARGUMENT →
-DEFENSE_ARGUMENT →
-CROSS_EXAMINATION →
-EVIDENCE_REVIEW →
-JUDGE_QUESTIONS →
-PROSECUTION_REBUTTAL →
-DEFENSE_REBUTTAL →
-CLOSING_ARGUMENTS →
-JURY_INDEPENDENT_DELIBERATION →
-JURY_DELIBERATION →
-JUDGE_DECISION →
-LEGAL_PROCESS_AUDIT →
-CASE_COMPLETE
-```
+**Conditional transitions**:
+
+| After | Goes to | When |
+|---|---|---|
+| CASE_INITIALIZATION | EVIDENCE_ANALYSIS / PROSECUTION_OPENING | Evidence Agent on / off |
+| DEFENSE_ARGUMENT | CROSS_EXAMINATION / EVIDENCE_REVIEW / PROSECUTION_REBUTTAL | cross-examination on; else evidence on; else neither |
+| EVIDENCE_REVIEW | JUDGE_QUESTIONS / PROSECUTION_REBUTTAL | an argument is unsupported and question rounds remain |
+| review of answers | JUDGE_QUESTIONS / PROSECUTION_REBUTTAL | an answer is still unsupported and rounds remain |
+| CLOSING_ARGUMENTS | JURY_INDEPENDENT_DELIBERATION / JUDGE_DECISION | jury on / off |
+| JURY_INDEPENDENT_DELIBERATION | JURY_DELIBERATION / verdict engine | deliberation on with 2+ jurors |
+| JUDGE_DECISION | LEGAL_PROCESS_AUDIT / CASE_COMPLETE | audit on / off |
+
+The judge-questions loop is the spec's "the Judge should be able to request
+additional analysis if an argument lacks evidence", bounded by
+`max_question_rounds`. A stage that does not run is recorded as a
+`STAGE_SKIPPED` event with its reason.
+
+**Live events**: `run_court(..., on_event=...)` is called with every event as
+nodes complete - the hook the streaming phase will build on.
 
 ### Layer 7: API Layer
 
@@ -459,7 +481,7 @@ def validate_argument(argument: Argument, case: Case) -> ValidationResult:
 
 ## Scalability Considerations
 
-### Current Phase (Phase 7)
+### Current Phase (Phase 8)
 - In-memory case data and evaluations
 - No database required
 - Single-threaded, deterministic execution

@@ -10,7 +10,7 @@ comparable across experiments.
 import json
 from typing import Any, Dict, List, Optional, Sequence
 
-from app.domain import Argument, Case
+from app.domain import Argument, Case, JudgeQuestion
 from app.rules import CaseEvaluation, LegalRuleRegistry
 
 from ..record import render_case_record
@@ -94,10 +94,11 @@ def build_user_prompt(
     arguments: Sequence[Argument] = (),
     evidence_context: Optional[Dict[str, Any]] = None,
     jury_context: Optional[Dict[str, Any]] = None,
+    judge_questions: Sequence[JudgeQuestion] = (),
 ) -> str:
     """The first user turn: the record, then the task"""
     record = render_case_record(
-        case, evaluation, registry, arguments, evidence_context, jury_context
+        case, evaluation, registry, arguments, evidence_context, jury_context, judge_questions
     )
     charges = ", ".join(case.charges) if case.charges else "(none)"
     argument_note = (
