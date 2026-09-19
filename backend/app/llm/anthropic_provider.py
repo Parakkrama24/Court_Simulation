@@ -63,7 +63,14 @@ class AnthropicProvider(LLMProvider):
         kwargs: Dict[str, Any] = {"max_retries": max_retries, "timeout": timeout}
         if api_key:
             kwargs["api_key"] = api_key
-        return anthropic.Anthropic(**kwargs)
+
+        try:
+            return anthropic.Anthropic(**kwargs)
+        except Exception as exc:  # usually a missing API key
+            raise LLMConfigurationError(
+                f"Could not create the Anthropic client: {exc}. Set ANTHROPIC_API_KEY in "
+                "your environment or in .env."
+            ) from exc
 
     def build_params(self, request: LLMRequest) -> Dict[str, Any]:
         """Messages API parameters for a request (exposed for logging and tests)"""

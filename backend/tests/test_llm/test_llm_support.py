@@ -264,3 +264,17 @@ class TestFactory:
             "effort": "xhigh",
             "use_refusal_fallback": False,
         }
+
+
+class TestMissingCredentials:
+    """A missing key is a clear message, not a traceback from the SDK"""
+
+    def test_openai_without_a_key(self, monkeypatch):
+        monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+        with pytest.raises(LLMConfigurationError, match="OPENAI_API_KEY"):
+            create_provider("openai")
+
+    def test_local_provider_needs_no_key(self, monkeypatch):
+        monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+        provider = create_provider("local", model="llama3.1")
+        assert str(provider._client.base_url).startswith("http://localhost:11434")

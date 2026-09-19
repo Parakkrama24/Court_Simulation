@@ -12,6 +12,10 @@
     python -m app.cli trial CASE_001 --no-evidence        # without the Evidence Agent
     python -m app.cli trial CASE_001 --no-jury            # without the jury
     python -m app.cli trial CASE_001 --jurors 5 --jury-rule majority --no-deliberation
+    python -m app.cli trial CASE_001 --no-audit           # without LEGAL_PROCESS_AUDIT
+    python -m app.cli trial CASE_001 --json > run.json
+    python -m app.cli audit run.json                      # re-audit a saved trial
+    python -m app.cli audit run.json --deterministic-only # no model call
 
     python -m app.cli evidence CASE_001                   # evidence analysis only
     python -m app.cli evidence CASE_001 --show-prompt
@@ -41,6 +45,8 @@ from app.rules import RuleEngine
 from app.seed import get_bindings_for_case, get_case_by_id
 from app.workflow import (
     DEFAULT_DEBATE_STAGES,
+    TrialRun,
+    audit_trial,
     QUICK_DEBATE_STAGES,
     WorkflowError,
     run_adversarial_trial,
@@ -190,6 +196,27 @@ def _print_jury(run: Any) -> None:
     print(line)
 
 
+def _print_audit(audit: Any) -> None:
+    report = audit.report
+    meta = report.metadata
+    source = "deterministic checks only" if meta["deterministic_only"] else (
+        f"deterministic checks + auditor agent ({meta.get('auditor_model', '')})"
+    )
+    print(f"\n[LEGAL_PROCESS_AUDIT] {report.audit_id} - {source}")
+    counts = ", ".join(f"{n} {s}" for s, n in meta["severity_counts"].items() if n)
+    print(f"  overall: {meta['overall_status'].upper()} ({counts or 'no findings'})")
+    for finding in audit.findings:
+        where = " ".join(x for x in (finding.agent_id, finding.stage) if x)
+        print(
+            f"  {finding.finding_id} [{finding.severity.value:<8}] {finding.category.value:<13} "
+            f"{finding.check}{f' ({where})' if where else ''}"
+        )
+        print(f"      {finding.description}")
+    for link in meta.get("decision_chain", []):
+        print(f"  chain {link['link']}: {link['rating']} - {link['note']}")
+    print(f"  assessment: {report.final_assessment}")
+
+
 def _print_trial(run: Any) -> None:
     print(f"\n{run.case.case_id} - {run.case.title}")
     print(f"Defendant: {run.case.defendant}")
@@ -237,6 +264,8 @@ def _print_trial(run: Any) -> None:
     for row in run.judge_jury_agreement:
         verdict = "agrees with" if row["agrees"] else "differs from"
         print(f"  {row['charge']}: judge {verdict} jury ({row['judge']} vs {row['jury']})")
+    if run.audit is not None:
+        _print_audit(run.audit)
     print(f"\n{DISCLAIMER}")
 
 
@@ -332,6 +361,8 @@ def _trial(args: argparse.Namespace) -> int:
             jurors=args.jurors,
             deliberation=not args.no_deliberation,
             jury_rule=JuryRule(args.jury_rule),
+            audit=not args.no_audit,
+            audit_agent=not args.deterministic_audit,
             max_attempts=max_attempts,
             strict_engine_alignment=args.strict,
         )
@@ -395,6 +426,44 @@ def _evidence(args: argparse.Namespace) -> int:
     return 0
 
 
+def _audit(args: argparse.Namespace) -> int:
+    try:
+        with open(args.run_file, encoding="utf-8") as handle:
+            run = TrialRun.model_validate_json(handle.read())
+    except (OSError, ValueError) as exc:
+        print(f"Cannot load trial run '{args.run_file}': {exc}", file=sys.stderr)
+        return 2
+
+    settings = _load_settings()
+    provider = None
+    if not args.deterministic_only:
+        try:
+            provider = _build_provider(args, settings)
+        except LLMError as exc:
+            print(f"Provider error: {exc}", file=sys.stderr)
+            return 2
+
+    log_path = args.log_file
+    if log_path is None and settings is not None:
+        log_path = settings.llm_log_path
+    log = InteractionLog(log_path) if provider is not None else None
+    max_attempts = args.max_attempts or (settings.llm_max_attempts if settings else 3)
+
+    try:
+        audit = audit_trial(run, provider, log=log, max_attempts=max_attempts)
+    except AgentError as exc:
+        print(f"Audit failed: {exc}", file=sys.stderr)
+        return 1
+
+    if args.json:
+        print(audit.model_dump_json(indent=2))
+    else:
+        print(f"\n{run.case.case_id} - {run.case.title} (saved run: {args.run_file})")
+        _print_audit(audit)
+        print(f"\n{DISCLAIMER}")
+    return 0
+
+
 def _add_run_options(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("case_id", help="Seeded case ID, e.g. CASE_001")
     parser.add_argument("--provider", choices=SUPPORTED_PROVIDERS, help="Override LLM_PROVIDER")
@@ -441,7 +510,25 @@ def main(argv: Optional[List[str]] = None) -> int:
         default=JuryRule.UNANIMOUS.value,
         help="How votes become a verdict (default unanimous; a split is a hung jury)",
     )
+    trial.add_argument("--no-audit", action="store_true", help="Skip LEGAL_PROCESS_AUDIT")
+    trial.add_argument(
+        "--deterministic-audit",
+        action="store_true",
+        help="Audit with deterministic checks only (no auditor agent call)",
+    )
     trial.set_defaults(handler=_trial)
+
+    audit = commands.add_parser("audit", help="Audit a saved trial run (from trial --json)")
+    audit.add_argument("run_file", help="JSON file written by `trial --json`")
+    audit.add_argument("--provider", choices=SUPPORTED_PROVIDERS, help="Override LLM_PROVIDER")
+    audit.add_argument("--model", help="Override the provider's model")
+    audit.add_argument("--max-attempts", type=int, help="Generation attempts before giving up")
+    audit.add_argument("--log-file", help="JSON Lines file for interaction logs")
+    audit.add_argument(
+        "--deterministic-only", action="store_true", help="Run the deterministic checks only"
+    )
+    audit.add_argument("--json", action="store_true", help="Print the audit as JSON")
+    audit.set_defaults(handler=_audit)
 
     evidence = commands.add_parser("evidence", help="Run the Evidence Agent's analysis only")
     _add_run_options(evidence)

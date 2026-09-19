@@ -1,6 +1,6 @@
 """Integration tests: the Evidence Agent inside the trial, and its CLI
 
-Pinned to ``jury=False``; the jury is covered in ``test_jury_trial.py``.
+Pinned to ``jury=False, audit=False``; the jury is covered in ``test_jury_trial.py``.
 """
 
 import json
@@ -69,6 +69,7 @@ def trial(decision_with):
         evidence_provider=providers["evidence"],
         log=log,
         jury=False,
+        audit=False,
     )
     return run, providers, log
 
@@ -167,7 +168,7 @@ class TestEvidenceTrialVariants:
             judge_step(decision_with, ["PR-OPEN-1", "DF-OPEN-1"]),
         ]
         run = run_adversarial_trial(
-            "CASE_001", ScriptedProvider(steps), stages=QUICK_DEBATE_STAGES, jury=False
+            "CASE_001", ScriptedProvider(steps), stages=QUICK_DEBATE_STAGES, jury=False, audit=False
         )
         assert run.evidence_analysis is not None
         assert run.evidence_reviews == []
@@ -191,7 +192,7 @@ class TestEvidenceTrialVariants:
             judge_step(decision_with, ["PR-OPEN-1", "DF-OPEN-1"]),
         ]
         run = run_adversarial_trial(
-            "CASE_001", ScriptedProvider(steps), stages=stages, jury=False
+            "CASE_001", ScriptedProvider(steps), stages=stages, jury=False, audit=False
         )
         assert [r.message.message_id for r in run.evidence_reviews] == [
             "MSG-EVIDENCE-REVIEW",
@@ -212,7 +213,7 @@ class TestEvidenceTrialVariants:
             judge_step(decision_with, ["PR-OPEN-1", "DF-OPEN-1"]),
         ]
         run = run_adversarial_trial(
-            "CASE_001", ScriptedProvider(steps), evidence=False, jury=False
+            "CASE_001", ScriptedProvider(steps), evidence=False, jury=False, audit=False
         )
         assert run.evidence_analysis is None
         assert all(m.message_type != MessageType.EVIDENCE_REVIEW for m in run.messages)
@@ -300,7 +301,8 @@ class TestEvidenceCli:
             "app.cli._build_provider", lambda args, settings: ScriptedProvider(steps)
         )
         log_file = str(tmp_path / "t.jsonl")
-        code = main(["trial", "CASE_001", "--quick", "--no-jury", "--log-file", log_file])
+        args = ["trial", "CASE_001", "--quick", "--no-jury", "--no-audit"]
+        code = main(args + ["--log-file", log_file])
         assert code == 0
         out = capsys.readouterr().out
         assert out.index("[EVIDENCE_ANALYSIS]") < out.index("[PROSECUTION_OPENING]")

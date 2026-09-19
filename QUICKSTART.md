@@ -1,15 +1,15 @@
 # Quick Start Guide
 
-## Phase 6 Complete ✅
+## Phase 7 Complete ✅
 
-This guide will help you get started with the Court Simulation System. Currently, Phase 1 (Domain Models & Seed Data), Phase 2 (Legal Rule Engine), Phase 3 (Judge Agent), Phase 4 (Prosecution ↔ Defense → Judge), Phase 5 (Evidence Agent), and Phase 6 (Jury) are complete.
+This guide will help you get started with the Court Simulation System. Currently, Phase 1 (Domain Models & Seed Data), Phase 2 (Legal Rule Engine), Phase 3 (Judge Agent), Phase 4 (Prosecution ↔ Defense → Judge), Phase 5 (Evidence Agent), Phase 6 (Jury), and Phase 7 (Legal Process Auditor) are complete.
 
 ## What's Working Now
 
 - ✅ Complete domain models (Pydantic)
 - ✅ Structured legal rules (JSON)
 - ✅ CASE_001 seed data with facts, evidence, and witnesses
-- ✅ 418 passing unit tests
+- ✅ 465 passing unit tests
 - ✅ Configuration management
 - ✅ Project structure
 
@@ -51,7 +51,7 @@ pytest
 
 Expected output:
 ```
-418 tests passed ✅
+465 tests passed ✅
 ```
 
 ### Run Specific Tests
@@ -316,7 +316,9 @@ Every model call is appended to `logs/llm_interactions.jsonl`.
 python -m app.cli trial CASE_001 --show-prompt   # the prosecution's opening prompt
 python -m app.cli evidence CASE_001              # Evidence Agent only (1 call)
 python -m app.cli trial CASE_001 --quick         # analysis, openings, closings, jury, judge (12 calls)
-python -m app.cli trial CASE_001                 # the full trial (17 calls)
+python -m app.cli trial CASE_001                 # the full trial (18 calls)
+python -m app.cli trial CASE_001 --json > run.json   # save a run
+python -m app.cli audit run.json --deterministic-only  # re-audit it, no model call
 python -m app.cli trial CASE_001 --no-jury       # the Phase 5 trial (11 calls)
 python -m app.cli trial CASE_001 --no-jury --no-evidence   # the Phase 4 trial (9 calls)
 ```
@@ -374,7 +376,7 @@ When implementing new phases:
 
 ## Summary
 
-**Phase 1-6 Status**: ✅ Complete and tested
+**Phase 1-7 Status**: ✅ Complete and tested
 
 You now have:
 - Clean domain models
@@ -383,7 +385,7 @@ You now have:
 - Comprehensive tests
 - Solid foundation for multi-agent system
 
-**Next Step**: Implement Phase 7 (Legal Process Auditor).
+**Next Step**: Implement Phase 8 (Full LangGraph Workflow).
 
 ---
 

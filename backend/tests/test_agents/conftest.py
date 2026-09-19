@@ -403,3 +403,40 @@ def juror_verdict(
 @pytest.fixture
 def juror() -> Callable[..., Dict[str, Any]]:
     return juror_verdict
+
+
+# ============================================================================
+# Legal Process Auditor
+# ============================================================================
+
+
+def auditor_output(findings=None) -> Dict[str, Any]:
+    """A well-formed auditor-agent output for a quick CASE_001 trial"""
+    return {
+        "findings": list(
+            findings
+            if findings is not None
+            else [
+                {
+                    "category": "reasoning",
+                    "severity": "minor",
+                    "issue_type": "self_contradiction",
+                    "agent_id": "prosecution_agent",
+                    "stage": "CLOSING_ARGUMENTS",
+                    "description": "The closing restates PR-OPEN-2 without the assumption the "
+                    "opening listed.",
+                    "references": ["PR-OPEN-2", "PR-CLOSE-2", "F004"],
+                }
+            ]
+        ),
+        "decision_chain": [
+            {"link": link, "rating": "sound", "note": "Cited and consistent."}
+            for link in (
+                "facts_to_evidence",
+                "evidence_to_law",
+                "law_to_analysis",
+                "analysis_to_decision",
+            )
+        ],
+        "final_assessment": "The trial followed procedure; one minor reasoning issue.",
+    }

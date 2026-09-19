@@ -1,7 +1,7 @@
 """Integration tests: the jury inside the trial, and its CLI
 
 The debate runs openings and closings only with the Evidence Agent off, so
-these tests isolate what the jury adds.
+these tests isolate what the jury adds. The audit is off (``audit=False``).
 """
 
 import json
@@ -61,6 +61,7 @@ def trial(decision_with):
         **providers,
         juror_providers=jurors,
         evidence=False,
+        audit=False,
         stages=QUICK_DEBATE_STAGES,
         log=log,
     )
@@ -169,6 +170,7 @@ class TestJuryVariants:
             **debate_providers(decision_with),
             juror_providers=jurors,
             evidence=False,
+            audit=False,
             stages=QUICK_DEBATE_STAGES,
             deliberation=False,
         )
@@ -183,6 +185,7 @@ class TestJuryVariants:
             juror_providers=[ScriptedProvider([juror_verdict(considered=CONSIDERED)])],
             jurors=1,
             evidence=False,
+            audit=False,
             stages=QUICK_DEBATE_STAGES,
         )
         assert len(run.jury_independent) == 1
@@ -201,6 +204,7 @@ class TestJuryVariants:
             jury_rule=JuryRule.MAJORITY,
             deliberation=False,
             evidence=False,
+            audit=False,
             stages=QUICK_DEBATE_STAGES,
         )
         assert run.jury_result.final[1].outcome == JuryOutcome.GUILTY
@@ -227,7 +231,7 @@ class TestJuryVariants:
         ]
         provider = ScriptedProvider(steps)
         run = run_adversarial_trial(
-            "CASE_001", provider, evidence=False, stages=QUICK_DEBATE_STAGES
+            "CASE_001", provider, evidence=False, audit=False, stages=QUICK_DEBATE_STAGES
         )
         assert provider.remaining == 0
         assert run.jury_result.final_agreement == 1.0
@@ -239,6 +243,7 @@ class TestJuryVariants:
                 **debate_providers(decision_with),
                 juror_providers=[ScriptedProvider(["bad"] * 3) for _ in range(3)],
                 evidence=False,
+                audit=False,
                 stages=QUICK_DEBATE_STAGES,
             )
 
@@ -265,6 +270,7 @@ class TestJuryVariants:
                 defense_provider=ScriptedProvider([]),
                 judge_provider=ScriptedProvider([]),
                 evidence=False,
+                audit=False,
             )
 
 
@@ -285,7 +291,8 @@ class TestJuryCli:
             "app.cli._build_provider", lambda args, settings: ScriptedProvider(steps)
         )
         log_file = str(tmp_path / "jury.jsonl")
-        args = ["trial", "CASE_001", "--quick", "--no-evidence", "--log-file", log_file]
+        args = ["trial", "CASE_001", "--quick", "--no-evidence", "--no-audit"]
+        args += ["--log-file", log_file]
         assert main(args) == 0
 
         out = capsys.readouterr().out
@@ -310,7 +317,7 @@ class TestJuryCli:
             "app.cli._build_provider", lambda args, settings: ScriptedProvider(steps)
         )
         args = [
-            "trial", "CASE_001", "--quick", "--no-evidence", "--jurors", "5",
+            "trial", "CASE_001", "--quick", "--no-evidence", "--no-audit", "--jurors", "5",
             "--jury-rule", "majority", "--no-deliberation",
             "--log-file", str(tmp_path / "j.jsonl"),
         ]

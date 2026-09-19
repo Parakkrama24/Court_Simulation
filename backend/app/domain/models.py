@@ -98,6 +98,7 @@ class MessageType(str, Enum):
     EVIDENCE_REVIEW = "evidence_review"
     JURY_VERDICT = "jury_verdict"
     DECISION = "decision"
+    AUDIT_REPORT = "audit_report"
 
 
 # ============================================================================

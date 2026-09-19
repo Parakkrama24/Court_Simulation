@@ -195,7 +195,7 @@ validation outcome - to memory and optionally to a JSON Lines file.
 ### Layer 5: Agent Layer
 
 **Location**: `backend/app/agents/` (Judge in Phase 3; Prosecution and Defense in Phase 4;
-Evidence in Phase 5; Jury in Phase 6)
+Evidence in Phase 5; Jury in Phase 6; Auditor in Phase 7)
 
 **Implemented design**: every agent runs through one loop in `agents/base.py` -
 generate structured JSON, parse, validate against the record, and on failure
@@ -218,6 +218,13 @@ built from the trial record alone, with no parameter through which another
 juror's decision could enter. The verdict engine (`jury/aggregation.py`)
 that turns votes into a verdict is deterministic code, and only the judge
 receives the jury's result.
+
+The Legal Process Auditor closes a trial. It is two layers: deterministic
+checks over the finished run (`workflow/audit.py`) and an auditor agent for
+what code cannot judge. Both produce `AuditFinding`s, filed by category into
+the domain `AuditReport`. Because the checks take a finished `TrialRun`, a
+run saved as JSON can be re-audited later without re-running the trial -
+which is what the evaluation phase will need.
 
 **Purpose**: Specialized reasoning agents
 
@@ -452,7 +459,7 @@ def validate_argument(argument: Argument, case: Case) -> ValidationResult:
 
 ## Scalability Considerations
 
-### Current Phase (Phase 6)
+### Current Phase (Phase 7)
 - In-memory case data and evaluations
 - No database required
 - Single-threaded, deterministic execution

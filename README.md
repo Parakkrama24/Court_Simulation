@@ -19,7 +19,7 @@ The Court Simulation System uses multiple specialized AI agents to simulate cour
 
 ## Project Status
 
-**Current Phase**: Phase 6 - Jury ✅
+**Current Phase**: Phase 7 - Legal Process Auditor ✅
 
 ### Completed
 - ✅ Domain models (Case, Fact, Evidence, Witness, LegalRule, Argument, Verdict, AuditReport)
@@ -44,12 +44,14 @@ The Court Simulation System uses multiple specialized AI agents to simulate cour
 - ✅ Evidence provenance traced deterministically from the record
 - ✅ Three independent jurors, then an optional controlled deliberation round
 - ✅ Deterministic verdict engine: unanimous or majority rule, hung juries, agreement metrics
+- ✅ Legal Process Auditor: deterministic integrity checks plus an auditor agent
+- ✅ AuditReport with evidence, legal, reasoning, procedural, and hallucination findings
+- ✅ Saved trials can be re-audited without re-running them
 - ✅ Comprehensive unit tests
 - ✅ Project structure and configuration
 
 ### Upcoming Phases
-- 🔄 Phase 7: Legal Process Auditor
-- ⏳ Phase 8: Full LangGraph Workflow
+- 🔄 Phase 8: Full LangGraph Workflow
 - ⏳ Phase 9: FastAPI Backend
 - ⏳ Phase 10: Frontend Visualization
 - ⏳ Phase 11: Evaluation Framework
@@ -104,11 +106,13 @@ Court_Simulation/
 │   │   │   ├── advocate/        # Prosecution + Defense agents
 │   │   │   ├── evidence/        # Evidence Agent + deterministic provenance
 │   │   │   ├── jury/            # Juror agents + deterministic verdict engine
+│   │   │   ├── auditor/         # Legal Process Auditor + AuditReport assembly
 │   │   │   └── judge/           # Judge Agent: prompts, schema, validation
 │   │   ├── workflow/
 │   │   │   ├── judge_only.py    # Case → Judge → Decision
 │   │   │   ├── evidence_only.py # Case → Evidence Agent
-│   │   │   └── adversarial.py   # Evidence → Prosecution ↔ Defense → Jury → Judge
+│   │   │   ├── audit.py         # Deterministic integrity checks over a trial
+│   │   │   └── adversarial.py   # Evidence → Debate → Jury → Judge → Audit
 │   │   ├── llm/                 # Provider-agnostic LLM layer + interaction log
 │   │   ├── cli.py               # python -m app.cli judge|trial|evidence CASE_001
 │   │   └── config.py            # Configuration management
@@ -116,7 +120,7 @@ Court_Simulation/
 │   │   ├── test_domain/         # Domain model tests
 │   │   ├── test_rules/          # Rule engine tests
 │   │   ├── test_llm/            # LLM layer tests (no network)
-│   │   └── test_agents/         # Judge, advocate, evidence, jury, and trial tests
+│   │   └── test_agents/         # Agent, trial, and audit tests
 │   ├── requirements.txt
 │   ├── pyproject.toml
 │   └── pytest.ini
@@ -181,7 +185,7 @@ pytest tests/test_rules/test_engine.py -v
 ### Current Test Results
 
 ```
-All Tests: 418/418 passing ✅ (no network or API key needed)
+All Tests: 465/465 passing ✅ (no network or API key needed)
 - Domain Models: 21 tests
 - Seed Data: 20 tests
 - Rule Registry: 13 tests
@@ -200,6 +204,8 @@ All Tests: 418/418 passing ✅ (no network or API key needed)
 - Evidence in the Trial + CLI: 25 tests
 - Jury Agents + Verdict Engine: 34 tests
 - Jury in the Trial + CLI: 22 tests
+- Auditor Agent + Report: 21 tests
+- Audit of Trials + CLI: 26 tests
 ```
 
 ## Domain Models
@@ -348,14 +354,14 @@ A rejected decision goes back to the model with the exact reasons. After
 never returned. Every call, rejected or accepted, is appended to
 `logs/llm_interactions.jsonl`.
 
-## Adversarial Trial (Phases 4-6)
+## Adversarial Trial (Phases 4-7)
 
-**Evidence → Prosecution ↔ Defense → Jury → Judge**.
+**Evidence → Prosecution ↔ Defense → Jury → Judge → Audit**.
 
 ```bash
 cd backend
 python -m app.cli trial CASE_001 --show-prompt              # prosecution opening prompt
-python -m app.cli trial CASE_001 --provider anthropic       # full trial (17 calls)
+python -m app.cli trial CASE_001 --provider anthropic       # full trial (18 calls)
 python -m app.cli trial CASE_001 --no-jury                 # without the jury (11 calls)
 python -m app.cli trial CASE_001 --jurors 5 --jury-rule majority --no-deliberation
 python -m app.cli trial CASE_001 --no-evidence             # Phase 4 trial, no Evidence Agent
@@ -377,6 +383,7 @@ python -m app.cli trial CASE_001 --provider anthropic --quick   # openings + clo
 | `JURY_INDEPENDENT_DELIBERATION` | each juror | verdict per charge, alone |
 | `JURY_DELIBERATION` | each juror | reconsider once, seeing the panel |
 | `JUDGE_DECISION` | judge | decide, weighing at least one argument from each side |
+| `LEGAL_PROCESS_AUDIT` | auditor | inspect how the trial ran, never the verdict |
 
 Every argument names its charges and legal elements, cites facts, evidence,
 or witnesses (at least one), lists its **assumptions** separately from facts,
@@ -432,6 +439,40 @@ departure from it, and every disagreement between judge and jury is recorded.
 Jurors can run on different models (`juror_providers`) or with research
 backgrounds (`juror_perspectives`); by default all three get identical
 instructions.
+
+### The Legal Process Auditor (Phase 7)
+
+The trial ends by auditing itself. The auditor inspects **how the simulation
+ran** - it never says how the case should have been decided - and produces the
+`AuditReport`: evidence, legal, reasoning, and procedural findings plus
+hallucinations, each with a severity and the IDs involved.
+
+Two layers:
+
+**Deterministic checks** (code, always run) cover what is provable from the
+record: every invented ID an agent tried to cite and was caught on; a re-check
+of every accepted output's citations; stages of the spec §14 procedure not
+completed; a message sent by an agent with no role at that stage; a side's
+arguments ignored by the judge or a juror; arguments the Evidence Agent found
+unsupported; assumptions presented as facts; the judge going beyond the rule
+engine; judge and jury disagreeing; a defense rule argued for a party it does
+not concern.
+
+**The auditor agent** adds what code cannot judge - self-contradiction,
+misapplied law - and rates the judge's decision chain FACTS → EVIDENCE → LAW →
+ANALYSIS → DECISION as sound, weak, or broken. It sees the deterministic
+findings and is told not to repeat them.
+
+The overall status is the worst severity found: `clean`, `minor_issues`,
+`major_issues`, or `critical_issues`. Info-only findings (such as stages this
+simulation does not implement) leave a run clean.
+
+```bash
+python -m app.cli trial CASE_001 --deterministic-audit  # audit without a model call
+python -m app.cli trial CASE_001 --json > run.json
+python -m app.cli audit run.json                        # re-audit a saved trial
+python -m app.cli audit run.json --deterministic-only
+```
 
 ### LLM providers
 

@@ -1,4 +1,4 @@
-"""Adversarial trial: Evidence -> Prosecution <-> Defense -> Jury -> Judge
+"""Adversarial trial: Evidence -> Prosecution <-> Defense -> Jury -> Judge -> Audit
 
     CASE_INITIALIZATION -> RULE_EVALUATION
     -> EVIDENCE_ANALYSIS                                    (Phase 5)
@@ -9,7 +9,9 @@
     -> CLOSING_ARGUMENTS (prosecution, then defense)
     -> JURY_INDEPENDENT_DELIBERATION                        (Phase 6)
     -> JURY_DELIBERATION (optional)                         (Phase 6)
-    -> JUDGE_DECISION -> CASE_COMPLETE
+    -> JUDGE_DECISION
+    -> LEGAL_PROCESS_AUDIT                                  (Phase 7)
+    -> CASE_COMPLETE
 
 The neutral Evidence Agent analyses the record before anyone argues, and
 reviews the parties' arguments where spec section 14 places EVIDENCE_REVIEW.
@@ -21,8 +23,10 @@ court-assigned IDs it can answer. Every turn is one structured
 After closing arguments each juror decides independently - its request is
 built from the trial record alone, so no other juror's view can reach it -
 then, optionally, reconsiders once with the whole panel's decisions in view.
-The verdict engine tallies the votes. The judge decides last, with the jury's
-result in front of it, and must show it weighed both sides.
+The verdict engine tallies the votes. The judge decides, with the jury's
+result in front of it, and must show it weighed both sides. Finally the
+Legal Process Auditor inspects how the trial ran - deterministic checks, plus
+the auditor agent - and produces the AuditReport.
 
 Cross examination and judge questions are not yet implemented. The full
 procedure, as a LangGraph state machine, replaces this linear runner in a
@@ -33,6 +37,7 @@ from typing import Any, Dict, List, Optional, Sequence
 
 from pydantic import BaseModel, ConfigDict, Field
 
+from app.agents.auditor import AUDITOR_AGENT_ID, ProcessAudit
 from app.agents.advocate import (
     REBUTTAL_STAGES,
     STAGE_CODES,
@@ -62,6 +67,7 @@ from app.domain import Argument, Case, CourtMessage, CourtStage, MessageType
 from app.llm import InteractionLog, LLMProvider, TokenUsage
 from app.rules import CaseEvaluation, LegalRuleRegistry
 
+from .audit import audit_trial
 from .common import WorkflowError, event, prepare_case
 
 DEFAULT_DEBATE_STAGES: List[CourtStage] = [
@@ -99,6 +105,7 @@ class TrialRun(BaseModel):
     judge_jury_agreement: List[Dict[str, Any]] = Field(default_factory=list)
     messages: List[CourtMessage] = Field(default_factory=list)
     judgment: JudgeResult
+    audit: Optional[ProcessAudit] = None
     event_history: List[Dict[str, Any]] = Field(default_factory=list)
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
@@ -128,7 +135,14 @@ class TrialRun(BaseModel):
             total = add_usage(total, review.usage)
         for decision in self.jury_independent + self.jury_deliberation:
             total = add_usage(total, decision.usage)
+        if self.audit is not None:
+            total = add_usage(total, self.audit.usage)
         return total
+
+    @property
+    def audit_report(self) -> Optional[Any]:
+        """The domain AuditReport, if the trial was audited"""
+        return self.audit.report if self.audit is not None else None
 
     @property
     def jury_verdicts(self) -> List[Any]:
@@ -180,6 +194,9 @@ def run_adversarial_trial(
     juror_perspectives: Optional[Sequence[Optional[str]]] = None,
     deliberation: bool = True,
     jury_rule: JuryRule = JuryRule.UNANIMOUS,
+    audit: bool = True,
+    audit_agent: bool = True,
+    auditor_provider: Optional[LLMProvider] = None,
     log: Optional[InteractionLog] = None,
     stages: Optional[Sequence[CourtStage]] = None,
     max_attempts: int = 3,
@@ -197,6 +214,10 @@ def run_adversarial_trial(
     panel. Each juror uses ``juror_providers[i]`` if given, else ``provider``,
     and ``juror_perspectives[i]`` as an optional background for research
     configurations; by default all jurors get identical instructions.
+
+    With ``audit=True`` (the default) the trial ends with LEGAL_PROCESS_AUDIT:
+    the deterministic checks always run; the auditor agent runs too when
+    ``audit_agent`` is set and ``auditor_provider`` (or ``provider``) is given.
     """
     providers = {
         AdvocateRole.PROSECUTION: prosecution_provider or provider,
@@ -474,9 +495,7 @@ def run_adversarial_trial(
             agrees_with_jury={row["charge"]: row["agrees"] for row in agreement},
         )
     )
-    events.append(event(CourtStage.CASE_COMPLETE.value, "CASE_COMPLETE", case_id=case.case_id))
-
-    return TrialRun(
+    run = TrialRun(
         case=case,
         evaluation=evaluation,
         evidence_analysis=analysis,
@@ -490,3 +509,40 @@ def run_adversarial_trial(
         judgment=judgment,
         event_history=events,
     )
+
+    # -- LEGAL_PROCESS_AUDIT ---------------------------------------------------
+    if audit:
+        stage = CourtStage.LEGAL_PROCESS_AUDIT.value
+        auditor_llm = (auditor_provider or provider) if audit_agent else None
+        run.event_history.append(event(stage, "AGENT_STARTED", agent_id=AUDITOR_AGENT_ID))
+        run.audit = audit_trial(run, auditor_llm, log=log, max_attempts=max_attempts)
+        report = run.audit.report
+        run.messages.append(
+            CourtMessage(
+                message_id="MSG-AUDIT-REPORT",
+                case_id=case.case_id,
+                sender=AUDITOR_AGENT_ID,
+                recipient="court",
+                message_type=MessageType.AUDIT_REPORT,
+                stage=CourtStage.LEGAL_PROCESS_AUDIT,
+                claim=report.final_assessment,
+                reasoning=f"Overall status: {report.metadata['overall_status']}",
+            )
+        )
+        run.event_history.append(
+            event(
+                stage,
+                "AUDIT_COMPLETED",
+                agent_id=AUDITOR_AGENT_ID,
+                audit_id=report.audit_id,
+                overall_status=report.metadata["overall_status"],
+                severity_counts=report.metadata["severity_counts"],
+                findings=len(run.audit.findings),
+                deterministic_only=report.metadata["deterministic_only"],
+            )
+        )
+
+    run.event_history.append(
+        event(CourtStage.CASE_COMPLETE.value, "CASE_COMPLETE", case_id=case.case_id)
+    )
+    return run

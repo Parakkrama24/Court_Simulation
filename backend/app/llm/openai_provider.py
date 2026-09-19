@@ -67,7 +67,14 @@ class OpenAICompatibleProvider(LLMProvider):
             kwargs["api_key"] = "not-needed"
         if base_url:
             kwargs["base_url"] = base_url
-        return openai.OpenAI(**kwargs)
+
+        try:
+            return openai.OpenAI(**kwargs)
+        except Exception as exc:  # usually a missing API key
+            raise LLMConfigurationError(
+                f"Could not create the OpenAI client: {exc}. Set OPENAI_API_KEY in your "
+                "environment or in .env, or point --provider local at a local server."
+            ) from exc
 
     def build_params(self, request: LLMRequest) -> Dict[str, Any]:
         """Chat Completions parameters for a request (exposed for logging and tests)"""
