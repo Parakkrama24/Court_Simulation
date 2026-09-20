@@ -354,21 +354,37 @@ nodes complete - the hook the streaming phase will build on.
 
 ### Layer 7: API Layer
 
-**Location**: `backend/app/api/` (Future)
+**Location**: `backend/app/api/` (implemented in Phase 9)
 
-**Purpose**: HTTP and WebSocket endpoints
+**Purpose**: HTTP access to cases, rules, and simulations
 
-**Endpoints**:
-- `GET /cases` - List cases
-- `GET /cases/{id}` - Get case details
-- `POST /cases/{id}/simulate` - Start simulation
-- `WS /cases/{id}/stream` - Real-time events
+**Structure**:
+- `app.py` - `create_app()`, CORS from settings, `/health`, the OpenAPI docs
+- `routers/cases.py` - cases and legal rules (read-only)
+- `routers/simulations.py` - starting runs and following them
+- `runs.py` - the run manager: a run per background thread, its events, its
+  result
+- `schemas.py` - the API's own request and response models, separate from the
+  domain models
+- `dependencies.py` - settings, the LLM provider factory, the run manager
 
-**Design**:
-- FastAPI for HTTP
-- WebSocket for streaming
-- Server-Sent Events (SSE) alternative
-- CORS configuration for frontend
+**Why runs are asynchronous**: a trial is minutes of model calls, far longer
+than an HTTP request should live. `POST /api/cases/{id}/simulate` validates
+the request, starts a background thread, and returns `202` with a run ID. The
+client polls `/events?after=N` or subscribes to `/stream`, and reads the
+result from `/runs/{id}` once the status is terminal. Errors do not escape the
+thread: a failed run is recorded with its reason and reported as `failed`.
+
+**Streaming** (spec section 21) uses Server-Sent Events over the existing
+`on_event` hook from the workflow. Each message's event name is the court
+event type - `AGENT_ARGUMENT`, `JURY_DECISION`, `AUDIT_COMPLETED` - so a
+browser can listen for the ones it needs. The stream reads the run's own event
+list from an index, so a late subscriber still receives everything from the
+beginning.
+
+**The provider is a dependency**, not a global, so tests (and other
+deployments) supply their own. That is how the API test suite runs every
+endpoint, including a full trial, without a network or an API key.
 
 ### Layer 8: Frontend Layer
 
@@ -481,7 +497,7 @@ def validate_argument(argument: Argument, case: Case) -> ValidationResult:
 
 ## Scalability Considerations
 
-### Current Phase (Phase 8)
+### Current Phase (Phase 9)
 - In-memory case data and evaluations
 - No database required
 - Single-threaded, deterministic execution

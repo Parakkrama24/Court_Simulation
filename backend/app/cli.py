@@ -25,6 +25,9 @@
     python -m app.cli evidence CASE_001                   # evidence analysis only
     python -m app.cli evidence CASE_001 --show-prompt
 
+    python -m app.cli serve                               # HTTP API + docs at /docs
+    python -m app.cli serve --host 0.0.0.0 --port 8000    # reachable on your network
+
 Research simulation only. This system does not provide legal advice or
 determine real legal rights or obligations.
 """
@@ -567,6 +570,27 @@ def _audit(args: argparse.Namespace) -> int:
     return 0
 
 
+def _serve(args: argparse.Namespace) -> int:
+    try:
+        import uvicorn
+    except ImportError:
+        print(
+            "The 'uvicorn' package is not installed. Run: pip install \"uvicorn[standard]\"",
+            file=sys.stderr,
+        )
+        return 2
+
+    settings = _load_settings()
+    port = args.port or (settings.api_port if settings else 8000)
+    provider = getattr(settings, "llm_provider", "not configured") if settings else "not configured"
+    print(f"Court Simulation API on http://{args.host}:{port}")
+    print(f"  docs:     http://{args.host}:{port}/docs")
+    print(f"  provider: {provider}")
+    print(f"\n{DISCLAIMER}\n")
+    uvicorn.run("app.api:app", host=args.host, port=port, reload=args.reload)
+    return 0
+
+
 def _add_run_options(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("case_id", help="Seeded case ID, e.g. CASE_001")
     parser.add_argument("--provider", choices=SUPPORTED_PROVIDERS, help="Override LLM_PROVIDER")
@@ -664,6 +688,16 @@ def main(argv: Optional[List[str]] = None) -> int:
     )
     audit.add_argument("--json", action="store_true", help="Print the audit as JSON")
     audit.set_defaults(handler=_audit)
+
+    serve = commands.add_parser("serve", help="Run the HTTP API (FastAPI + uvicorn)")
+    serve.add_argument(
+        "--host",
+        default="127.0.0.1",
+        help="Interface to bind (default 127.0.0.1; use 0.0.0.0 to allow other machines)",
+    )
+    serve.add_argument("--port", type=int, help="Port (default from settings, else 8000)")
+    serve.add_argument("--reload", action="store_true", help="Reload on code changes")
+    serve.set_defaults(handler=_serve)
 
     evidence = commands.add_parser("evidence", help="Run the Evidence Agent's analysis only")
     _add_run_options(evidence)

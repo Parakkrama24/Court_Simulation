@@ -19,7 +19,7 @@ The Court Simulation System uses multiple specialized AI agents to simulate cour
 
 ## Project Status
 
-**Current Phase**: Phase 8 - Full LangGraph Workflow ✅
+**Current Phase**: Phase 9 - FastAPI Backend ✅
 
 ### Completed
 - ✅ Domain models (Case, Fact, Evidence, Witness, LegalRule, Argument, Verdict, AuditReport)
@@ -50,12 +50,14 @@ The Court Simulation System uses multiple specialized AI agents to simulate cour
 - ✅ The full spec §14 procedure as a LangGraph state machine with conditional transitions
 - ✅ Cross-examination, and judge questions when an argument lacks evidence
 - ✅ Typed `CourtState` with every spec §17 field; live events as the court runs
+- ✅ HTTP API: browse cases and rules, start simulations, follow them, read results
+- ✅ Server-Sent Events stream every court event as it happens
+- ✅ OpenAPI docs at `/docs`, ready for the frontend
 - ✅ Comprehensive unit tests
 - ✅ Project structure and configuration
 
 ### Upcoming Phases
-- 🔄 Phase 9: FastAPI Backend
-- ⏳ Phase 10: Frontend Visualization
+- 🔄 Phase 10: Frontend Visualization
 - ⏳ Phase 11: Evaluation Framework
 - ⏳ Phase 12: Production Readiness
 
@@ -119,13 +121,15 @@ Court_Simulation/
 │   │   │   ├── audit.py         # Deterministic integrity checks over a trial
 │   │   │   └── adversarial.py   # Linear runner for custom stage plans
 │   │   ├── llm/                 # Provider-agnostic LLM layer + interaction log
-│   │   ├── cli.py               # python -m app.cli court|trial|judge|evidence|audit
+│   │   ├── api/                 # FastAPI app, routers, run manager
+│   │   ├── cli.py               # python -m app.cli court|trial|serve|audit|…
 │   │   └── config.py            # Configuration management
 │   ├── tests/
 │   │   ├── test_domain/         # Domain model tests
 │   │   ├── test_rules/          # Rule engine tests
 │   │   ├── test_llm/            # LLM layer tests (no network)
-│   │   └── test_agents/         # Agent, trial, and audit tests
+│   │   ├── test_agents/         # Agent, trial, and audit tests
+│   │   └── test_api/            # HTTP API tests
 │   ├── requirements.txt
 │   ├── pyproject.toml
 │   └── pytest.ini
@@ -190,7 +194,7 @@ pytest tests/test_rules/test_engine.py -v
 ### Current Test Results
 
 ```
-All Tests: 517/517 passing ✅ (no network or API key needed)
+All Tests: 549/549 passing ✅ (no network or API key needed)
 - Domain Models: 21 tests
 - Seed Data: 20 tests
 - Rule Registry: 13 tests
@@ -213,6 +217,8 @@ All Tests: 517/517 passing ✅ (no network or API key needed)
 - Audit of Trials + CLI: 26 tests
 - Judge Questions + Cross-Examination: 22 tests
 - Court Graph (LangGraph) + CLI: 28 tests
+- API read endpoints: 10 tests
+- API simulations, streaming, failures: 22 tests
 ```
 
 ## Domain Models
@@ -360,6 +366,46 @@ A rejected decision goes back to the model with the exact reasons. After
 `LLM_MAX_ATTEMPTS` rejections the run fails loudly - an unvalidated decision is
 never returned. Every call, rejected or accepted, is appended to
 `logs/llm_interactions.jsonl`.
+
+## The HTTP API (Phase 9)
+
+```bash
+cd backend
+pip install -r requirements.txt
+python -m app.cli serve          # http://127.0.0.1:8000/docs
+```
+
+`/docs` is the interactive reference (OpenAPI). A simulation is minutes of
+model calls, so starting one returns a run ID at once and the client follows
+it:
+
+| Method | Path | |
+|---|---|---|
+| GET | `/health` | liveness, and how many runs are active |
+| GET | `/api/cases` | the seeded cases |
+| GET | `/api/cases/{case_id}` | the record, the rule engine's evaluation, evidence provenance |
+| GET | `/api/rules`, `/api/rules/{rule_id}` | the legal rules of Arandia |
+| POST | `/api/cases/{case_id}/simulate` | start a run → `202` with its ID |
+| GET | `/api/runs` | every run this server remembers |
+| GET | `/api/runs/{run_id}` | status, and the full result when finished |
+| GET | `/api/runs/{run_id}/events?after=N` | events so far (polling) |
+| GET | `/api/runs/{run_id}/stream` | the same events as they happen (SSE) |
+| GET | `/api/runs/{run_id}/audit` | the audit report |
+| DELETE | `/api/runs/{run_id}` | forget a finished run |
+
+```bash
+# start a trial and watch it live
+curl -X POST localhost:8000/api/cases/CASE_001/simulate \
+     -H 'content-type: application/json' -d '{"mode":"court","jurors":3}'
+curl -N localhost:8000/api/runs/<run_id>/stream
+```
+
+The request body chooses the mode (`court`, `judge`, or `evidence`), which
+stages run, the jury size and rule, and optionally the provider and model.
+The result is the same `TrialRun` JSON the CLI writes with `--json`.
+
+Runs are kept in memory, so restarting the server forgets them; persistence
+is a later phase.
 
 ## The Court Procedure (Phase 8)
 

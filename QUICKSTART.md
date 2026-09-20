@@ -1,15 +1,15 @@
 # Quick Start Guide
 
-## Phase 8 Complete ✅
+## Phase 9 Complete ✅
 
-This guide will help you get started with the Court Simulation System. Currently, Phase 1 (Domain Models & Seed Data), Phase 2 (Legal Rule Engine), Phase 3 (Judge Agent), Phase 4 (Prosecution ↔ Defense → Judge), Phase 5 (Evidence Agent), Phase 6 (Jury), Phase 7 (Legal Process Auditor), and Phase 8 (Full LangGraph Workflow) are complete.
+This guide will help you get started with the Court Simulation System. Currently, Phase 1 (Domain Models & Seed Data), Phase 2 (Legal Rule Engine), Phase 3 (Judge Agent), Phase 4 (Prosecution ↔ Defense → Judge), Phase 5 (Evidence Agent), Phase 6 (Jury), Phase 7 (Legal Process Auditor), Phase 8 (Full LangGraph Workflow), and Phase 9 (FastAPI Backend) are complete.
 
 ## What's Working Now
 
 - ✅ Complete domain models (Pydantic)
 - ✅ Structured legal rules (JSON)
 - ✅ CASE_001 seed data with facts, evidence, and witnesses
-- ✅ 517 passing unit tests
+- ✅ 549 passing unit tests
 - ✅ Configuration management
 - ✅ Project structure
 
@@ -51,7 +51,7 @@ pytest
 
 Expected output:
 ```
-517 tests passed ✅
+549 tests passed ✅
 ```
 
 ### Run Specific Tests
@@ -310,6 +310,16 @@ python -m app.cli judge CASE_001 --json > run.json
 
 Every model call is appended to `logs/llm_interactions.jsonl`.
 
+## Running the HTTP API
+
+```bash
+pip install -r requirements.txt   # FastAPI, uvicorn, LangGraph, pydantic-settings
+python -m app.cli serve           # then open http://127.0.0.1:8000/docs
+```
+
+The docs page lets you browse cases and rules and start a simulation from the
+browser. Add `--host 0.0.0.0` to reach it from another machine.
+
 ## Running the Full Court Procedure
 
 ```bash
@@ -384,7 +394,7 @@ When implementing new phases:
 
 ## Summary
 
-**Phase 1-8 Status**: ✅ Complete and tested
+**Phase 1-9 Status**: ✅ Complete and tested
 
 You now have:
 - Clean domain models
@@ -393,7 +403,7 @@ You now have:
 - Comprehensive tests
 - Solid foundation for multi-agent system
 
-**Next Step**: Implement Phase 9 (FastAPI Backend).
+**Next Step**: Implement Phase 10 (Frontend Visualization).
 
 ---
 
