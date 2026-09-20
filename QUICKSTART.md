@@ -1,15 +1,15 @@
 # Quick Start Guide
 
-## Phase 9 Complete ✅
+## Phase 10 Complete ✅
 
-This guide will help you get started with the Court Simulation System. Currently, Phase 1 (Domain Models & Seed Data), Phase 2 (Legal Rule Engine), Phase 3 (Judge Agent), Phase 4 (Prosecution ↔ Defense → Judge), Phase 5 (Evidence Agent), Phase 6 (Jury), Phase 7 (Legal Process Auditor), Phase 8 (Full LangGraph Workflow), and Phase 9 (FastAPI Backend) are complete.
+This guide will help you get started with the Court Simulation System. Currently, Phase 1 (Domain Models & Seed Data), Phase 2 (Legal Rule Engine), Phase 3 (Judge Agent), Phase 4 (Prosecution ↔ Defense → Judge), Phase 5 (Evidence Agent), Phase 6 (Jury), Phase 7 (Legal Process Auditor), Phase 8 (Full LangGraph Workflow), Phase 9 (FastAPI Backend), and Phase 10 (Frontend Visualization) are complete.
 
 ## What's Working Now
 
 - ✅ Complete domain models (Pydantic)
 - ✅ Structured legal rules (JSON)
 - ✅ CASE_001 seed data with facts, evidence, and witnesses
-- ✅ 549 passing unit tests
+- ✅ 549 passing backend tests, 60 passing frontend tests
 - ✅ Configuration management
 - ✅ Project structure
 
@@ -51,7 +51,7 @@ pytest
 
 Expected output:
 ```
-549 tests passed ✅
+549 tests passed ✅   (and, in frontend/, `npm test`: 60 passed ✅)
 ```
 
 ### Run Specific Tests
@@ -310,6 +310,21 @@ python -m app.cli judge CASE_001 --json > run.json
 
 Every model call is appended to `logs/llm_interactions.jsonl`.
 
+## Running the Courtroom Dashboard
+
+```bash
+# terminal 1 - the API
+cd backend && python -m app.cli serve
+
+# terminal 2 - the dashboard
+cd frontend && npm install && npm run dev
+```
+
+Open http://localhost:3000, pick a case, and start a simulation: the run
+page shows the bench, the timeline, and every event as it happens. Set
+`NEXT_PUBLIC_API_URL` in `frontend/.env.local` if the API is not on
+127.0.0.1:8000.
+
 ## Running the HTTP API
 
 ```bash
@@ -394,7 +409,7 @@ When implementing new phases:
 
 ## Summary
 
-**Phase 1-9 Status**: ✅ Complete and tested
+**Phase 1-10 Status**: ✅ Complete and tested
 
 You now have:
 - Clean domain models
@@ -403,7 +418,7 @@ You now have:
 - Comprehensive tests
 - Solid foundation for multi-agent system
 
-**Next Step**: Implement Phase 10 (Frontend Visualization).
+**Next Step**: Implement Phase 11 (Evaluation Framework).
 
 ---
 

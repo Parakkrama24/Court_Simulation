@@ -1,0 +1,61 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: Georgia, "Times New Roman", serif;
+  --color-court-950: #060912;
+  --color-court-900: #0b1020;
+  --color-court-800: #121a2e;
+  --color-court-700: #1b2540;
+  --color-brass-400: #d9b26a;
+}
+
+:root {
+  color-scheme: dark;
+}
+
+body {
+  background:
+    radial-gradient(
+      1200px 600px at 50% -10%,
+      rgba(217, 178, 106, 0.08),
+      transparent 60%
+    ),
+    var(--color-court-950);
+  color: var(--color-slate-200);
+  min-height: 100vh;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  letter-spacing: 0.01em;
+}
+
+/* The live feed and long panels scroll inside the dashboard, not the page. */
+.scroll-panel {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-court-700) transparent;
+}
+
+@keyframes pulse-ring {
+  0% {
+    box-shadow: 0 0 0 0 rgba(217, 178, 106, 0.45);
+  }
+  70% {
+    box-shadow: 0 0 0 12px rgba(217, 178, 106, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(217, 178, 106, 0);
+  }
+}
+
+.speaking {
+  animation: pulse-ring 1.8s ease-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .speaking {
+    animation: none;
+  }
+}

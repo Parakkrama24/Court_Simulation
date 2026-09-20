@@ -19,7 +19,7 @@ The Court Simulation System uses multiple specialized AI agents to simulate cour
 
 ## Project Status
 
-**Current Phase**: Phase 9 - FastAPI Backend ✅
+**Current Phase**: Phase 10 - Frontend Visualization ✅
 
 ### Completed
 - ✅ Domain models (Case, Fact, Evidence, Witness, LegalRule, Argument, Verdict, AuditReport)
@@ -53,11 +53,14 @@ The Court Simulation System uses multiple specialized AI agents to simulate cour
 - ✅ HTTP API: browse cases and rules, start simulations, follow them, read results
 - ✅ Server-Sent Events stream every court event as it happens
 - ✅ OpenAPI docs at `/docs`, ready for the frontend
+- ✅ Next.js courtroom dashboard: case selection, the record, and a live trial
+- ✅ The bench, the timeline, and the event feed update as the court runs
+- ✅ Evidence, legal rules, debate, jury, judge decision, and audit panels
+- ✅ Streams over `EventSource`, falling back to polling if the stream drops
 - ✅ Comprehensive unit tests
 - ✅ Project structure and configuration
 
 ### Upcoming Phases
-- 🔄 Phase 10: Frontend Visualization
 - ⏳ Phase 11: Evaluation Framework
 - ⏳ Phase 12: Production Readiness
 
@@ -77,10 +80,11 @@ The Court Simulation System uses multiple specialized AI agents to simulate cour
 - **Anthropic API** - Claude models
 - Support for local models (future)
 
-### Frontend (Future)
-- **Next.js** - React framework
+### Frontend
+- **Next.js 16** (App Router) - React framework
 - **TypeScript** - Type safety
-- **Tailwind CSS** - Styling
+- **Tailwind CSS 4** - Styling
+- **Vitest + Testing Library** - Component and hook tests
 
 ## Project Structure
 
@@ -133,6 +137,18 @@ Court_Simulation/
 │   ├── requirements.txt
 │   ├── pyproject.toml
 │   └── pytest.ini
+├── frontend/
+│   ├── src/
+│   │   ├── app/                 # App Router pages
+│   │   │   ├── page.tsx         # Case selection
+│   │   │   ├── cases/[caseId]/  # The record + start a simulation
+│   │   │   ├── runs/[runId]/    # The live courtroom dashboard
+│   │   │   └── rules/           # The law of Arandia
+│   │   ├── components/          # Courtroom, timeline, feed, panels/
+│   │   ├── hooks/               # useRunStream (SSE + polling fallback)
+│   │   └── lib/                 # API client, types, event derivation
+│   ├── package.json
+│   └── README.md
 ├── .env.example                 # Environment variables template
 ├── README.md
 └── Promot.md                    # Original requirements
@@ -189,12 +205,17 @@ pytest --cov=app --cov-report=term-missing
 # Run specific test file
 pytest tests/test_domain/test_models.py -v
 pytest tests/test_rules/test_engine.py -v
+
+# The frontend suite (from frontend/)
+npm test
+npm run typecheck
 ```
 
 ### Current Test Results
 
 ```
-All Tests: 549/549 passing ✅ (no network or API key needed)
+Backend: 549/549 passing ✅ (no network or API key needed)
+Frontend: 60/60 passing ✅ (vitest; no backend needed)
 - Domain Models: 21 tests
 - Seed Data: 20 tests
 - Rule Registry: 13 tests
@@ -219,6 +240,11 @@ All Tests: 549/549 passing ✅ (no network or API key needed)
 - Court Graph (LangGraph) + CLI: 28 tests
 - API read endpoints: 10 tests
 - API simulations, streaming, failures: 22 tests
+- Frontend - courtroom vocabulary and the live feed: 14 tests
+- Frontend - state derived from the event stream: 16 tests
+- Frontend - the panels, from a real finished run: 16 tests
+- Frontend - the API client: 9 tests
+- Frontend - following a run (SSE + polling fallback): 5 tests
 ```
 
 ## Domain Models
@@ -366,6 +392,37 @@ A rejected decision goes back to the model with the exact reasons. After
 `LLM_MAX_ATTEMPTS` rejections the run fails loudly - an unvalidated decision is
 never returned. Every call, rejected or accepted, is appended to
 `logs/llm_interactions.jsonl`.
+
+## The Courtroom Dashboard (Phase 10)
+
+```bash
+cd frontend
+npm install
+npm run dev          # http://localhost:3000 (backend on :8000 first)
+```
+
+| Route | |
+|---|---|
+| `/` | Case selection, and the simulations run so far |
+| `/cases/{case_id}` | Facts, evidence, witnesses, laws, what the rule engine computed - and the form that starts a trial |
+| `/runs/{run_id}` | The live courtroom: the bench, the timeline, the event feed, and every panel |
+| `/runs` | Every run the server remembers |
+| `/rules` | The 17 legal rules of Arandia |
+
+A trial takes minutes, so the dashboard subscribes to
+`/api/runs/{id}/stream` with `EventSource` and updates as each event arrives:
+the seat of whichever agent is working lights up, the timeline fills in, and
+the feed reports what was presented, reviewed, asked, and decided. If the
+stream drops it falls back to polling `?after=N`, which returns the same
+numbered events.
+
+While a run is going, everything shown comes from the events. The full text of
+the arguments, verdicts, and audit arrives with the finished run - the panels
+say which they are showing rather than filling the gap with a guess.
+
+Spec §24's disclaimer is in the header of every page: **research simulation
+only; this system does not provide legal advice or determine real legal rights
+or obligations.**
 
 ## The HTTP API (Phase 9)
 

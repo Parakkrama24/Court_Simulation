@@ -1,0 +1,5822 @@
+{
+ "case": {
+  "case_id": "CASE_001",
+  "title": "The Night Intruder",
+  "description": "Alex Johnson is charged with burglary and assault after entering David Thompson's home without permission at 11:45 PM. David Thompson struck Alex with a baseball bat, causing serious injuries. David claims self-defense. Alex claims he entered by mistake and was attacked without provocation. The case involves questions about burglary, assault, self-defense, necessity, proportionality, and excessive force.",
+  "jurisdiction": "Republic of Arandia",
+  "case_type": "criminal",
+  "defendant": "Alex Johnson",
+  "prosecution": "The People of Arandia",
+  "facts": [
+   {
+    "fact_id": "F001",
+    "description": "Alex entered David's house at 11:45 PM without permission",
+    "source": "police_report",
+    "status": "established",
+    "metadata": {
+     "timestamp": "2024-01-15T23:45:00"
+    }
+   },
+   {
+    "fact_id": "F002",
+    "description": "Entry was made through a broken window",
+    "source": "E001",
+    "status": "established",
+    "metadata": {
+     "entry_point": "kitchen_window"
+    }
+   },
+   {
+    "fact_id": "F003",
+    "description": "David confronted Alex inside the house",
+    "source": "W001",
+    "status": "established",
+    "metadata": {}
+   },
+   {
+    "fact_id": "F004",
+    "description": "Alex physically attacked David",
+    "source": "W001",
+    "status": "disputed",
+    "metadata": {
+     "disputed_by": "defense"
+    }
+   },
+   {
+    "fact_id": "F005",
+    "description": "David struck Alex with a metal object",
+    "source": "E003",
+    "status": "established",
+    "metadata": {}
+   },
+   {
+    "fact_id": "F006",
+    "description": "Alex suffered serious injuries including broken ribs and head trauma",
+    "source": "E004",
+    "status": "established",
+    "metadata": {}
+   },
+   {
+    "fact_id": "F007",
+    "description": "David called emergency services after the incident",
+    "source": "E005",
+    "status": "established",
+    "metadata": {}
+   },
+   {
+    "fact_id": "F008",
+    "description": "Alex had no weapon",
+    "source": "police_report",
+    "status": "established",
+    "metadata": {}
+   }
+  ],
+  "evidence": [
+   {
+    "evidence_id": "E001",
+    "type": "physical",
+    "description": "Broken kitchen window with glass fragments on the floor inside",
+    "source": "crime_scene_investigation",
+    "supports": [
+     "F001",
+     "F002"
+    ],
+    "contradicts": [],
+    "reliability": 0.95,
+    "metadata": {
+     "collected_by": "Officer Martinez",
+     "date": "2024-01-16",
+     "location": "kitchen_window"
+    }
+   },
+   {
+    "evidence_id": "E002",
+    "type": "physical",
+    "description": "Footprints matching Alex's shoes found near broken window",
+    "source": "crime_scene_investigation",
+    "supports": [
+     "F001",
+     "F002"
+    ],
+    "contradicts": [],
+    "reliability": 0.9,
+    "metadata": {
+     "collected_by": "CSI Team",
+     "date": "2024-01-16"
+    }
+   },
+   {
+    "evidence_id": "E003",
+    "type": "physical",
+    "description": "Metal baseball bat with blood matching Alex's DNA",
+    "source": "crime_scene_investigation",
+    "supports": [
+     "F005"
+    ],
+    "contradicts": [],
+    "reliability": 0.98,
+    "metadata": {
+     "collected_by": "CSI Team",
+     "date": "2024-01-16",
+     "location": "living_room"
+    }
+   },
+   {
+    "evidence_id": "E004",
+    "type": "forensic",
+    "description": "Medical examination report showing Alex sustained broken ribs, head trauma, and severe bruising",
+    "source": "hospital_records",
+    "supports": [
+     "F006"
+    ],
+    "contradicts": [],
+    "reliability": 0.99,
+    "metadata": {
+     "examined_by": "Dr. Sarah Johnson",
+     "date": "2024-01-16",
+     "hospital": "Arandia General Hospital"
+    }
+   },
+   {
+    "evidence_id": "E005",
+    "type": "digital",
+    "description": "911 call recording from David reporting an intruder",
+    "source": "emergency_services",
+    "supports": [
+     "F007"
+    ],
+    "contradicts": [],
+    "reliability": 1.0,
+    "metadata": {
+     "call_time": "2024-01-15T23:52:00",
+     "duration": "3:42"
+    }
+   },
+   {
+    "evidence_id": "E006",
+    "type": "testimonial",
+    "description": "Neighbor heard shouting and sounds of a struggle around 11:45 PM",
+    "source": "W002",
+    "supports": [
+     "F003"
+    ],
+    "contradicts": [],
+    "reliability": 0.7,
+    "metadata": {
+     "witness": "W002",
+     "distance_from_scene": "next_door"
+    }
+   },
+   {
+    "evidence_id": "E007",
+    "type": "forensic",
+    "description": "No defensive wounds found on David during examination",
+    "source": "medical_examination",
+    "supports": [],
+    "contradicts": [
+     "F004"
+    ],
+    "reliability": 0.85,
+    "metadata": {
+     "examined_by": "Dr. Michael Chen",
+     "date": "2024-01-16"
+    }
+   },
+   {
+    "evidence_id": "E008",
+    "type": "physical",
+    "description": "No weapons found on Alex or at the scene belonging to Alex",
+    "source": "police_search",
+    "supports": [
+     "F008"
+    ],
+    "contradicts": [],
+    "reliability": 0.95,
+    "metadata": {
+     "searched_by": "Officer Martinez",
+     "date": "2024-01-16"
+    }
+   }
+  ],
+  "witnesses": [
+   {
+    "witness_id": "W001",
+    "name": "David Thompson",
+    "statement": "I was sleeping when I heard glass breaking downstairs. I went to investigate and found an intruder in my house. He came at me aggressively, so I grabbed my baseball bat and defended myself. I was terrified for my life.",
+    "reliability_factors": {
+     "bias": "victim_and_defendant_in_related_charge",
+     "opportunity_to_observe": "high",
+     "memory_quality": "good",
+     "consistency": "statement_consistent",
+     "personal_interest": "high"
+    },
+    "related_evidence": [
+     "E001",
+     "E003",
+     "E005"
+    ],
+    "metadata": {
+     "interviewed_date": "2024-01-16",
+     "interviewed_by": "Detective Williams"
+    }
+   },
+   {
+    "witness_id": "W002",
+    "name": "Margaret Foster",
+    "statement": "I live next door. I heard loud noises and shouting around 11:45 PM. I couldn't make out words, but it sounded like two men arguing or fighting. Then it went quiet for a few minutes before I heard sirens.",
+    "reliability_factors": {
+     "bias": "none_apparent",
+     "opportunity_to_observe": "moderate",
+     "memory_quality": "good",
+     "consistency": "statement_consistent",
+     "personal_interest": "none"
+    },
+    "related_evidence": [
+     "E006"
+    ],
+    "metadata": {
+     "interviewed_date": "2024-01-16",
+     "interviewed_by": "Officer Martinez"
+    }
+   },
+   {
+    "witness_id": "W003",
+    "name": "Alex Johnson",
+    "statement": "I made a mistake entering the house - I thought it was my friend's place because I was confused about the address. When David confronted me, I tried to explain, but he immediately attacked me with a bat without giving me a chance to leave. I put my hands up, but he just kept hitting me. I never attacked him.",
+    "reliability_factors": {
+     "bias": "defendant_in_case",
+     "opportunity_to_observe": "high",
+     "memory_quality": "potentially_impaired_by_trauma",
+     "consistency": "conflicts_with_other_evidence",
+     "personal_interest": "very_high"
+    },
+    "related_evidence": [
+     "E004"
+    ],
+    "metadata": {
+     "interviewed_date": "2024-01-17",
+     "interviewed_by": "Detective Williams",
+     "note": "Interviewed after medical treatment"
+    }
+   }
+  ],
+  "charges": [
+   "burglary",
+   "assault"
+  ],
+  "applicable_laws": [
+   "LAW_101",
+   "LAW_102",
+   "LAW_104",
+   "LAW_201",
+   "LAW_202"
+  ],
+  "status": "initialized",
+  "created_at": "2024-01-16T10:00:00",
+  "updated_at": "2024-01-16T10:00:00",
+  "metadata": {
+   "incident_date": "2024-01-15T23:45:00",
+   "incident_location": "123 Oak Street, Arandia City",
+   "arresting_officer": "Officer Martinez",
+   "key_issues": [
+    "unauthorized_entry",
+    "self_defense_claim",
+    "proportionality_of_force",
+    "reasonable_belief_of_threat"
+   ]
+  }
+ },
+ "evaluation": {
+  "case_id": "CASE_001",
+  "rule_evaluations": [
+   {
+    "rule_id": "LAW_101",
+    "rule_name": "Assault",
+    "category": "offense",
+    "subject": "Alex Johnson",
+    "status": "not_satisfied",
+    "effect": "assault_offense_established",
+    "effect_applies": false,
+    "conditions": [
+     {
+      "rule_id": "LAW_101",
+      "condition_id": "C1",
+      "description": "Intentional physical force",
+      "required": true,
+      "status": "unsatisfied",
+      "support_strength": 0.595,
+      "contradiction_strength": 0.85,
+      "supporting_fact_ids": [
+       "F004"
+      ],
+      "supporting_evidence_ids": [
+       "E006"
+      ],
+      "contradicting_fact_ids": [],
+      "contradicting_evidence_ids": [
+       "E007"
+      ],
+      "weights": [
+       {
+        "reference_id": "F004",
+        "reference_type": "fact",
+        "weight": 0.5,
+        "explanation": "fact status 'disputed' weighted 0.50"
+       },
+       {
+        "reference_id": "E006",
+        "reference_type": "evidence",
+        "weight": 0.595,
+        "explanation": "reliability 0.70 x testimonial factor 0.85 = 0.59"
+       },
+       {
+        "reference_id": "E007",
+        "reference_type": "evidence",
+        "weight": 0.85,
+        "explanation": "reliability 0.85 x forensic factor 1.00 = 0.85"
+       }
+      ],
+      "depends_on_rule": null,
+      "reasoning": "Contradicted, without sufficiently strong supporting material: support 0.59 (threshold 0.60), contradiction 0.85 (threshold 0.40).",
+      "metadata": {}
+     },
+     {
+      "rule_id": "LAW_101",
+      "condition_id": "C2",
+      "description": "Physical contact",
+      "required": true,
+      "status": "unsatisfied",
+      "support_strength": 0.5,
+      "contradiction_strength": 0.85,
+      "supporting_fact_ids": [
+       "F004"
+      ],
+      "supporting_evidence_ids": [],
+      "contradicting_fact_ids": [],
+      "contradicting_evidence_ids": [
+       "E007"
+      ],
+      "weights": [
+       {
+        "reference_id": "F004",
+        "reference_type": "fact",
+        "weight": 0.5,
+        "explanation": "fact status 'disputed' weighted 0.50"
+       },
+       {
+        "reference_id": "E007",
+        "reference_type": "evidence",
+        "weight": 0.85,
+        "explanation": "reliability 0.85 x forensic factor 1.00 = 0.85"
+       }
+      ],
+      "depends_on_rule": null,
+      "reasoning": "Contradicted, without sufficiently strong supporting material: support 0.50 (threshold 0.60), contradiction 0.85 (threshold 0.40).",
+      "metadata": {}
+     },
+     {
+      "rule_id": "LAW_101",
+      "condition_id": "C3",
+      "description": "Unlawfulness",
+      "required": true,
+      "status": "satisfied",
+      "support_strength": 1.0,
+      "contradiction_strength": 0.0,
+      "supporting_fact_ids": [
+       "F001"
+      ],
+      "supporting_evidence_ids": [
+       "E001"
+      ],
+      "contradicting_fact_ids": [],
+      "contradicting_evidence_ids": [],
+      "weights": [
+       {
+        "reference_id": "F001",
+        "reference_type": "fact",
+        "weight": 1.0,
+        "explanation": "fact status 'established' weighted 1.00"
+       },
+       {
+        "reference_id": "E001",
+        "reference_type": "evidence",
+        "weight": 0.95,
+        "explanation": "reliability 0.95 x physical factor 1.00 = 0.95"
+       }
+      ],
+      "depends_on_rule": null,
+      "reasoning": "Supported by sufficiently strong material with no substantial contradiction: support 1.00 (threshold 0.60), contradiction 0.00 (threshold 0.40).",
+      "metadata": {}
+     }
+    ],
+    "satisfied_conditions": [
+     "C3"
+    ],
+    "unsatisfied_conditions": [
+     "C1",
+     "C2"
+    ],
+    "disputed_conditions": [],
+    "unsupported_conditions": [],
+    "reasoning": "Condition(s) C1, C2 are contradicted by the record.",
+    "metadata": {
+     "severity": "misdemeanor",
+     "category": "violent_crime"
+    }
+   },
+   {
+    "rule_id": "LAW_101",
+    "rule_name": "Assault",
+    "category": "offense",
+    "subject": "David Thompson",
+    "status": "indeterminate",
+    "effect": "assault_offense_established",
+    "effect_applies": false,
+    "conditions": [
+     {
+      "rule_id": "LAW_101",
+      "condition_id": "C1",
+      "description": "Intentional physical force",
+      "required": true,
+      "status": "satisfied",
+      "support_strength": 1.0,
+      "contradiction_strength": 0.0,
+      "supporting_fact_ids": [
+       "F005"
+      ],
+      "supporting_evidence_ids": [
+       "E003"
+      ],
+      "contradicting_fact_ids": [],
+      "contradicting_evidence_ids": [],
+      "weights": [
+       {
+        "reference_id": "F005",
+        "reference_type": "fact",
+        "weight": 1.0,
+        "explanation": "fact status 'established' weighted 1.00"
+       },
+       {
+        "reference_id": "E003",
+        "reference_type": "evidence",
+        "weight": 0.98,
+        "explanation": "reliability 0.98 x physical factor 1.00 = 0.98"
+       }
+      ],
+      "depends_on_rule": null,
+      "reasoning": "Supported by sufficiently strong material with no substantial contradiction: support 1.00 (threshold 0.60), contradiction 0.00 (threshold 0.40).",
+      "metadata": {}
+     },
+     {
+      "rule_id": "LAW_101",
+      "condition_id": "C2",
+      "description": "Physical contact",
+      "required": true,
+      "status": "satisfied",
+      "support_strength": 1.0,
+      "contradiction_strength": 0.0,
+      "supporting_fact_ids": [
+       "F005",
+       "F006"
+      ],
+      "supporting_evidence_ids": [
+       "E003",
+       "E004"
+      ],
+      "contradicting_fact_ids": [],
+      "contradicting_evidence_ids": [],
+      "weights": [
+       {
+        "reference_id": "F005",
+        "reference_type": "fact",
+        "weight": 1.0,
+        "explanation": "fact status 'established' weighted 1.00"
+       },
+       {
+        "reference_id": "F006",
+        "reference_type": "fact",
+        "weight": 1.0,
+        "explanation": "fact status 'established' weighted 1.00"
+       },
+       {
+        "reference_id": "E003",
+        "reference_type": "evidence",
+        "weight": 0.98,
+        "explanation": "reliability 0.98 x physical factor 1.00 = 0.98"
+       },
+       {
+        "reference_id": "E004",
+        "reference_type": "evidence",
+        "weight": 0.99,
+        "explanation": "reliability 0.99 x forensic factor 1.00 = 0.99"
+       }
+      ],
+      "depends_on_rule": null,
+      "reasoning": "Supported by sufficiently strong material with no substantial contradiction: support 1.00 (threshold 0.60), contradiction 0.00 (threshold 0.40).",
+      "metadata": {}
+     },
+     {
+      "rule_id": "LAW_101",
+      "condition_id": "C3",
+      "description": "Unlawfulness",
+      "required": true,
+      "status": "disputed",
+      "support_strength": 1.0,
+      "contradiction_strength": 0.5,
+      "supporting_fact_ids": [
+       "F008"
+      ],
+      "supporting_evidence_ids": [
+       "E008"
+      ],
+      "contradicting_fact_ids": [
+       "F004"
+      ],
+      "contradicting_evidence_ids": [],
+      "weights": [
+       {
+        "reference_id": "F008",
+        "reference_type": "fact",
+        "weight": 1.0,
+        "explanation": "fact status 'established' weighted 1.00"
+       },
+       {
+        "reference_id": "E008",
+        "reference_type": "evidence",
+        "weight": 0.95,
+        "explanation": "reliability 0.95 x physical factor 1.00 = 0.95"
+       },
+       {
+        "reference_id": "F004",
+        "reference_type": "fact",
+        "weight": 0.5,
+        "explanation": "fact status 'disputed' weighted 0.50"
+       }
+      ],
+      "depends_on_rule": null,
+      "reasoning": "Supported, but substantial contradicting material remains unresolved: support 1.00 (threshold 0.60), contradiction 0.50 (threshold 0.40).",
+      "metadata": {}
+     }
+    ],
+    "satisfied_conditions": [
+     "C1",
+     "C2"
+    ],
+    "unsatisfied_conditions": [],
+    "disputed_conditions": [
+     "C3"
+    ],
+    "unsupported_conditions": [],
+    "reasoning": "Condition(s) C3 remain disputed or unsupported; the rule can be neither applied nor excluded on this record.",
+    "metadata": {
+     "severity": "misdemeanor",
+     "category": "violent_crime"
+    }
+   },
+   {
+    "rule_id": "LAW_102",
+    "rule_name": "Aggravated Assault",
+    "category": "offense",
+    "subject": "David Thompson",
+    "status": "indeterminate",
+    "effect": "aggravated_assault_offense_established",
+    "effect_applies": false,
+    "conditions": [
+     {
+      "rule_id": "LAW_102",
+      "condition_id": "C1",
+      "description": "Assault",
+      "required": true,
+      "status": "disputed",
+      "support_strength": 1.0,
+      "contradiction_strength": 0.5,
+      "supporting_fact_ids": [
+       "F005",
+       "F006",
+       "F008"
+      ],
+      "supporting_evidence_ids": [
+       "E003",
+       "E004",
+       "E008"
+      ],
+      "contradicting_fact_ids": [
+       "F004"
+      ],
+      "contradicting_evidence_ids": [],
+      "weights": [],
+      "depends_on_rule": "LAW_101",
+      "reasoning": "Determined by rule LAW_101 (Assault), evaluated as 'indeterminate' for David Thompson.",
+      "metadata": {
+       "dependency_status": "indeterminate"
+      }
+     },
+     {
+      "rule_id": "LAW_102",
+      "condition_id": "C2",
+      "description": "Serious bodily injury",
+      "required": true,
+      "status": "satisfied",
+      "support_strength": 1.0,
+      "contradiction_strength": 0.0,
+      "supporting_fact_ids": [
+       "F006"
+      ],
+      "supporting_evidence_ids": [
+       "E004"
+      ],
+      "contradicting_fact_ids": [],
+      "contradicting_evidence_ids": [],
+      "weights": [
+       {
+        "reference_id": "F006",
+        "reference_type": "fact",
+        "weight": 1.0,
+        "explanation": "fact status 'established' weighted 1.00"
+       },
+       {
+        "reference_id": "E004",
+        "reference_type": "evidence",
+        "weight": 0.99,
+        "explanation": "reliability 0.99 x forensic factor 1.00 = 0.99"
+       }
+      ],
+      "depends_on_rule": null,
+      "reasoning": "Supported by sufficiently strong material with no substantial contradiction: support 1.00 (threshold 0.60), contradiction 0.00 (threshold 0.40).",
+      "metadata": {}
+     }
+    ],
+    "satisfied_conditions": [
+     "C2"
+    ],
+    "unsatisfied_conditions": [],
+    "disputed_conditions": [
+     "C1"
+    ],
+    "unsupported_conditions": [],
+    "reasoning": "Condition(s) C1 remain disputed or unsupported; the rule can be neither applied nor excluded on this record.",
+    "metadata": {
+     "severity": "felony",
+     "category": "violent_crime"
+    }
+   },
+   {
+    "rule_id": "LAW_104",
+    "rule_name": "Burglary",
+    "category": "offense",
+    "subject": "Alex Johnson",
+    "status": "indeterminate",
+    "effect": "burglary_offense_established",
+    "effect_applies": false,
+    "conditions": [
+     {
+      "rule_id": "LAW_104",
+      "condition_id": "C1",
+      "description": "Unauthorized entry into a building",
+      "required": true,
+      "status": "satisfied",
+      "support_strength": 1.0,
+      "contradiction_strength": 0.0,
+      "supporting_fact_ids": [
+       "F001",
+       "F002"
+      ],
+      "supporting_evidence_ids": [
+       "E001",
+       "E002"
+      ],
+      "contradicting_fact_ids": [],
+      "contradicting_evidence_ids": [],
+      "weights": [
+       {
+        "reference_id": "F001",
+        "reference_type": "fact",
+        "weight": 1.0,
+        "explanation": "fact status 'established' weighted 1.00"
+       },
+       {
+        "reference_id": "F002",
+        "reference_type": "fact",
+        "weight": 1.0,
+        "explanation": "fact status 'established' weighted 1.00"
+       },
+       {
+        "reference_id": "E001",
+        "reference_type": "evidence",
+        "weight": 0.95,
+        "explanation": "reliability 0.95 x physical factor 1.00 = 0.95"
+       },
+       {
+        "reference_id": "E002",
+        "reference_type": "evidence",
+        "weight": 0.9,
+        "explanation": "reliability 0.90 x physical factor 1.00 = 0.90"
+       }
+      ],
+      "depends_on_rule": null,
+      "reasoning": "Supported by sufficiently strong material with no substantial contradiction: support 1.00 (threshold 0.60), contradiction 0.00 (threshold 0.40).",
+      "metadata": {}
+     },
+     {
+      "rule_id": "LAW_104",
+      "condition_id": "C2",
+      "description": "Intent to commit a criminal offense inside",
+      "required": true,
+      "status": "unsupported",
+      "support_strength": 0.0,
+      "contradiction_strength": 0.0,
+      "supporting_fact_ids": [],
+      "supporting_evidence_ids": [],
+      "contradicting_fact_ids": [],
+      "contradicting_evidence_ids": [],
+      "weights": [],
+      "depends_on_rule": null,
+      "reasoning": "No sufficiently strong material bears on this condition: support 0.00 (threshold 0.60), contradiction 0.00 (threshold 0.40).",
+      "metadata": {}
+     }
+    ],
+    "satisfied_conditions": [
+     "C1"
+    ],
+    "unsatisfied_conditions": [],
+    "disputed_conditions": [],
+    "unsupported_conditions": [
+     "C2"
+    ],
+    "reasoning": "Condition(s) C2 remain disputed or unsupported; the rule can be neither applied nor excluded on this record.",
+    "metadata": {
+     "severity": "felony",
+     "category": "property_crime"
+    }
+   },
+   {
+    "rule_id": "LAW_201",
+    "rule_name": "Self Defense",
+    "category": "defense",
+    "subject": "David Thompson",
+    "status": "not_satisfied",
+    "effect": "self_defense_may_apply",
+    "effect_applies": false,
+    "conditions": [
+     {
+      "rule_id": "LAW_201",
+      "condition_id": "C1",
+      "description": "Reasonable belief of unlawful physical attack",
+      "required": true,
+      "status": "satisfied",
+      "support_strength": 1.0,
+      "contradiction_strength": 0.0,
+      "supporting_fact_ids": [
+       "F001",
+       "F003"
+      ],
+      "supporting_evidence_ids": [
+       "E001",
+       "E005",
+       "E006"
+      ],
+      "contradicting_fact_ids": [],
+      "contradicting_evidence_ids": [],
+      "weights": [
+       {
+        "reference_id": "F001",
+        "reference_type": "fact",
+        "weight": 1.0,
+        "explanation": "fact status 'established' weighted 1.00"
+       },
+       {
+        "reference_id": "F003",
+        "reference_type": "fact",
+        "weight": 1.0,
+        "explanation": "fact status 'established' weighted 1.00"
+       },
+       {
+        "reference_id": "E001",
+        "reference_type": "evidence",
+        "weight": 0.95,
+        "explanation": "reliability 0.95 x physical factor 1.00 = 0.95"
+       },
+       {
+        "reference_id": "E005",
+        "reference_type": "evidence",
+        "weight": 1.0,
+        "explanation": "reliability 1.00 x digital factor 1.00 = 1.00"
+       },
+       {
+        "reference_id": "E006",
+        "reference_type": "evidence",
+        "weight": 0.595,
+        "explanation": "reliability 0.70 x testimonial factor 0.85 = 0.59"
+       }
+      ],
+      "depends_on_rule": null,
+      "reasoning": "Supported by sufficiently strong material with no substantial contradiction: support 1.00 (threshold 0.60), contradiction 0.00 (threshold 0.40).",
+      "metadata": {}
+     },
+     {
+      "rule_id": "LAW_201",
+      "condition_id": "C2",
+      "description": "Force was necessary",
+      "required": true,
+      "status": "unsatisfied",
+      "support_strength": 0.5,
+      "contradiction_strength": 1.0,
+      "supporting_fact_ids": [
+       "F004"
+      ],
+      "supporting_evidence_ids": [],
+      "contradicting_fact_ids": [
+       "F008"
+      ],
+      "contradicting_evidence_ids": [
+       "E008"
+      ],
+      "weights": [
+       {
+        "reference_id": "F004",
+        "reference_type": "fact",
+        "weight": 0.5,
+        "explanation": "fact status 'disputed' weighted 0.50"
+       },
+       {
+        "reference_id": "F008",
+        "reference_type": "fact",
+        "weight": 1.0,
+        "explanation": "fact status 'established' weighted 1.00"
+       },
+       {
+        "reference_id": "E008",
+        "reference_type": "evidence",
+        "weight": 0.95,
+        "explanation": "reliability 0.95 x physical factor 1.00 = 0.95"
+       }
+      ],
+      "depends_on_rule": null,
+      "reasoning": "Contradicted, without sufficiently strong supporting material: support 0.50 (threshold 0.60), contradiction 1.00 (threshold 0.40).",
+      "metadata": {}
+     },
+     {
+      "rule_id": "LAW_201",
+      "condition_id": "C3",
+      "description": "Force was proportionate to the threat",
+      "required": true,
+      "status": "unsatisfied",
+      "support_strength": 0.0,
+      "contradiction_strength": 1.0,
+      "supporting_fact_ids": [],
+      "supporting_evidence_ids": [],
+      "contradicting_fact_ids": [
+       "F006",
+       "F008"
+      ],
+      "contradicting_evidence_ids": [
+       "E004",
+       "E008"
+      ],
+      "weights": [
+       {
+        "reference_id": "F006",
+        "reference_type": "fact",
+        "weight": 1.0,
+        "explanation": "fact status 'established' weighted 1.00"
+       },
+       {
+        "reference_id": "F008",
+        "reference_type": "fact",
+        "weight": 1.0,
+        "explanation": "fact status 'established' weighted 1.00"
+       },
+       {
+        "reference_id": "E004",
+        "reference_type": "evidence",
+        "weight": 0.99,
+        "explanation": "reliability 0.99 x forensic factor 1.00 = 0.99"
+       },
+       {
+        "reference_id": "E008",
+        "reference_type": "evidence",
+        "weight": 0.95,
+        "explanation": "reliability 0.95 x physical factor 1.00 = 0.95"
+       }
+      ],
+      "depends_on_rule": null,
+      "reasoning": "Contradicted, without sufficiently strong supporting material: support 0.00 (threshold 0.60), contradiction 1.00 (threshold 0.40).",
+      "metadata": {}
+     }
+    ],
+    "satisfied_conditions": [
+     "C1"
+    ],
+    "unsatisfied_conditions": [
+     "C2",
+     "C3"
+    ],
+    "disputed_conditions": [],
+    "unsupported_conditions": [],
+    "reasoning": "Condition(s) C2, C3 are contradicted by the record.",
+    "metadata": {
+     "type": "justification_defense"
+    }
+   },
+   {
+    "rule_id": "LAW_202",
+    "rule_name": "Excessive Defensive Force",
+    "category": "defense",
+    "subject": "David Thompson",
+    "status": "indeterminate",
+    "effect": "self_defense_weakened_or_rejected",
+    "effect_applies": false,
+    "conditions": [
+     {
+      "rule_id": "LAW_202",
+      "condition_id": "C1",
+      "description": "Defensive force was used",
+      "required": true,
+      "status": "satisfied",
+      "support_strength": 1.0,
+      "contradiction_strength": 0.0,
+      "supporting_fact_ids": [
+       "F005"
+      ],
+      "supporting_evidence_ids": [
+       "E003"
+      ],
+      "contradicting_fact_ids": [],
+      "contradicting_evidence_ids": [],
+      "weights": [
+       {
+        "reference_id": "F005",
+        "reference_type": "fact",
+        "weight": 1.0,
+        "explanation": "fact status 'established' weighted 1.00"
+       },
+       {
+        "reference_id": "E003",
+        "reference_type": "evidence",
+        "weight": 0.98,
+        "explanation": "reliability 0.98 x physical factor 1.00 = 0.98"
+       }
+      ],
+      "depends_on_rule": null,
+      "reasoning": "Supported by sufficiently strong material with no substantial contradiction: support 1.00 (threshold 0.60), contradiction 0.00 (threshold 0.40).",
+      "metadata": {}
+     },
+     {
+      "rule_id": "LAW_202",
+      "condition_id": "C2",
+      "description": "Force substantially exceeded the threat",
+      "required": true,
+      "status": "disputed",
+      "support_strength": 1.0,
+      "contradiction_strength": 0.5,
+      "supporting_fact_ids": [
+       "F006",
+       "F008"
+      ],
+      "supporting_evidence_ids": [
+       "E004",
+       "E008"
+      ],
+      "contradicting_fact_ids": [
+       "F004"
+      ],
+      "contradicting_evidence_ids": [],
+      "weights": [
+       {
+        "reference_id": "F006",
+        "reference_type": "fact",
+        "weight": 1.0,
+        "explanation": "fact status 'established' weighted 1.00"
+       },
+       {
+        "reference_id": "F008",
+        "reference_type": "fact",
+        "weight": 1.0,
+        "explanation": "fact status 'established' weighted 1.00"
+       },
+       {
+        "reference_id": "E004",
+        "reference_type": "evidence",
+        "weight": 0.99,
+        "explanation": "reliability 0.99 x forensic factor 1.00 = 0.99"
+       },
+       {
+        "reference_id": "E008",
+        "reference_type": "evidence",
+        "weight": 0.95,
+        "explanation": "reliability 0.95 x physical factor 1.00 = 0.95"
+       },
+       {
+        "reference_id": "F004",
+        "reference_type": "fact",
+        "weight": 0.5,
+        "explanation": "fact status 'disputed' weighted 0.50"
+       }
+      ],
+      "depends_on_rule": null,
+      "reasoning": "Supported, but substantial contradicting material remains unresolved: support 1.00 (threshold 0.60), contradiction 0.50 (threshold 0.40).",
+      "metadata": {}
+     }
+    ],
+    "satisfied_conditions": [
+     "C1"
+    ],
+    "unsatisfied_conditions": [],
+    "disputed_conditions": [
+     "C2"
+    ],
+    "unsupported_conditions": [],
+    "reasoning": "Condition(s) C2 remain disputed or unsupported; the rule can be neither applied nor excluded on this record.",
+    "metadata": {
+     "type": "defense_limitation"
+    }
+   },
+   {
+    "rule_id": "P001",
+    "rule_name": "Presumption of Innocence",
+    "category": "principle",
+    "subject": "case",
+    "status": "unconditional",
+    "effect": "defendant_presumed_innocent",
+    "effect_applies": true,
+    "conditions": [],
+    "satisfied_conditions": [],
+    "unsatisfied_conditions": [],
+    "disputed_conditions": [],
+    "unsupported_conditions": [],
+    "reasoning": "Rule states no conditions; its effect applies to the proceeding.",
+    "metadata": {
+     "fundamental": true,
+     "applies_to": "all_criminal_cases"
+    }
+   },
+   {
+    "rule_id": "P002",
+    "rule_name": "Burden of Proof",
+    "category": "principle",
+    "subject": "case",
+    "status": "unconditional",
+    "effect": "prosecution_has_burden",
+    "effect_applies": true,
+    "conditions": [],
+    "satisfied_conditions": [],
+    "unsatisfied_conditions": [],
+    "disputed_conditions": [],
+    "unsupported_conditions": [],
+    "reasoning": "Rule states no conditions; its effect applies to the proceeding.",
+    "metadata": {
+     "fundamental": true,
+     "applies_to": "all_criminal_cases"
+    }
+   },
+   {
+    "rule_id": "P003",
+    "rule_name": "Evidence Requirement",
+    "category": "principle",
+    "subject": "case",
+    "status": "unconditional",
+    "effect": "claims_require_evidence",
+    "effect_applies": true,
+    "conditions": [],
+    "satisfied_conditions": [],
+    "unsatisfied_conditions": [],
+    "disputed_conditions": [],
+    "unsupported_conditions": [],
+    "reasoning": "Rule states no conditions; its effect applies to the proceeding.",
+    "metadata": {
+     "fundamental": true,
+     "applies_to": "all_cases"
+    }
+   },
+   {
+    "rule_id": "P004",
+    "rule_name": "Reasonable Doubt",
+    "category": "principle",
+    "subject": "case",
+    "status": "unconditional",
+    "effect": "doubt_favors_defendant",
+    "effect_applies": true,
+    "conditions": [],
+    "satisfied_conditions": [],
+    "unsatisfied_conditions": [],
+    "disputed_conditions": [],
+    "unsupported_conditions": [],
+    "reasoning": "Rule states no conditions; its effect applies to the proceeding.",
+    "metadata": {
+     "fundamental": true,
+     "applies_to": "all_criminal_cases"
+    }
+   },
+   {
+    "rule_id": "P005",
+    "rule_name": "Evidence Consistency",
+    "category": "principle",
+    "subject": "case",
+    "status": "unconditional",
+    "effect": "contradictions_must_be_addressed",
+    "effect_applies": true,
+    "conditions": [],
+    "satisfied_conditions": [],
+    "unsatisfied_conditions": [],
+    "disputed_conditions": [],
+    "unsupported_conditions": [],
+    "reasoning": "Rule states no conditions; its effect applies to the proceeding.",
+    "metadata": {
+     "fundamental": true,
+     "applies_to": "all_cases"
+    }
+   }
+  ],
+  "witness_assessments": [
+   {
+    "witness_id": "W001",
+    "name": "David Thompson",
+    "reliability_score": 0.65,
+    "positive_factors": [
+     "opportunity_to_observe: high",
+     "memory_quality: good",
+     "consistency: statement_consistent"
+    ],
+    "challenge_grounds": [
+     "bias: victim_and_defendant_in_related_charge",
+     "high personal interest in the outcome"
+    ],
+    "unscored_factors": [],
+    "reasoning": "Reliability reduced to 0.65 by 2 challenge ground(s): bias: victim_and_defendant_in_related_charge; high personal interest in the outcome"
+   },
+   {
+    "witness_id": "W002",
+    "name": "Margaret Foster",
+    "reliability_score": 0.95,
+    "positive_factors": [
+     "no apparent bias",
+     "memory_quality: good",
+     "consistency: statement_consistent",
+     "personal_interest: none"
+    ],
+    "challenge_grounds": [],
+    "unscored_factors": [],
+    "reasoning": "No challenge grounds identified; reliability 0.95"
+   },
+   {
+    "witness_id": "W003",
+    "name": "Alex Johnson",
+    "reliability_score": 0.15,
+    "positive_factors": [
+     "opportunity_to_observe: high"
+    ],
+    "challenge_grounds": [
+     "bias: defendant_in_case",
+     "memory may be impaired",
+     "testimony conflicts with other evidence",
+     "very high personal interest in the outcome"
+    ],
+    "unscored_factors": [],
+    "reasoning": "Reliability reduced to 0.15 by 4 challenge ground(s): bias: defendant_in_case; memory may be impaired; testimony conflicts with other evidence; very high personal interest in the outcome"
+   }
+  ],
+  "unevaluated_rules": [],
+  "conflicting_evidence": [
+   {
+    "type": "condition_conflict",
+    "rule_id": "LAW_101",
+    "condition_id": "C3",
+    "subject": "David Thompson",
+    "supporting_evidence": [
+     "E008"
+    ],
+    "contradicting_evidence": [],
+    "description": "LAW_101 condition C3 (Unlawfulness) is contested for David Thompson."
+   },
+   {
+    "type": "condition_conflict",
+    "rule_id": "LAW_102",
+    "condition_id": "C1",
+    "subject": "David Thompson",
+    "supporting_evidence": [
+     "E003",
+     "E004",
+     "E008"
+    ],
+    "contradicting_evidence": [],
+    "description": "LAW_102 condition C1 (Assault) is contested for David Thompson."
+   },
+   {
+    "type": "condition_conflict",
+    "rule_id": "LAW_202",
+    "condition_id": "C2",
+    "subject": "David Thompson",
+    "supporting_evidence": [
+     "E004",
+     "E008"
+    ],
+    "contradicting_evidence": [],
+    "description": "LAW_202 condition C2 (Force substantially exceeded the threat) is contested for David Thompson."
+   }
+  ],
+  "policy": {
+   "fact_weights": {
+    "established": 1.0,
+    "disputed": 0.5,
+    "unknown": 0.25
+   },
+   "evidence_type_factors": {
+    "physical": 1.0,
+    "forensic": 1.0,
+    "documentary": 1.0,
+    "digital": 1.0,
+    "testimonial": 0.85,
+    "circumstantial": 0.7
+   },
+   "satisfaction_threshold": 0.6,
+   "dispute_threshold": 0.4
+  }
+ },
+ "evidence_analysis": {
+  "output": {
+   "claims": [
+    {
+     "claim": "Alex entered the house without permission through a broken window.",
+     "fact_ids": [
+      "F001",
+      "F002"
+     ],
+     "supporting_evidence_ids": [
+      "E001",
+      "E002"
+     ],
+     "supporting_witness_ids": [],
+     "contradicting_evidence_ids": [],
+     "contradicting_witness_ids": [],
+     "status": "established",
+     "confidence": 0.95,
+     "reasoning": "Glass inside the kitchen and matching footprints; Alex concedes entry."
+    },
+    {
+     "claim": "Alex physically attacked David.",
+     "fact_ids": [
+      "F004"
+     ],
+     "supporting_evidence_ids": [
+      "E006"
+     ],
+     "supporting_witness_ids": [
+      "W001"
+     ],
+     "contradicting_evidence_ids": [
+      "E007"
+     ],
+     "contradicting_witness_ids": [
+      "W003"
+     ],
+     "status": "disputed",
+     "confidence": 0.6,
+     "reasoning": "David's account against the absence of defensive wounds; the forensic evidence is the stronger side."
+    },
+    {
+     "claim": "Alex intended to commit an offense inside the house.",
+     "fact_ids": [],
+     "supporting_evidence_ids": [],
+     "supporting_witness_ids": [],
+     "contradicting_evidence_ids": [],
+     "contradicting_witness_ids": [],
+     "status": "unsupported",
+     "confidence": 0.9,
+     "reasoning": "Nothing in the record speaks to intent."
+    },
+    {
+     "claim": "David struck Alex with a metal bat, causing serious injuries.",
+     "fact_ids": [
+      "F005",
+      "F006"
+     ],
+     "supporting_evidence_ids": [
+      "E003",
+      "E004"
+     ],
+     "supporting_witness_ids": [],
+     "contradicting_evidence_ids": [],
+     "contradicting_witness_ids": [],
+     "status": "established",
+     "confidence": 0.97,
+     "reasoning": "Blood on the bat and the medical report."
+    }
+   ],
+   "evidence": [
+    {
+     "evidence_id": "E001",
+     "directness": "direct",
+     "fact_ids": [
+      "F001",
+      "F002"
+     ],
+     "reliability_concerns": [],
+     "reasoning": "Assessed from its source and content."
+    },
+    {
+     "evidence_id": "E002",
+     "directness": "circumstantial",
+     "fact_ids": [
+      "F001"
+     ],
+     "reliability_concerns": [],
+     "reasoning": "Assessed from its source and content."
+    },
+    {
+     "evidence_id": "E003",
+     "directness": "direct",
+     "fact_ids": [
+      "F005"
+     ],
+     "reliability_concerns": [],
+     "reasoning": "Assessed from its source and content."
+    },
+    {
+     "evidence_id": "E004",
+     "directness": "direct",
+     "fact_ids": [
+      "F006"
+     ],
+     "reliability_concerns": [],
+     "reasoning": "Assessed from its source and content."
+    },
+    {
+     "evidence_id": "E005",
+     "directness": "direct",
+     "fact_ids": [
+      "F007"
+     ],
+     "reliability_concerns": [
+      "no record of who retrieved the recording"
+     ],
+     "reasoning": "Assessed from its source and content."
+    },
+    {
+     "evidence_id": "E006",
+     "directness": "circumstantial",
+     "fact_ids": [
+      "F003"
+     ],
+     "reliability_concerns": [
+      "heard, not seen"
+     ],
+     "reasoning": "Assessed from its source and content."
+    },
+    {
+     "evidence_id": "E007",
+     "directness": "circumstantial",
+     "fact_ids": [
+      "F004"
+     ],
+     "reliability_concerns": [],
+     "reasoning": "Assessed from its source and content."
+    },
+    {
+     "evidence_id": "E008",
+     "directness": "direct",
+     "fact_ids": [
+      "F008"
+     ],
+     "reliability_concerns": [],
+     "reasoning": "Assessed from its source and content."
+    }
+   ],
+   "contradictions": [
+    {
+     "description": "David says Alex came at him; Alex denies it and David had no defensive wounds.",
+     "evidence_ids": [
+      "E007"
+     ],
+     "witness_ids": [
+      "W001",
+      "W003"
+     ],
+     "fact_ids": [
+      "F004"
+     ],
+     "significance": "Decides whether any force by Alex is proven."
+    }
+   ],
+   "witnesses": [
+    {
+     "witness_id": "W001",
+     "rating": "moderate",
+     "grounds": [
+      "bias",
+      "personal interest"
+     ],
+     "reasoning": "Good opportunity to observe; strong interest in the outcome."
+    },
+    {
+     "witness_id": "W002",
+     "rating": "high",
+     "grounds": [],
+     "reasoning": "Independent neighbour, though she only heard the events."
+    },
+    {
+     "witness_id": "W003",
+     "rating": "low",
+     "grounds": [
+      "bias",
+      "memory",
+      "contradiction",
+      "personal interest"
+     ],
+     "reasoning": "Defendant; possible trauma; conflicts with other evidence."
+    }
+   ],
+   "missing_evidence": [
+    {
+     "description": "Any evidence of what Alex intended to do inside.",
+     "elements": [
+      {
+       "rule_id": "LAW_104",
+       "condition_id": "C2"
+      }
+     ],
+     "why_it_matters": "Burglary requires intent to commit an offense inside."
+    }
+   ],
+   "summary": "Entry and David's use of force are established; whether Alex attacked is disputed; nothing speaks to Alex's intent."
+  },
+  "provenance": [
+   {
+    "evidence_id": "E001",
+    "evidence_type": "physical",
+    "source": "crime_scene_investigation",
+    "handled_by": "Officer Martinez",
+    "date": "2024-01-16",
+    "witness_id": null,
+    "supports_facts": [
+     "F001",
+     "F002"
+    ],
+    "contradicts_facts": [],
+    "recorded_reliability": 0.95,
+    "gaps": []
+   },
+   {
+    "evidence_id": "E002",
+    "evidence_type": "physical",
+    "source": "crime_scene_investigation",
+    "handled_by": "CSI Team",
+    "date": "2024-01-16",
+    "witness_id": null,
+    "supports_facts": [
+     "F001",
+     "F002"
+    ],
+    "contradicts_facts": [],
+    "recorded_reliability": 0.9,
+    "gaps": []
+   },
+   {
+    "evidence_id": "E003",
+    "evidence_type": "physical",
+    "source": "crime_scene_investigation",
+    "handled_by": "CSI Team",
+    "date": "2024-01-16",
+    "witness_id": null,
+    "supports_facts": [
+     "F005"
+    ],
+    "contradicts_facts": [],
+    "recorded_reliability": 0.98,
+    "gaps": []
+   },
+   {
+    "evidence_id": "E004",
+    "evidence_type": "forensic",
+    "source": "hospital_records",
+    "handled_by": "Dr. Sarah Johnson",
+    "date": "2024-01-16",
+    "witness_id": null,
+    "supports_facts": [
+     "F006"
+    ],
+    "contradicts_facts": [],
+    "recorded_reliability": 0.99,
+    "gaps": []
+   },
+   {
+    "evidence_id": "E005",
+    "evidence_type": "digital",
+    "source": "emergency_services",
+    "handled_by": null,
+    "date": "2024-01-15T23:52:00",
+    "witness_id": null,
+    "supports_facts": [
+     "F007"
+    ],
+    "contradicts_facts": [],
+    "recorded_reliability": 1.0,
+    "gaps": [
+     "no record of who collected or produced it"
+    ]
+   },
+   {
+    "evidence_id": "E006",
+    "evidence_type": "testimonial",
+    "source": "W002",
+    "handled_by": null,
+    "date": null,
+    "witness_id": "W002",
+    "supports_facts": [
+     "F003"
+    ],
+    "contradicts_facts": [],
+    "recorded_reliability": 0.7,
+    "gaps": [
+     "no collection date recorded"
+    ]
+   },
+   {
+    "evidence_id": "E007",
+    "evidence_type": "forensic",
+    "source": "medical_examination",
+    "handled_by": "Dr. Michael Chen",
+    "date": "2024-01-16",
+    "witness_id": null,
+    "supports_facts": [],
+    "contradicts_facts": [
+     "F004"
+    ],
+    "recorded_reliability": 0.85,
+    "gaps": []
+   },
+   {
+    "evidence_id": "E008",
+    "evidence_type": "physical",
+    "source": "police_search",
+    "handled_by": "Officer Martinez",
+    "date": "2024-01-16",
+    "witness_id": null,
+    "supports_facts": [
+     "F008"
+    ],
+    "contradicts_facts": [],
+    "recorded_reliability": 0.95,
+    "gaps": []
+   }
+  ],
+  "message": {
+   "message_id": "MSG-EVIDENCE-ANALYSIS",
+   "case_id": "CASE_001",
+   "sender": "evidence_agent",
+   "recipient": "court",
+   "message_type": "evidence_analysis",
+   "stage": "EVIDENCE_ANALYSIS",
+   "claim": "Entry and David's use of force are established; whether Alex attacked is disputed; nothing speaks to Alex's intent.",
+   "argument_ids": [],
+   "evidence_ids": [
+    "E001",
+    "E002",
+    "E003",
+    "E004",
+    "E005",
+    "E006",
+    "E007",
+    "E008"
+   ],
+   "law_ids": [],
+   "reasoning": "4 claims (2 established, 1 disputed, 1 unsupported); 1 contradictions; 1 missing-evidence items.",
+   "timestamp": "2026-09-20T08:13:14.319423Z",
+   "metadata": {}
+  },
+  "flags": [],
+  "attempts": [
+   {
+    "attempt": 1,
+    "accepted": true,
+    "errors": [],
+    "output": "{\"claims\": [{\"claim\": \"Alex entered the house without permission through a broken window.\", \"fact_ids\": [\"F001\", \"F002\"], \"supporting_evidence_ids\": [\"E001\", \"E002\"], \"supporting_witness_ids\": [], \"contradicting_evidence_ids\": [], \"contradicting_witness_ids\": [], \"status\": \"established\", \"confidence\": 0.95, \"reasoning\": \"Glass inside the kitchen and matching footprints; Alex concedes entry.\"}, {\"claim\": \"Alex physically attacked David.\", \"fact_ids\": [\"F004\"], \"supporting_evidence_ids\": [\"E006\"], \"supporting_witness_ids\": [\"W001\"], \"contradicting_evidence_ids\": [\"E007\"], \"contradicting_witness_ids\": [\"W003\"], \"status\": \"disputed\", \"confidence\": 0.6, \"reasoning\": \"David's account against the absence of defensive wounds; the forensic evidence is the stronger side.\"}, {\"claim\": \"Alex intended to commit an offense inside the house.\", \"fact_ids\": [], \"supporting_evidence_ids\": [], \"supporting_witness_ids\": [], \"contradicting_evidence_ids\": [], \"contradicting_witness_ids\": [], \"status\": \"unsupported\", \"confidence\": 0.9, \"reasoning\": \"Nothing in the record speaks to intent.\"}, {\"claim\": \"David struck Alex with a metal bat, causing serious injuries.\", \"fact_ids\": [\"F005\", \"F006\"], \"supporting_evidence_ids\": [\"E003\", \"E004\"], \"supporting_witness_ids\": [], \"contradicting_evidence_ids\": [], \"contradicting_witness_ids\": [], \"status\": \"established\", \"confidence\": 0.97, \"reasoning\": \"Blood on the bat and the medical report.\"}], \"evidence\": [{\"evidence_id\": \"E001\", \"directness\": \"direct\", \"fact_ids\": [\"F001\", \"F002\"], \"reliability_concerns\": [], \"reasoning\": \"Assessed from its source and content.\"}, {\"evidence_id\": \"E002\", \"directness\": \"circumstantial\", \"fact_ids\": [\"F001\"], \"reliability_concerns\": [], \"reasoning\": \"Assessed from its source and content.\"}, {\"evidence_id\": \"E003\", \"directness\": \"direct\", \"fact_ids\": [\"F005\"], \"reliability_concerns\": [], \"reasoning\": \"Assessed from its source and content.\"}, {\"evidence_id\": \"E004\", \"directness\": \"direct\", \"fact_ids\": [\"F006\"], \"reliability_concerns\": [], \"reasoning\": \"Assessed from its source and content.\"}, {\"evidence_id\": \"E005\", \"directness\": \"direct\", \"fact_ids\": [\"F007\"], \"reliability_concerns\": [\"no record of who retrieved the recording\"], \"reasoning\": \"Assessed from its source and content.\"}, {\"evidence_id\": \"E006\", \"directness\": \"circumstantial\", \"fact_ids\": [\"F003\"], \"reliability_concerns\": [\"heard, not seen\"], \"reasoning\": \"Assessed from its source and content.\"}, {\"evidence_id\": \"E007\", \"directness\": \"circumstantial\", \"fact_ids\": [\"F004\"], \"reliability_concerns\": [], \"reasoning\": \"Assessed from its source and content.\"}, {\"evidence_id\": \"E008\", \"directness\": \"direct\", \"fact_ids\": [\"F008\"], \"reliability_concerns\": [], \"reasoning\": \"Assessed from its source and content.\"}], \"contradictions\": [{\"description\": \"David says Alex came at him; Alex denies it and David had no defensive wounds.\", \"evidence_ids\": [\"E007\"], \"witness_ids\": [\"W001\", \"W003\"], \"fact_ids\": [\"F004\"], \"significance\": \"Decides whether any force by Alex is proven.\"}], \"witnesses\": [{\"witness_id\": \"W001\", \"rating\": \"moderate\", \"grounds\": [\"bias\", \"personal interest\"], \"reasoning\": \"Good opportunity to observe; strong interest in the outcome.\"}, {\"witness_id\": \"W002\", \"rating\": \"high\", \"grounds\": [], \"reasoning\": \"Independent neighbour, though she only heard the events.\"}, {\"witness_id\": \"W003\", \"rating\": \"low\", \"grounds\": [\"bias\", \"memory\", \"contradiction\", \"personal interest\"], \"reasoning\": \"Defendant; possible trauma; conflicts with other evidence.\"}], \"missing_evidence\": [{\"description\": \"Any evidence of what Alex intended to do inside.\", \"elements\": [{\"rule_id\": \"LAW_104\", \"condition_id\": \"C2\"}], \"why_it_matters\": \"Burglary requires intent to commit an offense inside.\"}], \"summary\": \"Entry and David's use of force are established; whether Alex attacked is disputed; nothing speaks to Alex's intent.\"}"
+   }
+  ],
+  "prompt_version": "evidence.v1",
+  "provider": "scripted",
+  "model": "scripted-model",
+  "usage": {
+   "input_tokens": 6827,
+   "output_tokens": 970,
+   "cache_read_input_tokens": 0
+  }
+ },
+ "evidence_reviews": [
+  {
+   "output": {
+    "reviews": [
+     {
+      "argument_id": "PR-OPEN-1",
+      "support": "supported",
+      "issues": [],
+      "reasoning": "Checked against the cited record."
+     },
+     {
+      "argument_id": "PR-OPEN-2",
+      "support": "unsupported",
+      "issues": [
+       "not supported by what it cites"
+      ],
+      "reasoning": "Checked against the cited record."
+     },
+     {
+      "argument_id": "DF-OPEN-1",
+      "support": "supported",
+      "issues": [],
+      "reasoning": "Checked against the cited record."
+     },
+     {
+      "argument_id": "DF-OPEN-2",
+      "support": "supported",
+      "issues": [],
+      "reasoning": "Checked against the cited record."
+     },
+     {
+      "argument_id": "PR-ARG-1",
+      "support": "supported",
+      "issues": [],
+      "reasoning": "Checked against the cited record."
+     },
+     {
+      "argument_id": "PR-ARG-2",
+      "support": "supported",
+      "issues": [],
+      "reasoning": "Checked against the cited record."
+     },
+     {
+      "argument_id": "DF-ARG-1",
+      "support": "supported",
+      "issues": [],
+      "reasoning": "Checked against the cited record."
+     },
+     {
+      "argument_id": "DF-ARG-2",
+      "support": "supported",
+      "issues": [],
+      "reasoning": "Checked against the cited record."
+     },
+     {
+      "argument_id": "PR-CROSS-1",
+      "support": "supported",
+      "issues": [],
+      "reasoning": "Checked against the cited record."
+     },
+     {
+      "argument_id": "PR-CROSS-2",
+      "support": "supported",
+      "issues": [],
+      "reasoning": "Checked against the cited record."
+     },
+     {
+      "argument_id": "DF-CROSS-1",
+      "support": "supported",
+      "issues": [],
+      "reasoning": "Checked against the cited record."
+     },
+     {
+      "argument_id": "DF-CROSS-2",
+      "support": "supported",
+      "issues": [],
+      "reasoning": "Checked against the cited record."
+     }
+    ],
+    "summary": "Arguments reviewed against their citations."
+   },
+   "message": {
+    "message_id": "MSG-EVIDENCE-REVIEW",
+    "case_id": "CASE_001",
+    "sender": "evidence_agent",
+    "recipient": "court",
+    "message_type": "evidence_review",
+    "stage": "EVIDENCE_REVIEW",
+    "claim": "Arguments reviewed against their citations.",
+    "argument_ids": [
+     "PR-OPEN-1",
+     "PR-OPEN-2",
+     "DF-OPEN-1",
+     "DF-OPEN-2",
+     "PR-ARG-1",
+     "PR-ARG-2",
+     "DF-ARG-1",
+     "DF-ARG-2",
+     "PR-CROSS-1",
+     "PR-CROSS-2",
+     "DF-CROSS-1",
+     "DF-CROSS-2"
+    ],
+    "evidence_ids": [],
+    "law_ids": [],
+    "reasoning": "11 supported, 0 partially supported, 1 unsupported.",
+    "timestamp": "2026-09-20T08:13:14.328991Z",
+    "metadata": {}
+   },
+   "flags": [],
+   "attempts": [
+    {
+     "attempt": 1,
+     "accepted": true,
+     "errors": [],
+     "output": "{\"reviews\": [{\"argument_id\": \"PR-OPEN-1\", \"support\": \"supported\", \"issues\": [], \"reasoning\": \"Checked against the cited record.\"}, {\"argument_id\": \"PR-OPEN-2\", \"support\": \"unsupported\", \"issues\": [\"not supported by what it cites\"], \"reasoning\": \"Checked against the cited record.\"}, {\"argument_id\": \"DF-OPEN-1\", \"support\": \"supported\", \"issues\": [], \"reasoning\": \"Checked against the cited record.\"}, {\"argument_id\": \"DF-OPEN-2\", \"support\": \"supported\", \"issues\": [], \"reasoning\": \"Checked against the cited record.\"}, {\"argument_id\": \"PR-ARG-1\", \"support\": \"supported\", \"issues\": [], \"reasoning\": \"Checked against the cited record.\"}, {\"argument_id\": \"PR-ARG-2\", \"support\": \"supported\", \"issues\": [], \"reasoning\": \"Checked against the cited record.\"}, {\"argument_id\": \"DF-ARG-1\", \"support\": \"supported\", \"issues\": [], \"reasoning\": \"Checked against the cited record.\"}, {\"argument_id\": \"DF-ARG-2\", \"support\": \"supported\", \"issues\": [], \"reasoning\": \"Checked against the cited record.\"}, {\"argument_id\": \"PR-CROSS-1\", \"support\": \"supported\", \"issues\": [], \"reasoning\": \"Checked against the cited record.\"}, {\"argument_id\": \"PR-CROSS-2\", \"support\": \"supported\", \"issues\": [], \"reasoning\": \"Checked against the cited record.\"}, {\"argument_id\": \"DF-CROSS-1\", \"support\": \"supported\", \"issues\": [], \"reasoning\": \"Checked against the cited record.\"}, {\"argument_id\": \"DF-CROSS-2\", \"support\": \"supported\", \"issues\": [], \"reasoning\": \"Checked against the cited record.\"}], \"summary\": \"Arguments reviewed against their citations.\"}"
+    }
+   ],
+   "prompt_version": "evidence.v1",
+   "provider": "scripted",
+   "model": "scripted-model",
+   "usage": {
+    "input_tokens": 10552,
+    "output_tokens": 380,
+    "cache_read_input_tokens": 0
+   }
+  },
+  {
+   "output": {
+    "reviews": [
+     {
+      "argument_id": "PR-ANS1-1",
+      "support": "supported",
+      "issues": [],
+      "reasoning": "Checked against the cited record."
+     },
+     {
+      "argument_id": "PR-ANS1-2",
+      "support": "supported",
+      "issues": [],
+      "reasoning": "Checked against the cited record."
+     }
+    ],
+    "summary": "Arguments reviewed against their citations."
+   },
+   "message": {
+    "message_id": "MSG-EVIDENCE-REVIEW-ANS1",
+    "case_id": "CASE_001",
+    "sender": "evidence_agent",
+    "recipient": "court",
+    "message_type": "evidence_review",
+    "stage": "EVIDENCE_REVIEW",
+    "claim": "Arguments reviewed against their citations.",
+    "argument_ids": [
+     "PR-ANS1-1",
+     "PR-ANS1-2"
+    ],
+    "evidence_ids": [],
+    "law_ids": [],
+    "reasoning": "2 supported, 0 partially supported, 0 unsupported.",
+    "timestamp": "2026-09-20T08:13:14.333466Z",
+    "metadata": {}
+   },
+   "flags": [],
+   "attempts": [
+    {
+     "attempt": 1,
+     "accepted": true,
+     "errors": [],
+     "output": "{\"reviews\": [{\"argument_id\": \"PR-ANS1-1\", \"support\": \"supported\", \"issues\": [], \"reasoning\": \"Checked against the cited record.\"}, {\"argument_id\": \"PR-ANS1-2\", \"support\": \"supported\", \"issues\": [], \"reasoning\": \"Checked against the cited record.\"}], \"summary\": \"Arguments reviewed against their citations.\"}"
+    }
+   ],
+   "prompt_version": "evidence.v1",
+   "provider": "scripted",
+   "model": "scripted-model",
+   "usage": {
+    "input_tokens": 11507,
+    "output_tokens": 76,
+    "cache_read_input_tokens": 0
+   }
+  }
+ ],
+ "turns": [
+  {
+   "stage": "PROSECUTION_OPENING",
+   "role": "prosecution",
+   "agent_id": "prosecution_agent",
+   "statement": "The evidence proves Alex broke into the home and attacked David.",
+   "arguments": [
+    {
+     "argument_id": "PR-OPEN-1",
+     "agent_id": "prosecution_agent",
+     "claim": "Alex entered David's home without permission through a broken window.",
+     "evidence_ids": [
+      "E001",
+      "E002"
+     ],
+     "fact_ids": [
+      "F001",
+      "F002"
+     ],
+     "witness_ids": [],
+     "law_ids": [
+      "LAW_104"
+     ],
+     "counter_argument_ids": [],
+     "reasoning": "Glass inside the kitchen and Alex's footprints at the window.",
+     "confidence": 0.9,
+     "timestamp": "2026-09-20T08:13:14.321645Z",
+     "metadata": {
+      "stage": "PROSECUTION_OPENING",
+      "charges": [
+       "burglary"
+      ],
+      "elements": [
+       {
+        "rule_id": "LAW_104",
+        "condition_id": "C1"
+       }
+      ],
+      "assumptions": [],
+      "prompt_version": "advocate.v3"
+     }
+    },
+    {
+     "argument_id": "PR-OPEN-2",
+     "agent_id": "prosecution_agent",
+     "claim": "Alex came at David aggressively inside the house.",
+     "evidence_ids": [
+      "E006"
+     ],
+     "fact_ids": [
+      "F004"
+     ],
+     "witness_ids": [
+      "W001"
+     ],
+     "law_ids": [
+      "LAW_101"
+     ],
+     "counter_argument_ids": [],
+     "reasoning": "David's statement and the neighbour hearing a struggle.",
+     "confidence": 0.6,
+     "timestamp": "2026-09-20T08:13:14.321665Z",
+     "metadata": {
+      "stage": "PROSECUTION_OPENING",
+      "charges": [
+       "assault"
+      ],
+      "elements": [
+       {
+        "rule_id": "LAW_101",
+        "condition_id": "C1"
+       },
+       {
+        "rule_id": "LAW_101",
+        "condition_id": "C2"
+       }
+      ],
+      "assumptions": [
+       "David's account of the confrontation is accurate."
+      ],
+      "prompt_version": "advocate.v3"
+     }
+    }
+   ],
+   "message": {
+    "message_id": "MSG-PR-OPEN",
+    "case_id": "CASE_001",
+    "sender": "prosecution_agent",
+    "recipient": "judge_agent",
+    "message_type": "opening_statement",
+    "stage": "PROSECUTION_OPENING",
+    "claim": "The evidence proves Alex broke into the home and attacked David.",
+    "argument_ids": [
+     "PR-OPEN-1",
+     "PR-OPEN-2"
+    ],
+    "evidence_ids": [
+     "E001",
+     "E002",
+     "E006"
+    ],
+    "law_ids": [
+     "LAW_104",
+     "LAW_101"
+    ],
+    "reasoning": "[PR-OPEN-1] Alex entered David's home without permission through a broken window. [PR-OPEN-2] Alex came at David aggressively inside the house.",
+    "timestamp": "2026-09-20T08:13:14.321687Z",
+    "metadata": {}
+   },
+   "flags": [],
+   "attempts": [
+    {
+     "attempt": 1,
+     "accepted": true,
+     "errors": [],
+     "output": "{\"statement\": \"The evidence proves Alex broke into the home and attacked David.\", \"arguments\": [{\"charges\": [\"burglary\"], \"elements\": [{\"rule_id\": \"LAW_104\", \"condition_id\": \"C1\"}], \"claim\": \"Alex entered David's home without permission through a broken window.\", \"fact_ids\": [\"F001\", \"F002\"], \"evidence_ids\": [\"E001\", \"E002\"], \"witness_ids\": [], \"law_ids\": [\"LAW_104\"], \"responds_to\": [], \"assumptions\": [], \"reasoning\": \"Glass inside the kitchen and Alex's footprints at the window.\", \"confidence\": 0.9}, {\"charges\": [\"assault\"], \"elements\": [{\"rule_id\": \"LAW_101\", \"condition_id\": \"C1\"}, {\"rule_id\": \"LAW_101\", \"condition_id\": \"C2\"}], \"claim\": \"Alex came at David aggressively inside the house.\", \"fact_ids\": [\"F004\"], \"evidence_ids\": [\"E006\"], \"witness_ids\": [\"W001\"], \"law_ids\": [], \"responds_to\": [], \"assumptions\": [\"David's account of the confrontation is accurate.\"], \"reasoning\": \"David's statement and the neighbour hearing a struggle.\", \"confidence\": 0.6}]}"
+    }
+   ],
+   "prompt_version": "advocate.v3",
+   "provider": "scripted",
+   "model": "scripted-model",
+   "usage": {
+    "input_tokens": 8228,
+    "output_tokens": 242,
+    "cache_read_input_tokens": 0
+   }
+  },
+  {
+   "stage": "DEFENSE_OPENING",
+   "role": "defense",
+   "agent_id": "defense_agent",
+   "statement": "Nothing proves Alex intended a crime, and nothing proves he attacked.",
+   "arguments": [
+    {
+     "argument_id": "DF-OPEN-1",
+     "agent_id": "defense_agent",
+     "claim": "No evidence shows Alex intended to commit an offense inside.",
+     "evidence_ids": [],
+     "fact_ids": [
+      "F001"
+     ],
+     "witness_ids": [
+      "W003"
+     ],
+     "law_ids": [
+      "LAW_104",
+      "P002"
+     ],
+     "counter_argument_ids": [],
+     "reasoning": "The record is silent on intent; the burden is the prosecution's.",
+     "confidence": 0.8,
+     "timestamp": "2026-09-20T08:13:14.322978Z",
+     "metadata": {
+      "stage": "DEFENSE_OPENING",
+      "charges": [
+       "burglary"
+      ],
+      "elements": [
+       {
+        "rule_id": "LAW_104",
+        "condition_id": "C2"
+       }
+      ],
+      "assumptions": [
+       "Alex's account of confusing the address may be true."
+      ],
+      "prompt_version": "advocate.v3"
+     }
+    },
+    {
+     "argument_id": "DF-OPEN-2",
+     "agent_id": "defense_agent",
+     "claim": "The absence of defensive wounds contradicts any attack by Alex.",
+     "evidence_ids": [
+      "E007"
+     ],
+     "fact_ids": [],
+     "witness_ids": [],
+     "law_ids": [
+      "P004",
+      "LAW_101"
+     ],
+     "counter_argument_ids": [],
+     "reasoning": "E007 is forensic and reliable; F004 is disputed.",
+     "confidence": 0.75,
+     "timestamp": "2026-09-20T08:13:14.322988Z",
+     "metadata": {
+      "stage": "DEFENSE_OPENING",
+      "charges": [
+       "assault"
+      ],
+      "elements": [
+       {
+        "rule_id": "LAW_101",
+        "condition_id": "C1"
+       }
+      ],
+      "assumptions": [],
+      "prompt_version": "advocate.v3"
+     }
+    }
+   ],
+   "message": {
+    "message_id": "MSG-DF-OPEN",
+    "case_id": "CASE_001",
+    "sender": "defense_agent",
+    "recipient": "judge_agent",
+    "message_type": "opening_statement",
+    "stage": "DEFENSE_OPENING",
+    "claim": "Nothing proves Alex intended a crime, and nothing proves he attacked.",
+    "argument_ids": [
+     "DF-OPEN-1",
+     "DF-OPEN-2"
+    ],
+    "evidence_ids": [
+     "E007"
+    ],
+    "law_ids": [
+     "LAW_104",
+     "P002",
+     "P004",
+     "LAW_101"
+    ],
+    "reasoning": "[DF-OPEN-1] No evidence shows Alex intended to commit an offense inside. [DF-OPEN-2] The absence of defensive wounds contradicts any attack by Alex.",
+    "timestamp": "2026-09-20T08:13:14.323008Z",
+    "metadata": {}
+   },
+   "flags": [],
+   "attempts": [
+    {
+     "attempt": 1,
+     "accepted": true,
+     "errors": [],
+     "output": "{\"statement\": \"Nothing proves Alex intended a crime, and nothing proves he attacked.\", \"arguments\": [{\"charges\": [\"burglary\"], \"elements\": [{\"rule_id\": \"LAW_104\", \"condition_id\": \"C2\"}], \"claim\": \"No evidence shows Alex intended to commit an offense inside.\", \"fact_ids\": [\"F001\"], \"evidence_ids\": [], \"witness_ids\": [\"W003\"], \"law_ids\": [\"LAW_104\", \"P002\"], \"responds_to\": [], \"assumptions\": [\"Alex's account of confusing the address may be true.\"], \"reasoning\": \"The record is silent on intent; the burden is the prosecution's.\", \"confidence\": 0.8}, {\"charges\": [\"assault\"], \"elements\": [{\"rule_id\": \"LAW_101\", \"condition_id\": \"C1\"}], \"claim\": \"The absence of defensive wounds contradicts any attack by Alex.\", \"fact_ids\": [], \"evidence_ids\": [\"E007\"], \"witness_ids\": [], \"law_ids\": [\"P004\"], \"responds_to\": [], \"assumptions\": [], \"reasoning\": \"E007 is forensic and reliable; F004 is disputed.\", \"confidence\": 0.75}]}"
+    }
+   ],
+   "prompt_version": "advocate.v3",
+   "provider": "scripted",
+   "model": "scripted-model",
+   "usage": {
+    "input_tokens": 8615,
+    "output_tokens": 229,
+    "cache_read_input_tokens": 0
+   }
+  },
+  {
+   "stage": "PROSECUTION_ARGUMENT",
+   "role": "prosecution",
+   "agent_id": "prosecution_agent",
+   "statement": "The evidence proves Alex broke into the home and attacked David.",
+   "arguments": [
+    {
+     "argument_id": "PR-ARG-1",
+     "agent_id": "prosecution_agent",
+     "claim": "Alex entered David's home without permission through a broken window.",
+     "evidence_ids": [
+      "E001",
+      "E002"
+     ],
+     "fact_ids": [
+      "F001",
+      "F002"
+     ],
+     "witness_ids": [],
+     "law_ids": [
+      "LAW_104"
+     ],
+     "counter_argument_ids": [],
+     "reasoning": "Glass inside the kitchen and Alex's footprints at the window.",
+     "confidence": 0.9,
+     "timestamp": "2026-09-20T08:13:14.324119Z",
+     "metadata": {
+      "stage": "PROSECUTION_ARGUMENT",
+      "charges": [
+       "burglary"
+      ],
+      "elements": [
+       {
+        "rule_id": "LAW_104",
+        "condition_id": "C1"
+       }
+      ],
+      "assumptions": [],
+      "prompt_version": "advocate.v3"
+     }
+    },
+    {
+     "argument_id": "PR-ARG-2",
+     "agent_id": "prosecution_agent",
+     "claim": "Alex came at David aggressively inside the house.",
+     "evidence_ids": [
+      "E006"
+     ],
+     "fact_ids": [
+      "F004"
+     ],
+     "witness_ids": [
+      "W001"
+     ],
+     "law_ids": [
+      "LAW_101"
+     ],
+     "counter_argument_ids": [],
+     "reasoning": "David's statement and the neighbour hearing a struggle.",
+     "confidence": 0.6,
+     "timestamp": "2026-09-20T08:13:14.324140Z",
+     "metadata": {
+      "stage": "PROSECUTION_ARGUMENT",
+      "charges": [
+       "assault"
+      ],
+      "elements": [
+       {
+        "rule_id": "LAW_101",
+        "condition_id": "C1"
+       },
+       {
+        "rule_id": "LAW_101",
+        "condition_id": "C2"
+       }
+      ],
+      "assumptions": [
+       "David's account of the confrontation is accurate."
+      ],
+      "prompt_version": "advocate.v3"
+     }
+    }
+   ],
+   "message": {
+    "message_id": "MSG-PR-ARG",
+    "case_id": "CASE_001",
+    "sender": "prosecution_agent",
+    "recipient": "judge_agent",
+    "message_type": "argument",
+    "stage": "PROSECUTION_ARGUMENT",
+    "claim": "The evidence proves Alex broke into the home and attacked David.",
+    "argument_ids": [
+     "PR-ARG-1",
+     "PR-ARG-2"
+    ],
+    "evidence_ids": [
+     "E001",
+     "E002",
+     "E006"
+    ],
+    "law_ids": [
+     "LAW_104",
+     "LAW_101"
+    ],
+    "reasoning": "[PR-ARG-1] Alex entered David's home without permission through a broken window. [PR-ARG-2] Alex came at David aggressively inside the house.",
+    "timestamp": "2026-09-20T08:13:14.324159Z",
+    "metadata": {}
+   },
+   "flags": [],
+   "attempts": [
+    {
+     "attempt": 1,
+     "accepted": true,
+     "errors": [],
+     "output": "{\"statement\": \"The evidence proves Alex broke into the home and attacked David.\", \"arguments\": [{\"charges\": [\"burglary\"], \"elements\": [{\"rule_id\": \"LAW_104\", \"condition_id\": \"C1\"}], \"claim\": \"Alex entered David's home without permission through a broken window.\", \"fact_ids\": [\"F001\", \"F002\"], \"evidence_ids\": [\"E001\", \"E002\"], \"witness_ids\": [], \"law_ids\": [\"LAW_104\"], \"responds_to\": [], \"assumptions\": [], \"reasoning\": \"Glass inside the kitchen and Alex's footprints at the window.\", \"confidence\": 0.9}, {\"charges\": [\"assault\"], \"elements\": [{\"rule_id\": \"LAW_101\", \"condition_id\": \"C1\"}, {\"rule_id\": \"LAW_101\", \"condition_id\": \"C2\"}], \"claim\": \"Alex came at David aggressively inside the house.\", \"fact_ids\": [\"F004\"], \"evidence_ids\": [\"E006\"], \"witness_ids\": [\"W001\"], \"law_ids\": [], \"responds_to\": [], \"assumptions\": [\"David's account of the confrontation is accurate.\"], \"reasoning\": \"David's statement and the neighbour hearing a struggle.\", \"confidence\": 0.6}]}"
+    }
+   ],
+   "prompt_version": "advocate.v3",
+   "provider": "scripted",
+   "model": "scripted-model",
+   "usage": {
+    "input_tokens": 8971,
+    "output_tokens": 242,
+    "cache_read_input_tokens": 0
+   }
+  },
+  {
+   "stage": "DEFENSE_ARGUMENT",
+   "role": "defense",
+   "agent_id": "defense_agent",
+   "statement": "Nothing proves Alex intended a crime, and nothing proves he attacked.",
+   "arguments": [
+    {
+     "argument_id": "DF-ARG-1",
+     "agent_id": "defense_agent",
+     "claim": "No evidence shows Alex intended to commit an offense inside.",
+     "evidence_ids": [],
+     "fact_ids": [
+      "F001"
+     ],
+     "witness_ids": [
+      "W003"
+     ],
+     "law_ids": [
+      "LAW_104",
+      "P002"
+     ],
+     "counter_argument_ids": [],
+     "reasoning": "The record is silent on intent; the burden is the prosecution's.",
+     "confidence": 0.8,
+     "timestamp": "2026-09-20T08:13:14.325480Z",
+     "metadata": {
+      "stage": "DEFENSE_ARGUMENT",
+      "charges": [
+       "burglary"
+      ],
+      "elements": [
+       {
+        "rule_id": "LAW_104",
+        "condition_id": "C2"
+       }
+      ],
+      "assumptions": [
+       "Alex's account of confusing the address may be true."
+      ],
+      "prompt_version": "advocate.v3"
+     }
+    },
+    {
+     "argument_id": "DF-ARG-2",
+     "agent_id": "defense_agent",
+     "claim": "The absence of defensive wounds contradicts any attack by Alex.",
+     "evidence_ids": [
+      "E007"
+     ],
+     "fact_ids": [],
+     "witness_ids": [],
+     "law_ids": [
+      "P004",
+      "LAW_101"
+     ],
+     "counter_argument_ids": [],
+     "reasoning": "E007 is forensic and reliable; F004 is disputed.",
+     "confidence": 0.75,
+     "timestamp": "2026-09-20T08:13:14.325493Z",
+     "metadata": {
+      "stage": "DEFENSE_ARGUMENT",
+      "charges": [
+       "assault"
+      ],
+      "elements": [
+       {
+        "rule_id": "LAW_101",
+        "condition_id": "C1"
+       }
+      ],
+      "assumptions": [],
+      "prompt_version": "advocate.v3"
+     }
+    }
+   ],
+   "message": {
+    "message_id": "MSG-DF-ARG",
+    "case_id": "CASE_001",
+    "sender": "defense_agent",
+    "recipient": "judge_agent",
+    "message_type": "argument",
+    "stage": "DEFENSE_ARGUMENT",
+    "claim": "Nothing proves Alex intended a crime, and nothing proves he attacked.",
+    "argument_ids": [
+     "DF-ARG-1",
+     "DF-ARG-2"
+    ],
+    "evidence_ids": [
+     "E007"
+    ],
+    "law_ids": [
+     "LAW_104",
+     "P002",
+     "P004",
+     "LAW_101"
+    ],
+    "reasoning": "[DF-ARG-1] No evidence shows Alex intended to commit an offense inside. [DF-ARG-2] The absence of defensive wounds contradicts any attack by Alex.",
+    "timestamp": "2026-09-20T08:13:14.325507Z",
+    "metadata": {}
+   },
+   "flags": [],
+   "attempts": [
+    {
+     "attempt": 1,
+     "accepted": true,
+     "errors": [],
+     "output": "{\"statement\": \"Nothing proves Alex intended a crime, and nothing proves he attacked.\", \"arguments\": [{\"charges\": [\"burglary\"], \"elements\": [{\"rule_id\": \"LAW_104\", \"condition_id\": \"C2\"}], \"claim\": \"No evidence shows Alex intended to commit an offense inside.\", \"fact_ids\": [\"F001\"], \"evidence_ids\": [], \"witness_ids\": [\"W003\"], \"law_ids\": [\"LAW_104\", \"P002\"], \"responds_to\": [], \"assumptions\": [\"Alex's account of confusing the address may be true.\"], \"reasoning\": \"The record is silent on intent; the burden is the prosecution's.\", \"confidence\": 0.8}, {\"charges\": [\"assault\"], \"elements\": [{\"rule_id\": \"LAW_101\", \"condition_id\": \"C1\"}], \"claim\": \"The absence of defensive wounds contradicts any attack by Alex.\", \"fact_ids\": [], \"evidence_ids\": [\"E007\"], \"witness_ids\": [], \"law_ids\": [\"P004\"], \"responds_to\": [], \"assumptions\": [], \"reasoning\": \"E007 is forensic and reliable; F004 is disputed.\", \"confidence\": 0.75}]}"
+    }
+   ],
+   "prompt_version": "advocate.v3",
+   "provider": "scripted",
+   "model": "scripted-model",
+   "usage": {
+    "input_tokens": 9365,
+    "output_tokens": 229,
+    "cache_read_input_tokens": 0
+   }
+  },
+  {
+   "stage": "CROSS_EXAMINATION",
+   "role": "prosecution",
+   "agent_id": "prosecution_agent",
+   "statement": "The evidence proves Alex broke into the home and attacked David.",
+   "arguments": [
+    {
+     "argument_id": "PR-CROSS-1",
+     "agent_id": "prosecution_agent",
+     "claim": "Alex entered David's home without permission through a broken window.",
+     "evidence_ids": [
+      "E001",
+      "E002"
+     ],
+     "fact_ids": [
+      "F001",
+      "F002"
+     ],
+     "witness_ids": [
+      "W003"
+     ],
+     "law_ids": [
+      "LAW_104"
+     ],
+     "counter_argument_ids": [],
+     "reasoning": "Glass inside the kitchen and Alex's footprints at the window.",
+     "confidence": 0.9,
+     "timestamp": "2026-09-20T08:13:14.326783Z",
+     "metadata": {
+      "stage": "CROSS_EXAMINATION",
+      "charges": [
+       "burglary"
+      ],
+      "elements": [
+       {
+        "rule_id": "LAW_104",
+        "condition_id": "C1"
+       }
+      ],
+      "assumptions": [],
+      "prompt_version": "advocate.v3"
+     }
+    },
+    {
+     "argument_id": "PR-CROSS-2",
+     "agent_id": "prosecution_agent",
+     "claim": "Alex came at David aggressively inside the house.",
+     "evidence_ids": [
+      "E006"
+     ],
+     "fact_ids": [
+      "F004"
+     ],
+     "witness_ids": [
+      "W003"
+     ],
+     "law_ids": [
+      "LAW_101"
+     ],
+     "counter_argument_ids": [],
+     "reasoning": "David's statement and the neighbour hearing a struggle.",
+     "confidence": 0.6,
+     "timestamp": "2026-09-20T08:13:14.326796Z",
+     "metadata": {
+      "stage": "CROSS_EXAMINATION",
+      "charges": [
+       "assault"
+      ],
+      "elements": [
+       {
+        "rule_id": "LAW_101",
+        "condition_id": "C1"
+       },
+       {
+        "rule_id": "LAW_101",
+        "condition_id": "C2"
+       }
+      ],
+      "assumptions": [
+       "David's account of the confrontation is accurate."
+      ],
+      "prompt_version": "advocate.v3"
+     }
+    }
+   ],
+   "message": {
+    "message_id": "MSG-PR-CROSS",
+    "case_id": "CASE_001",
+    "sender": "prosecution_agent",
+    "recipient": "judge_agent",
+    "message_type": "cross_examination",
+    "stage": "CROSS_EXAMINATION",
+    "claim": "The evidence proves Alex broke into the home and attacked David.",
+    "argument_ids": [
+     "PR-CROSS-1",
+     "PR-CROSS-2"
+    ],
+    "evidence_ids": [
+     "E001",
+     "E002",
+     "E006"
+    ],
+    "law_ids": [
+     "LAW_104",
+     "LAW_101"
+    ],
+    "reasoning": "[PR-CROSS-1] Alex entered David's home without permission through a broken window. [PR-CROSS-2] Alex came at David aggressively inside the house.",
+    "timestamp": "2026-09-20T08:13:14.326809Z",
+    "metadata": {}
+   },
+   "flags": [],
+   "attempts": [
+    {
+     "attempt": 1,
+     "accepted": true,
+     "errors": [],
+     "output": "{\"statement\": \"The evidence proves Alex broke into the home and attacked David.\", \"arguments\": [{\"charges\": [\"burglary\"], \"elements\": [{\"rule_id\": \"LAW_104\", \"condition_id\": \"C1\"}], \"claim\": \"Alex entered David's home without permission through a broken window.\", \"fact_ids\": [\"F001\", \"F002\"], \"evidence_ids\": [\"E001\", \"E002\"], \"witness_ids\": [\"W003\"], \"law_ids\": [\"LAW_104\"], \"responds_to\": [], \"assumptions\": [], \"reasoning\": \"Glass inside the kitchen and Alex's footprints at the window.\", \"confidence\": 0.9}, {\"charges\": [\"assault\"], \"elements\": [{\"rule_id\": \"LAW_101\", \"condition_id\": \"C1\"}, {\"rule_id\": \"LAW_101\", \"condition_id\": \"C2\"}], \"claim\": \"Alex came at David aggressively inside the house.\", \"fact_ids\": [\"F004\"], \"evidence_ids\": [\"E006\"], \"witness_ids\": [\"W003\"], \"law_ids\": [], \"responds_to\": [], \"assumptions\": [\"David's account of the confrontation is accurate.\"], \"reasoning\": \"David's statement and the neighbour hearing a struggle.\", \"confidence\": 0.6}]}"
+    }
+   ],
+   "prompt_version": "advocate.v3",
+   "provider": "scripted",
+   "model": "scripted-model",
+   "usage": {
+    "input_tokens": 9769,
+    "output_tokens": 243,
+    "cache_read_input_tokens": 0
+   }
+  },
+  {
+   "stage": "CROSS_EXAMINATION",
+   "role": "defense",
+   "agent_id": "defense_agent",
+   "statement": "Nothing proves Alex intended a crime, and nothing proves he attacked.",
+   "arguments": [
+    {
+     "argument_id": "DF-CROSS-1",
+     "agent_id": "defense_agent",
+     "claim": "No evidence shows Alex intended to commit an offense inside.",
+     "evidence_ids": [],
+     "fact_ids": [
+      "F001"
+     ],
+     "witness_ids": [
+      "W001"
+     ],
+     "law_ids": [
+      "LAW_104",
+      "P002"
+     ],
+     "counter_argument_ids": [],
+     "reasoning": "The record is silent on intent; the burden is the prosecution's.",
+     "confidence": 0.8,
+     "timestamp": "2026-09-20T08:13:14.327519Z",
+     "metadata": {
+      "stage": "CROSS_EXAMINATION",
+      "charges": [
+       "burglary"
+      ],
+      "elements": [
+       {
+        "rule_id": "LAW_104",
+        "condition_id": "C2"
+       }
+      ],
+      "assumptions": [
+       "Alex's account of confusing the address may be true."
+      ],
+      "prompt_version": "advocate.v3"
+     }
+    },
+    {
+     "argument_id": "DF-CROSS-2",
+     "agent_id": "defense_agent",
+     "claim": "The absence of defensive wounds contradicts any attack by Alex.",
+     "evidence_ids": [
+      "E007"
+     ],
+     "fact_ids": [],
+     "witness_ids": [
+      "W001"
+     ],
+     "law_ids": [
+      "P004",
+      "LAW_101"
+     ],
+     "counter_argument_ids": [],
+     "reasoning": "E007 is forensic and reliable; F004 is disputed.",
+     "confidence": 0.75,
+     "timestamp": "2026-09-20T08:13:14.327529Z",
+     "metadata": {
+      "stage": "CROSS_EXAMINATION",
+      "charges": [
+       "assault"
+      ],
+      "elements": [
+       {
+        "rule_id": "LAW_101",
+        "condition_id": "C1"
+       }
+      ],
+      "assumptions": [],
+      "prompt_version": "advocate.v3"
+     }
+    }
+   ],
+   "message": {
+    "message_id": "MSG-DF-CROSS",
+    "case_id": "CASE_001",
+    "sender": "defense_agent",
+    "recipient": "judge_agent",
+    "message_type": "cross_examination",
+    "stage": "CROSS_EXAMINATION",
+    "claim": "Nothing proves Alex intended a crime, and nothing proves he attacked.",
+    "argument_ids": [
+     "DF-CROSS-1",
+     "DF-CROSS-2"
+    ],
+    "evidence_ids": [
+     "E007"
+    ],
+    "law_ids": [
+     "LAW_104",
+     "P002",
+     "P004",
+     "LAW_101"
+    ],
+    "reasoning": "[DF-CROSS-1] No evidence shows Alex intended to commit an offense inside. [DF-CROSS-2] The absence of defensive wounds contradicts any attack by Alex.",
+    "timestamp": "2026-09-20T08:13:14.327541Z",
+    "metadata": {}
+   },
+   "flags": [],
+   "attempts": [
+    {
+     "attempt": 1,
+     "accepted": true,
+     "errors": [],
+     "output": "{\"statement\": \"Nothing proves Alex intended a crime, and nothing proves he attacked.\", \"arguments\": [{\"charges\": [\"burglary\"], \"elements\": [{\"rule_id\": \"LAW_104\", \"condition_id\": \"C2\"}], \"claim\": \"No evidence shows Alex intended to commit an offense inside.\", \"fact_ids\": [\"F001\"], \"evidence_ids\": [], \"witness_ids\": [\"W001\"], \"law_ids\": [\"LAW_104\", \"P002\"], \"responds_to\": [], \"assumptions\": [\"Alex's account of confusing the address may be true.\"], \"reasoning\": \"The record is silent on intent; the burden is the prosecution's.\", \"confidence\": 0.8}, {\"charges\": [\"assault\"], \"elements\": [{\"rule_id\": \"LAW_101\", \"condition_id\": \"C1\"}], \"claim\": \"The absence of defensive wounds contradicts any attack by Alex.\", \"fact_ids\": [], \"evidence_ids\": [\"E007\"], \"witness_ids\": [\"W001\"], \"law_ids\": [\"P004\"], \"responds_to\": [], \"assumptions\": [], \"reasoning\": \"E007 is forensic and reliable; F004 is disputed.\", \"confidence\": 0.75}]}"
+    }
+   ],
+   "prompt_version": "advocate.v3",
+   "provider": "scripted",
+   "model": "scripted-model",
+   "usage": {
+    "input_tokens": 10169,
+    "output_tokens": 231,
+    "cache_read_input_tokens": 0
+   }
+  },
+  {
+   "stage": "JUDGE_QUESTIONS",
+   "role": "prosecution",
+   "agent_id": "prosecution_agent",
+   "statement": "The evidence proves Alex broke into the home and attacked David.",
+   "arguments": [
+    {
+     "argument_id": "PR-ANS1-1",
+     "agent_id": "prosecution_agent",
+     "claim": "Alex entered David's home without permission through a broken window.",
+     "evidence_ids": [
+      "E001",
+      "E002"
+     ],
+     "fact_ids": [
+      "F001",
+      "F002"
+     ],
+     "witness_ids": [],
+     "law_ids": [
+      "LAW_104"
+     ],
+     "counter_argument_ids": [
+      "JQ1-1"
+     ],
+     "reasoning": "Glass inside the kitchen and Alex's footprints at the window.",
+     "confidence": 0.9,
+     "timestamp": "2026-09-20T08:13:14.332341Z",
+     "metadata": {
+      "stage": "JUDGE_QUESTIONS",
+      "charges": [
+       "burglary"
+      ],
+      "elements": [
+       {
+        "rule_id": "LAW_104",
+        "condition_id": "C1"
+       }
+      ],
+      "assumptions": [],
+      "prompt_version": "advocate.v3"
+     }
+    },
+    {
+     "argument_id": "PR-ANS1-2",
+     "agent_id": "prosecution_agent",
+     "claim": "Alex came at David aggressively inside the house.",
+     "evidence_ids": [
+      "E006"
+     ],
+     "fact_ids": [
+      "F004"
+     ],
+     "witness_ids": [
+      "W001"
+     ],
+     "law_ids": [
+      "LAW_101"
+     ],
+     "counter_argument_ids": [
+      "JQ1-1"
+     ],
+     "reasoning": "David's statement and the neighbour hearing a struggle.",
+     "confidence": 0.6,
+     "timestamp": "2026-09-20T08:13:14.332353Z",
+     "metadata": {
+      "stage": "JUDGE_QUESTIONS",
+      "charges": [
+       "assault"
+      ],
+      "elements": [
+       {
+        "rule_id": "LAW_101",
+        "condition_id": "C1"
+       },
+       {
+        "rule_id": "LAW_101",
+        "condition_id": "C2"
+       }
+      ],
+      "assumptions": [
+       "David's account of the confrontation is accurate."
+      ],
+      "prompt_version": "advocate.v3"
+     }
+    }
+   ],
+   "message": {
+    "message_id": "MSG-PR-ANS1",
+    "case_id": "CASE_001",
+    "sender": "prosecution_agent",
+    "recipient": "judge_agent",
+    "message_type": "answer",
+    "stage": "JUDGE_QUESTIONS",
+    "claim": "The evidence proves Alex broke into the home and attacked David.",
+    "argument_ids": [
+     "PR-ANS1-1",
+     "PR-ANS1-2"
+    ],
+    "evidence_ids": [
+     "E001",
+     "E002",
+     "E006"
+    ],
+    "law_ids": [
+     "LAW_104",
+     "LAW_101"
+    ],
+    "reasoning": "[PR-ANS1-1] Alex entered David's home without permission through a broken window. [PR-ANS1-2] Alex came at David aggressively inside the house.",
+    "timestamp": "2026-09-20T08:13:14.332366Z",
+    "metadata": {}
+   },
+   "flags": [],
+   "attempts": [
+    {
+     "attempt": 1,
+     "accepted": true,
+     "errors": [],
+     "output": "{\"statement\": \"The evidence proves Alex broke into the home and attacked David.\", \"arguments\": [{\"charges\": [\"burglary\"], \"elements\": [{\"rule_id\": \"LAW_104\", \"condition_id\": \"C1\"}], \"claim\": \"Alex entered David's home without permission through a broken window.\", \"fact_ids\": [\"F001\", \"F002\"], \"evidence_ids\": [\"E001\", \"E002\"], \"witness_ids\": [], \"law_ids\": [\"LAW_104\"], \"responds_to\": [\"JQ1-1\"], \"assumptions\": [], \"reasoning\": \"Glass inside the kitchen and Alex's footprints at the window.\", \"confidence\": 0.9}, {\"charges\": [\"assault\"], \"elements\": [{\"rule_id\": \"LAW_101\", \"condition_id\": \"C1\"}, {\"rule_id\": \"LAW_101\", \"condition_id\": \"C2\"}], \"claim\": \"Alex came at David aggressively inside the house.\", \"fact_ids\": [\"F004\"], \"evidence_ids\": [\"E006\"], \"witness_ids\": [\"W001\"], \"law_ids\": [], \"responds_to\": [\"JQ1-1\"], \"assumptions\": [\"David's account of the confrontation is accurate.\"], \"reasoning\": \"David's statement and the neighbour hearing a struggle.\", \"confidence\": 0.6}]}"
+    }
+   ],
+   "prompt_version": "advocate.v3",
+   "provider": "scripted",
+   "model": "scripted-model",
+   "usage": {
+    "input_tokens": 11140,
+    "output_tokens": 245,
+    "cache_read_input_tokens": 0
+   }
+  },
+  {
+   "stage": "PROSECUTION_REBUTTAL",
+   "role": "prosecution",
+   "agent_id": "prosecution_agent",
+   "statement": "The evidence proves Alex broke into the home and attacked David.",
+   "arguments": [
+    {
+     "argument_id": "PR-REB-1",
+     "agent_id": "prosecution_agent",
+     "claim": "Alex entered David's home without permission through a broken window.",
+     "evidence_ids": [
+      "E001",
+      "E002"
+     ],
+     "fact_ids": [
+      "F001",
+      "F002"
+     ],
+     "witness_ids": [],
+     "law_ids": [
+      "LAW_104"
+     ],
+     "counter_argument_ids": [
+      "DF-ARG-1"
+     ],
+     "reasoning": "Glass inside the kitchen and Alex's footprints at the window.",
+     "confidence": 0.9,
+     "timestamp": "2026-09-20T08:13:14.334739Z",
+     "metadata": {
+      "stage": "PROSECUTION_REBUTTAL",
+      "charges": [
+       "burglary"
+      ],
+      "elements": [
+       {
+        "rule_id": "LAW_104",
+        "condition_id": "C1"
+       }
+      ],
+      "assumptions": [],
+      "prompt_version": "advocate.v3"
+     }
+    },
+    {
+     "argument_id": "PR-REB-2",
+     "agent_id": "prosecution_agent",
+     "claim": "Alex came at David aggressively inside the house.",
+     "evidence_ids": [
+      "E006"
+     ],
+     "fact_ids": [
+      "F004"
+     ],
+     "witness_ids": [
+      "W001"
+     ],
+     "law_ids": [
+      "LAW_101"
+     ],
+     "counter_argument_ids": [
+      "DF-ARG-1"
+     ],
+     "reasoning": "David's statement and the neighbour hearing a struggle.",
+     "confidence": 0.6,
+     "timestamp": "2026-09-20T08:13:14.334751Z",
+     "metadata": {
+      "stage": "PROSECUTION_REBUTTAL",
+      "charges": [
+       "assault"
+      ],
+      "elements": [
+       {
+        "rule_id": "LAW_101",
+        "condition_id": "C1"
+       },
+       {
+        "rule_id": "LAW_101",
+        "condition_id": "C2"
+       }
+      ],
+      "assumptions": [
+       "David's account of the confrontation is accurate."
+      ],
+      "prompt_version": "advocate.v3"
+     }
+    }
+   ],
+   "message": {
+    "message_id": "MSG-PR-REB",
+    "case_id": "CASE_001",
+    "sender": "prosecution_agent",
+    "recipient": "judge_agent",
+    "message_type": "rebuttal",
+    "stage": "PROSECUTION_REBUTTAL",
+    "claim": "The evidence proves Alex broke into the home and attacked David.",
+    "argument_ids": [
+     "PR-REB-1",
+     "PR-REB-2"
+    ],
+    "evidence_ids": [
+     "E001",
+     "E002",
+     "E006"
+    ],
+    "law_ids": [
+     "LAW_104",
+     "LAW_101"
+    ],
+    "reasoning": "[PR-REB-1] Alex entered David's home without permission through a broken window. [PR-REB-2] Alex came at David aggressively inside the house.",
+    "timestamp": "2026-09-20T08:13:14.334764Z",
+    "metadata": {}
+   },
+   "flags": [],
+   "attempts": [
+    {
+     "attempt": 1,
+     "accepted": true,
+     "errors": [],
+     "output": "{\"statement\": \"The evidence proves Alex broke into the home and attacked David.\", \"arguments\": [{\"charges\": [\"burglary\"], \"elements\": [{\"rule_id\": \"LAW_104\", \"condition_id\": \"C1\"}], \"claim\": \"Alex entered David's home without permission through a broken window.\", \"fact_ids\": [\"F001\", \"F002\"], \"evidence_ids\": [\"E001\", \"E002\"], \"witness_ids\": [], \"law_ids\": [\"LAW_104\"], \"responds_to\": [\"DF-ARG-1\"], \"assumptions\": [], \"reasoning\": \"Glass inside the kitchen and Alex's footprints at the window.\", \"confidence\": 0.9}, {\"charges\": [\"assault\"], \"elements\": [{\"rule_id\": \"LAW_101\", \"condition_id\": \"C1\"}, {\"rule_id\": \"LAW_101\", \"condition_id\": \"C2\"}], \"claim\": \"Alex came at David aggressively inside the house.\", \"fact_ids\": [\"F004\"], \"evidence_ids\": [\"E006\"], \"witness_ids\": [\"W001\"], \"law_ids\": [], \"responds_to\": [\"DF-ARG-1\"], \"assumptions\": [\"David's account of the confrontation is accurate.\"], \"reasoning\": \"David's statement and the neighbour hearing a struggle.\", \"confidence\": 0.6}]}"
+    }
+   ],
+   "prompt_version": "advocate.v3",
+   "provider": "scripted",
+   "model": "scripted-model",
+   "usage": {
+    "input_tokens": 11544,
+    "output_tokens": 247,
+    "cache_read_input_tokens": 0
+   }
+  },
+  {
+   "stage": "DEFENSE_REBUTTAL",
+   "role": "defense",
+   "agent_id": "defense_agent",
+   "statement": "Nothing proves Alex intended a crime, and nothing proves he attacked.",
+   "arguments": [
+    {
+     "argument_id": "DF-REB-1",
+     "agent_id": "defense_agent",
+     "claim": "No evidence shows Alex intended to commit an offense inside.",
+     "evidence_ids": [],
+     "fact_ids": [
+      "F001"
+     ],
+     "witness_ids": [
+      "W003"
+     ],
+     "law_ids": [
+      "LAW_104",
+      "P002"
+     ],
+     "counter_argument_ids": [
+      "PR-REB-1"
+     ],
+     "reasoning": "The record is silent on intent; the burden is the prosecution's.",
+     "confidence": 0.8,
+     "timestamp": "2026-09-20T08:13:14.336029Z",
+     "metadata": {
+      "stage": "DEFENSE_REBUTTAL",
+      "charges": [
+       "burglary"
+      ],
+      "elements": [
+       {
+        "rule_id": "LAW_104",
+        "condition_id": "C2"
+       }
+      ],
+      "assumptions": [
+       "Alex's account of confusing the address may be true."
+      ],
+      "prompt_version": "advocate.v3"
+     }
+    },
+    {
+     "argument_id": "DF-REB-2",
+     "agent_id": "defense_agent",
+     "claim": "The absence of defensive wounds contradicts any attack by Alex.",
+     "evidence_ids": [
+      "E007"
+     ],
+     "fact_ids": [],
+     "witness_ids": [],
+     "law_ids": [
+      "P004",
+      "LAW_101"
+     ],
+     "counter_argument_ids": [
+      "PR-REB-1"
+     ],
+     "reasoning": "E007 is forensic and reliable; F004 is disputed.",
+     "confidence": 0.75,
+     "timestamp": "2026-09-20T08:13:14.336043Z",
+     "metadata": {
+      "stage": "DEFENSE_REBUTTAL",
+      "charges": [
+       "assault"
+      ],
+      "elements": [
+       {
+        "rule_id": "LAW_101",
+        "condition_id": "C1"
+       }
+      ],
+      "assumptions": [],
+      "prompt_version": "advocate.v3"
+     }
+    }
+   ],
+   "message": {
+    "message_id": "MSG-DF-REB",
+    "case_id": "CASE_001",
+    "sender": "defense_agent",
+    "recipient": "judge_agent",
+    "message_type": "rebuttal",
+    "stage": "DEFENSE_REBUTTAL",
+    "claim": "Nothing proves Alex intended a crime, and nothing proves he attacked.",
+    "argument_ids": [
+     "DF-REB-1",
+     "DF-REB-2"
+    ],
+    "evidence_ids": [
+     "E007"
+    ],
+    "law_ids": [
+     "LAW_104",
+     "P002",
+     "P004",
+     "LAW_101"
+    ],
+    "reasoning": "[DF-REB-1] No evidence shows Alex intended to commit an offense inside. [DF-REB-2] The absence of defensive wounds contradicts any attack by Alex.",
+    "timestamp": "2026-09-20T08:13:14.336056Z",
+    "metadata": {}
+   },
+   "flags": [],
+   "attempts": [
+    {
+     "attempt": 1,
+     "accepted": true,
+     "errors": [],
+     "output": "{\"statement\": \"Nothing proves Alex intended a crime, and nothing proves he attacked.\", \"arguments\": [{\"charges\": [\"burglary\"], \"elements\": [{\"rule_id\": \"LAW_104\", \"condition_id\": \"C2\"}], \"claim\": \"No evidence shows Alex intended to commit an offense inside.\", \"fact_ids\": [\"F001\"], \"evidence_ids\": [], \"witness_ids\": [\"W003\"], \"law_ids\": [\"LAW_104\", \"P002\"], \"responds_to\": [\"PR-REB-1\"], \"assumptions\": [\"Alex's account of confusing the address may be true.\"], \"reasoning\": \"The record is silent on intent; the burden is the prosecution's.\", \"confidence\": 0.8}, {\"charges\": [\"assault\"], \"elements\": [{\"rule_id\": \"LAW_101\", \"condition_id\": \"C1\"}], \"claim\": \"The absence of defensive wounds contradicts any attack by Alex.\", \"fact_ids\": [], \"evidence_ids\": [\"E007\"], \"witness_ids\": [], \"law_ids\": [\"P004\"], \"responds_to\": [\"PR-REB-1\"], \"assumptions\": [], \"reasoning\": \"E007 is forensic and reliable; F004 is disputed.\", \"confidence\": 0.75}]}"
+    }
+   ],
+   "prompt_version": "advocate.v3",
+   "provider": "scripted",
+   "model": "scripted-model",
+   "usage": {
+    "input_tokens": 11956,
+    "output_tokens": 234,
+    "cache_read_input_tokens": 0
+   }
+  },
+  {
+   "stage": "CLOSING_ARGUMENTS",
+   "role": "prosecution",
+   "agent_id": "prosecution_agent",
+   "statement": "The evidence proves Alex broke into the home and attacked David.",
+   "arguments": [
+    {
+     "argument_id": "PR-CLOSE-1",
+     "agent_id": "prosecution_agent",
+     "claim": "Alex entered David's home without permission through a broken window.",
+     "evidence_ids": [
+      "E001",
+      "E002"
+     ],
+     "fact_ids": [
+      "F001",
+      "F002"
+     ],
+     "witness_ids": [],
+     "law_ids": [
+      "LAW_104"
+     ],
+     "counter_argument_ids": [],
+     "reasoning": "Glass inside the kitchen and Alex's footprints at the window.",
+     "confidence": 0.9,
+     "timestamp": "2026-09-20T08:13:14.337273Z",
+     "metadata": {
+      "stage": "CLOSING_ARGUMENTS",
+      "charges": [
+       "burglary"
+      ],
+      "elements": [
+       {
+        "rule_id": "LAW_104",
+        "condition_id": "C1"
+       }
+      ],
+      "assumptions": [],
+      "prompt_version": "advocate.v3"
+     }
+    },
+    {
+     "argument_id": "PR-CLOSE-2",
+     "agent_id": "prosecution_agent",
+     "claim": "Alex came at David aggressively inside the house.",
+     "evidence_ids": [
+      "E006"
+     ],
+     "fact_ids": [
+      "F004"
+     ],
+     "witness_ids": [
+      "W001"
+     ],
+     "law_ids": [
+      "LAW_101"
+     ],
+     "counter_argument_ids": [],
+     "reasoning": "David's statement and the neighbour hearing a struggle.",
+     "confidence": 0.6,
+     "timestamp": "2026-09-20T08:13:14.337291Z",
+     "metadata": {
+      "stage": "CLOSING_ARGUMENTS",
+      "charges": [
+       "assault"
+      ],
+      "elements": [
+       {
+        "rule_id": "LAW_101",
+        "condition_id": "C1"
+       },
+       {
+        "rule_id": "LAW_101",
+        "condition_id": "C2"
+       }
+      ],
+      "assumptions": [
+       "David's account of the confrontation is accurate."
+      ],
+      "prompt_version": "advocate.v3"
+     }
+    }
+   ],
+   "message": {
+    "message_id": "MSG-PR-CLOSE",
+    "case_id": "CASE_001",
+    "sender": "prosecution_agent",
+    "recipient": "judge_agent",
+    "message_type": "closing_statement",
+    "stage": "CLOSING_ARGUMENTS",
+    "claim": "The evidence proves Alex broke into the home and attacked David.",
+    "argument_ids": [
+     "PR-CLOSE-1",
+     "PR-CLOSE-2"
+    ],
+    "evidence_ids": [
+     "E001",
+     "E002",
+     "E006"
+    ],
+    "law_ids": [
+     "LAW_104",
+     "LAW_101"
+    ],
+    "reasoning": "[PR-CLOSE-1] Alex entered David's home without permission through a broken window. [PR-CLOSE-2] Alex came at David aggressively inside the house.",
+    "timestamp": "2026-09-20T08:13:14.337310Z",
+    "metadata": {}
+   },
+   "flags": [],
+   "attempts": [
+    {
+     "attempt": 1,
+     "accepted": true,
+     "errors": [],
+     "output": "{\"statement\": \"The evidence proves Alex broke into the home and attacked David.\", \"arguments\": [{\"charges\": [\"burglary\"], \"elements\": [{\"rule_id\": \"LAW_104\", \"condition_id\": \"C1\"}], \"claim\": \"Alex entered David's home without permission through a broken window.\", \"fact_ids\": [\"F001\", \"F002\"], \"evidence_ids\": [\"E001\", \"E002\"], \"witness_ids\": [], \"law_ids\": [\"LAW_104\"], \"responds_to\": [], \"assumptions\": [], \"reasoning\": \"Glass inside the kitchen and Alex's footprints at the window.\", \"confidence\": 0.9}, {\"charges\": [\"assault\"], \"elements\": [{\"rule_id\": \"LAW_101\", \"condition_id\": \"C1\"}, {\"rule_id\": \"LAW_101\", \"condition_id\": \"C2\"}], \"claim\": \"Alex came at David aggressively inside the house.\", \"fact_ids\": [\"F004\"], \"evidence_ids\": [\"E006\"], \"witness_ids\": [\"W001\"], \"law_ids\": [], \"responds_to\": [], \"assumptions\": [\"David's account of the confrontation is accurate.\"], \"reasoning\": \"David's statement and the neighbour hearing a struggle.\", \"confidence\": 0.6}]}"
+    }
+   ],
+   "prompt_version": "advocate.v3",
+   "provider": "scripted",
+   "model": "scripted-model",
+   "usage": {
+    "input_tokens": 12315,
+    "output_tokens": 242,
+    "cache_read_input_tokens": 0
+   }
+  },
+  {
+   "stage": "CLOSING_ARGUMENTS",
+   "role": "defense",
+   "agent_id": "defense_agent",
+   "statement": "Nothing proves Alex intended a crime, and nothing proves he attacked.",
+   "arguments": [
+    {
+     "argument_id": "DF-CLOSE-1",
+     "agent_id": "defense_agent",
+     "claim": "No evidence shows Alex intended to commit an offense inside.",
+     "evidence_ids": [],
+     "fact_ids": [
+      "F001"
+     ],
+     "witness_ids": [
+      "W003"
+     ],
+     "law_ids": [
+      "LAW_104",
+      "P002"
+     ],
+     "counter_argument_ids": [],
+     "reasoning": "The record is silent on intent; the burden is the prosecution's.",
+     "confidence": 0.8,
+     "timestamp": "2026-09-20T08:13:14.338391Z",
+     "metadata": {
+      "stage": "CLOSING_ARGUMENTS",
+      "charges": [
+       "burglary"
+      ],
+      "elements": [
+       {
+        "rule_id": "LAW_104",
+        "condition_id": "C2"
+       }
+      ],
+      "assumptions": [
+       "Alex's account of confusing the address may be true."
+      ],
+      "prompt_version": "advocate.v3"
+     }
+    },
+    {
+     "argument_id": "DF-CLOSE-2",
+     "agent_id": "defense_agent",
+     "claim": "The absence of defensive wounds contradicts any attack by Alex.",
+     "evidence_ids": [
+      "E007"
+     ],
+     "fact_ids": [],
+     "witness_ids": [],
+     "law_ids": [
+      "P004",
+      "LAW_101"
+     ],
+     "counter_argument_ids": [],
+     "reasoning": "E007 is forensic and reliable; F004 is disputed.",
+     "confidence": 0.75,
+     "timestamp": "2026-09-20T08:13:14.338400Z",
+     "metadata": {
+      "stage": "CLOSING_ARGUMENTS",
+      "charges": [
+       "assault"
+      ],
+      "elements": [
+       {
+        "rule_id": "LAW_101",
+        "condition_id": "C1"
+       }
+      ],
+      "assumptions": [],
+      "prompt_version": "advocate.v3"
+     }
+    }
+   ],
+   "message": {
+    "message_id": "MSG-DF-CLOSE",
+    "case_id": "CASE_001",
+    "sender": "defense_agent",
+    "recipient": "judge_agent",
+    "message_type": "closing_statement",
+    "stage": "CLOSING_ARGUMENTS",
+    "claim": "Nothing proves Alex intended a crime, and nothing proves he attacked.",
+    "argument_ids": [
+     "DF-CLOSE-1",
+     "DF-CLOSE-2"
+    ],
+    "evidence_ids": [
+     "E007"
+    ],
+    "law_ids": [
+     "LAW_104",
+     "P002",
+     "P004",
+     "LAW_101"
+    ],
+    "reasoning": "[DF-CLOSE-1] No evidence shows Alex intended to commit an offense inside. [DF-CLOSE-2] The absence of defensive wounds contradicts any attack by Alex.",
+    "timestamp": "2026-09-20T08:13:14.338413Z",
+    "metadata": {}
+   },
+   "flags": [],
+   "attempts": [
+    {
+     "attempt": 1,
+     "accepted": true,
+     "errors": [],
+     "output": "{\"statement\": \"Nothing proves Alex intended a crime, and nothing proves he attacked.\", \"arguments\": [{\"charges\": [\"burglary\"], \"elements\": [{\"rule_id\": \"LAW_104\", \"condition_id\": \"C2\"}], \"claim\": \"No evidence shows Alex intended to commit an offense inside.\", \"fact_ids\": [\"F001\"], \"evidence_ids\": [], \"witness_ids\": [\"W003\"], \"law_ids\": [\"LAW_104\", \"P002\"], \"responds_to\": [], \"assumptions\": [\"Alex's account of confusing the address may be true.\"], \"reasoning\": \"The record is silent on intent; the burden is the prosecution's.\", \"confidence\": 0.8}, {\"charges\": [\"assault\"], \"elements\": [{\"rule_id\": \"LAW_101\", \"condition_id\": \"C1\"}], \"claim\": \"The absence of defensive wounds contradicts any attack by Alex.\", \"fact_ids\": [], \"evidence_ids\": [\"E007\"], \"witness_ids\": [], \"law_ids\": [\"P004\"], \"responds_to\": [], \"assumptions\": [], \"reasoning\": \"E007 is forensic and reliable; F004 is disputed.\", \"confidence\": 0.75}]}"
+    }
+   ],
+   "prompt_version": "advocate.v3",
+   "provider": "scripted",
+   "model": "scripted-model",
+   "usage": {
+    "input_tokens": 12715,
+    "output_tokens": 229,
+    "cache_read_input_tokens": 0
+   }
+  }
+ ],
+ "judge_question_rounds": [
+  {
+   "round": 1,
+   "flagged_argument_ids": [
+    "PR-OPEN-2"
+   ],
+   "questions": [
+    {
+     "question_id": "JQ1-1",
+     "case_id": "CASE_001",
+     "addressed_to": "prosecution_agent",
+     "argument_ids": [
+      "PR-OPEN-2"
+     ],
+     "question": "What in the record supports PR-OPEN-2?",
+     "reason": "The evidence review found it unsupported.",
+     "round": 1,
+     "timestamp": "2026-09-20T08:13:14.330885Z"
+    }
+   ],
+   "message": {
+    "message_id": "MSG-JUDGE-QUESTIONS1",
+    "case_id": "CASE_001",
+    "sender": "judge_agent",
+    "recipient": "parties",
+    "message_type": "judge_question",
+    "stage": "JUDGE_QUESTIONS",
+    "claim": "1 question(s) to the parties",
+    "argument_ids": [
+     "PR-OPEN-2"
+    ],
+    "evidence_ids": [],
+    "law_ids": [],
+    "reasoning": "[JQ1-1 -> prosecution_agent] What in the record supports PR-OPEN-2?",
+    "timestamp": "2026-09-20T08:13:14.330898Z",
+    "metadata": {}
+   },
+   "attempts": [
+    {
+     "attempt": 1,
+     "accepted": true,
+     "errors": [],
+     "output": "{\"questions\": [{\"addressed_to\": \"prosecution\", \"argument_ids\": [\"PR-OPEN-2\"], \"question\": \"What in the record supports PR-OPEN-2?\", \"reason\": \"The evidence review found it unsupported.\"}]}"
+    }
+   ],
+   "prompt_version": "judge-questions.v1",
+   "provider": "scripted",
+   "model": "scripted-model",
+   "usage": {
+    "input_tokens": 10940,
+    "output_tokens": 47,
+    "cache_read_input_tokens": 0
+   }
+  }
+ ],
+ "jury_independent": [
+  {
+   "juror_id": "jury_1",
+   "stage": "JURY_INDEPENDENT_DELIBERATION",
+   "output": {
+    "charge_verdicts": [
+     {
+      "charge": "burglary",
+      "verdict": "not_guilty",
+      "fact_ids": [
+       "F001"
+      ],
+      "evidence_ids": [
+       "E001",
+       "E002"
+      ],
+      "witness_ids": [],
+      "rule_ids": [
+       "LAW_104",
+       "P002"
+      ],
+      "reasoning": "Entry is proven; intent is not.",
+      "confidence": 0.8
+     },
+     {
+      "charge": "assault",
+      "verdict": "not_guilty",
+      "fact_ids": [
+       "F004"
+      ],
+      "evidence_ids": [
+       "E007"
+      ],
+      "witness_ids": [
+       "W001"
+      ],
+      "rule_ids": [
+       "LAW_101",
+       "P004"
+      ],
+      "reasoning": "David's account is contradicted by the absence of defensive wounds.",
+      "confidence": 0.7
+     }
+    ],
+    "arguments_considered": [
+     "PR-OPEN-1",
+     "DF-OPEN-1"
+    ],
+    "uncertainties": [
+     "What Alex intended when he entered."
+    ],
+    "reasoning": "The prosecution has not proven every element of either charge.",
+    "confidence": 0.75
+   },
+   "verdict": {
+    "verdict_id": "V_CASE_001_JURY_1_IND",
+    "case_id": "CASE_001",
+    "agent_id": "jury_1",
+    "charges": [
+     "burglary",
+     "assault"
+    ],
+    "decision": "burglary: not_guilty; assault: not_guilty",
+    "reasoning": "The prosecution has not proven every element of either charge.",
+    "evidence_used": [
+     "E001",
+     "E002",
+     "E007"
+    ],
+    "laws_used": [
+     "LAW_104",
+     "P002",
+     "LAW_101",
+     "P004"
+    ],
+    "unresolved_questions": [
+     "What Alex intended when he entered."
+    ],
+    "confidence": 0.75,
+    "timestamp": "2026-09-20T08:13:14.342283Z",
+    "metadata": {
+     "charge_verdicts": [
+      {
+       "charge": "burglary",
+       "verdict": "not_guilty",
+       "fact_ids": [
+        "F001"
+       ],
+       "evidence_ids": [
+        "E001",
+        "E002"
+       ],
+       "witness_ids": [],
+       "rule_ids": [
+        "LAW_104",
+        "P002"
+       ],
+       "reasoning": "Entry is proven; intent is not.",
+       "confidence": 0.8
+      },
+      {
+       "charge": "assault",
+       "verdict": "not_guilty",
+       "fact_ids": [
+        "F004"
+       ],
+       "evidence_ids": [
+        "E007"
+       ],
+       "witness_ids": [
+        "W001"
+       ],
+       "rule_ids": [
+        "LAW_101",
+        "P004"
+       ],
+       "reasoning": "David's account is contradicted by the absence of defensive wounds.",
+       "confidence": 0.7
+      }
+     ],
+     "arguments_considered": [
+      "PR-OPEN-1",
+      "DF-OPEN-1"
+     ],
+     "prompt_version": "juror.v1",
+     "perspective": null
+    }
+   },
+   "message": {
+    "message_id": "MSG-JURY_1-IND",
+    "case_id": "CASE_001",
+    "sender": "jury_1",
+    "recipient": "court",
+    "message_type": "jury_verdict",
+    "stage": "JURY_INDEPENDENT_DELIBERATION",
+    "claim": "burglary: not_guilty; assault: not_guilty",
+    "argument_ids": [
+     "PR-OPEN-1",
+     "DF-OPEN-1"
+    ],
+    "evidence_ids": [
+     "E001",
+     "E002",
+     "E007"
+    ],
+    "law_ids": [
+     "LAW_104",
+     "P002",
+     "LAW_101",
+     "P004"
+    ],
+    "reasoning": "The prosecution has not proven every element of either charge.",
+    "timestamp": "2026-09-20T08:13:14.342303Z",
+    "metadata": {}
+   },
+   "changed_charges": [],
+   "attempts": [
+    {
+     "attempt": 1,
+     "accepted": true,
+     "errors": [],
+     "output": "{\"charge_verdicts\": [{\"charge\": \"burglary\", \"verdict\": \"not_guilty\", \"fact_ids\": [\"F001\"], \"evidence_ids\": [\"E001\", \"E002\"], \"witness_ids\": [], \"rule_ids\": [\"LAW_104\", \"P002\"], \"reasoning\": \"Entry is proven; intent is not.\", \"confidence\": 0.8}, {\"charge\": \"assault\", \"verdict\": \"not_guilty\", \"fact_ids\": [\"F004\"], \"evidence_ids\": [\"E007\"], \"witness_ids\": [\"W001\"], \"rule_ids\": [\"LAW_101\", \"P004\"], \"reasoning\": \"David's account is contradicted by the absence of defensive wounds.\", \"confidence\": 0.7}], \"arguments_considered\": [\"PR-OPEN-1\", \"DF-OPEN-1\"], \"uncertainties\": [\"What Alex intended when he entered.\"], \"reasoning\": \"The prosecution has not proven every element of either charge.\", \"confidence\": 0.75}"
+    }
+   ],
+   "prompt_version": "juror.v1",
+   "provider": "scripted",
+   "model": "scripted-model",
+   "usage": {
+    "input_tokens": 13022,
+    "output_tokens": 177,
+    "cache_read_input_tokens": 0
+   }
+  },
+  {
+   "juror_id": "jury_2",
+   "stage": "JURY_INDEPENDENT_DELIBERATION",
+   "output": {
+    "charge_verdicts": [
+     {
+      "charge": "burglary",
+      "verdict": "not_guilty",
+      "fact_ids": [
+       "F001"
+      ],
+      "evidence_ids": [
+       "E001",
+       "E002"
+      ],
+      "witness_ids": [],
+      "rule_ids": [
+       "LAW_104",
+       "P002"
+      ],
+      "reasoning": "Entry is proven; intent is not.",
+      "confidence": 0.8
+     },
+     {
+      "charge": "assault",
+      "verdict": "not_guilty",
+      "fact_ids": [
+       "F004"
+      ],
+      "evidence_ids": [
+       "E007"
+      ],
+      "witness_ids": [
+       "W001"
+      ],
+      "rule_ids": [
+       "LAW_101",
+       "P004"
+      ],
+      "reasoning": "David's account is contradicted by the absence of defensive wounds.",
+      "confidence": 0.7
+     }
+    ],
+    "arguments_considered": [
+     "PR-OPEN-1",
+     "DF-OPEN-1"
+    ],
+    "uncertainties": [
+     "What Alex intended when he entered."
+    ],
+    "reasoning": "The prosecution has not proven every element of either charge.",
+    "confidence": 0.75
+   },
+   "verdict": {
+    "verdict_id": "V_CASE_001_JURY_2_IND",
+    "case_id": "CASE_001",
+    "agent_id": "jury_2",
+    "charges": [
+     "burglary",
+     "assault"
+    ],
+    "decision": "burglary: not_guilty; assault: not_guilty",
+    "reasoning": "The prosecution has not proven every element of either charge.",
+    "evidence_used": [
+     "E001",
+     "E002",
+     "E007"
+    ],
+    "laws_used": [
+     "LAW_104",
+     "P002",
+     "LAW_101",
+     "P004"
+    ],
+    "unresolved_questions": [
+     "What Alex intended when he entered."
+    ],
+    "confidence": 0.75,
+    "timestamp": "2026-09-20T08:13:14.344564Z",
+    "metadata": {
+     "charge_verdicts": [
+      {
+       "charge": "burglary",
+       "verdict": "not_guilty",
+       "fact_ids": [
+        "F001"
+       ],
+       "evidence_ids": [
+        "E001",
+        "E002"
+       ],
+       "witness_ids": [],
+       "rule_ids": [
+        "LAW_104",
+        "P002"
+       ],
+       "reasoning": "Entry is proven; intent is not.",
+       "confidence": 0.8
+      },
+      {
+       "charge": "assault",
+       "verdict": "not_guilty",
+       "fact_ids": [
+        "F004"
+       ],
+       "evidence_ids": [
+        "E007"
+       ],
+       "witness_ids": [
+        "W001"
+       ],
+       "rule_ids": [
+        "LAW_101",
+        "P004"
+       ],
+       "reasoning": "David's account is contradicted by the absence of defensive wounds.",
+       "confidence": 0.7
+      }
+     ],
+     "arguments_considered": [
+      "PR-OPEN-1",
+      "DF-OPEN-1"
+     ],
+     "prompt_version": "juror.v1",
+     "perspective": null
+    }
+   },
+   "message": {
+    "message_id": "MSG-JURY_2-IND",
+    "case_id": "CASE_001",
+    "sender": "jury_2",
+    "recipient": "court",
+    "message_type": "jury_verdict",
+    "stage": "JURY_INDEPENDENT_DELIBERATION",
+    "claim": "burglary: not_guilty; assault: not_guilty",
+    "argument_ids": [
+     "PR-OPEN-1",
+     "DF-OPEN-1"
+    ],
+    "evidence_ids": [
+     "E001",
+     "E002",
+     "E007"
+    ],
+    "law_ids": [
+     "LAW_104",
+     "P002",
+     "LAW_101",
+     "P004"
+    ],
+    "reasoning": "The prosecution has not proven every element of either charge.",
+    "timestamp": "2026-09-20T08:13:14.344583Z",
+    "metadata": {}
+   },
+   "changed_charges": [],
+   "attempts": [
+    {
+     "attempt": 1,
+     "accepted": true,
+     "errors": [],
+     "output": "{\"charge_verdicts\": [{\"charge\": \"burglary\", \"verdict\": \"not_guilty\", \"fact_ids\": [\"F001\"], \"evidence_ids\": [\"E001\", \"E002\"], \"witness_ids\": [], \"rule_ids\": [\"LAW_104\", \"P002\"], \"reasoning\": \"Entry is proven; intent is not.\", \"confidence\": 0.8}, {\"charge\": \"assault\", \"verdict\": \"not_guilty\", \"fact_ids\": [\"F004\"], \"evidence_ids\": [\"E007\"], \"witness_ids\": [\"W001\"], \"rule_ids\": [\"LAW_101\", \"P004\"], \"reasoning\": \"David's account is contradicted by the absence of defensive wounds.\", \"confidence\": 0.7}], \"arguments_considered\": [\"PR-OPEN-1\", \"DF-OPEN-1\"], \"uncertainties\": [\"What Alex intended when he entered.\"], \"reasoning\": \"The prosecution has not proven every element of either charge.\", \"confidence\": 0.75}"
+    }
+   ],
+   "prompt_version": "juror.v1",
+   "provider": "scripted",
+   "model": "scripted-model",
+   "usage": {
+    "input_tokens": 13022,
+    "output_tokens": 177,
+    "cache_read_input_tokens": 0
+   }
+  },
+  {
+   "juror_id": "jury_3",
+   "stage": "JURY_INDEPENDENT_DELIBERATION",
+   "output": {
+    "charge_verdicts": [
+     {
+      "charge": "burglary",
+      "verdict": "not_guilty",
+      "fact_ids": [
+       "F001"
+      ],
+      "evidence_ids": [
+       "E001",
+       "E002"
+      ],
+      "witness_ids": [],
+      "rule_ids": [
+       "LAW_104",
+       "P002"
+      ],
+      "reasoning": "Entry is proven; intent is not.",
+      "confidence": 0.8
+     },
+     {
+      "charge": "assault",
+      "verdict": "not_guilty",
+      "fact_ids": [
+       "F004"
+      ],
+      "evidence_ids": [
+       "E007"
+      ],
+      "witness_ids": [
+       "W001"
+      ],
+      "rule_ids": [
+       "LAW_101",
+       "P004"
+      ],
+      "reasoning": "David's account is contradicted by the absence of defensive wounds.",
+      "confidence": 0.7
+     }
+    ],
+    "arguments_considered": [
+     "PR-OPEN-1",
+     "DF-OPEN-1"
+    ],
+    "uncertainties": [
+     "What Alex intended when he entered."
+    ],
+    "reasoning": "The prosecution has not proven every element of either charge.",
+    "confidence": 0.75
+   },
+   "verdict": {
+    "verdict_id": "V_CASE_001_JURY_3_IND",
+    "case_id": "CASE_001",
+    "agent_id": "jury_3",
+    "charges": [
+     "burglary",
+     "assault"
+    ],
+    "decision": "burglary: not_guilty; assault: not_guilty",
+    "reasoning": "The prosecution has not proven every element of either charge.",
+    "evidence_used": [
+     "E001",
+     "E002",
+     "E007"
+    ],
+    "laws_used": [
+     "LAW_104",
+     "P002",
+     "LAW_101",
+     "P004"
+    ],
+    "unresolved_questions": [
+     "What Alex intended when he entered."
+    ],
+    "confidence": 0.75,
+    "timestamp": "2026-09-20T08:13:14.346737Z",
+    "metadata": {
+     "charge_verdicts": [
+      {
+       "charge": "burglary",
+       "verdict": "not_guilty",
+       "fact_ids": [
+        "F001"
+       ],
+       "evidence_ids": [
+        "E001",
+        "E002"
+       ],
+       "witness_ids": [],
+       "rule_ids": [
+        "LAW_104",
+        "P002"
+       ],
+       "reasoning": "Entry is proven; intent is not.",
+       "confidence": 0.8
+      },
+      {
+       "charge": "assault",
+       "verdict": "not_guilty",
+       "fact_ids": [
+        "F004"
+       ],
+       "evidence_ids": [
+        "E007"
+       ],
+       "witness_ids": [
+        "W001"
+       ],
+       "rule_ids": [
+        "LAW_101",
+        "P004"
+       ],
+       "reasoning": "David's account is contradicted by the absence of defensive wounds.",
+       "confidence": 0.7
+      }
+     ],
+     "arguments_considered": [
+      "PR-OPEN-1",
+      "DF-OPEN-1"
+     ],
+     "prompt_version": "juror.v1",
+     "perspective": null
+    }
+   },
+   "message": {
+    "message_id": "MSG-JURY_3-IND",
+    "case_id": "CASE_001",
+    "sender": "jury_3",
+    "recipient": "court",
+    "message_type": "jury_verdict",
+    "stage": "JURY_INDEPENDENT_DELIBERATION",
+    "claim": "burglary: not_guilty; assault: not_guilty",
+    "argument_ids": [
+     "PR-OPEN-1",
+     "DF-OPEN-1"
+    ],
+    "evidence_ids": [
+     "E001",
+     "E002",
+     "E007"
+    ],
+    "law_ids": [
+     "LAW_104",
+     "P002",
+     "LAW_101",
+     "P004"
+    ],
+    "reasoning": "The prosecution has not proven every element of either charge.",
+    "timestamp": "2026-09-20T08:13:14.346749Z",
+    "metadata": {}
+   },
+   "changed_charges": [],
+   "attempts": [
+    {
+     "attempt": 1,
+     "accepted": true,
+     "errors": [],
+     "output": "{\"charge_verdicts\": [{\"charge\": \"burglary\", \"verdict\": \"not_guilty\", \"fact_ids\": [\"F001\"], \"evidence_ids\": [\"E001\", \"E002\"], \"witness_ids\": [], \"rule_ids\": [\"LAW_104\", \"P002\"], \"reasoning\": \"Entry is proven; intent is not.\", \"confidence\": 0.8}, {\"charge\": \"assault\", \"verdict\": \"not_guilty\", \"fact_ids\": [\"F004\"], \"evidence_ids\": [\"E007\"], \"witness_ids\": [\"W001\"], \"rule_ids\": [\"LAW_101\", \"P004\"], \"reasoning\": \"David's account is contradicted by the absence of defensive wounds.\", \"confidence\": 0.7}], \"arguments_considered\": [\"PR-OPEN-1\", \"DF-OPEN-1\"], \"uncertainties\": [\"What Alex intended when he entered.\"], \"reasoning\": \"The prosecution has not proven every element of either charge.\", \"confidence\": 0.75}"
+    }
+   ],
+   "prompt_version": "juror.v1",
+   "provider": "scripted",
+   "model": "scripted-model",
+   "usage": {
+    "input_tokens": 13022,
+    "output_tokens": 177,
+    "cache_read_input_tokens": 0
+   }
+  }
+ ],
+ "jury_deliberation": [
+  {
+   "juror_id": "jury_1",
+   "stage": "JURY_DELIBERATION",
+   "output": {
+    "charge_verdicts": [
+     {
+      "charge": "burglary",
+      "verdict": "not_guilty",
+      "fact_ids": [
+       "F001"
+      ],
+      "evidence_ids": [
+       "E001",
+       "E002"
+      ],
+      "witness_ids": [],
+      "rule_ids": [
+       "LAW_104",
+       "P002"
+      ],
+      "reasoning": "Entry is proven; intent is not.",
+      "confidence": 0.8
+     },
+     {
+      "charge": "assault",
+      "verdict": "not_guilty",
+      "fact_ids": [
+       "F004"
+      ],
+      "evidence_ids": [
+       "E007"
+      ],
+      "witness_ids": [
+       "W001"
+      ],
+      "rule_ids": [
+       "LAW_101",
+       "P004"
+      ],
+      "reasoning": "David's account is contradicted by the absence of defensive wounds.",
+      "confidence": 0.7
+     }
+    ],
+    "arguments_considered": [
+     "PR-OPEN-1",
+     "DF-OPEN-1"
+    ],
+    "uncertainties": [
+     "What Alex intended when he entered."
+    ],
+    "reasoning": "The prosecution has not proven every element of either charge.",
+    "confidence": 0.75
+   },
+   "verdict": {
+    "verdict_id": "V_CASE_001_JURY_1_DELIB",
+    "case_id": "CASE_001",
+    "agent_id": "jury_1",
+    "charges": [
+     "burglary",
+     "assault"
+    ],
+    "decision": "burglary: not_guilty; assault: not_guilty",
+    "reasoning": "The prosecution has not proven every element of either charge.",
+    "evidence_used": [
+     "E001",
+     "E002",
+     "E007"
+    ],
+    "laws_used": [
+     "LAW_104",
+     "P002",
+     "LAW_101",
+     "P004"
+    ],
+    "unresolved_questions": [
+     "What Alex intended when he entered."
+    ],
+    "confidence": 0.75,
+    "timestamp": "2026-09-20T08:13:14.350383Z",
+    "metadata": {
+     "charge_verdicts": [
+      {
+       "charge": "burglary",
+       "verdict": "not_guilty",
+       "fact_ids": [
+        "F001"
+       ],
+       "evidence_ids": [
+        "E001",
+        "E002"
+       ],
+       "witness_ids": [],
+       "rule_ids": [
+        "LAW_104",
+        "P002"
+       ],
+       "reasoning": "Entry is proven; intent is not.",
+       "confidence": 0.8
+      },
+      {
+       "charge": "assault",
+       "verdict": "not_guilty",
+       "fact_ids": [
+        "F004"
+       ],
+       "evidence_ids": [
+        "E007"
+       ],
+       "witness_ids": [
+        "W001"
+       ],
+       "rule_ids": [
+        "LAW_101",
+        "P004"
+       ],
+       "reasoning": "David's account is contradicted by the absence of defensive wounds.",
+       "confidence": 0.7
+      }
+     ],
+     "arguments_considered": [
+      "PR-OPEN-1",
+      "DF-OPEN-1"
+     ],
+     "prompt_version": "juror.v1",
+     "perspective": null
+    }
+   },
+   "message": {
+    "message_id": "MSG-JURY_1-DELIB",
+    "case_id": "CASE_001",
+    "sender": "jury_1",
+    "recipient": "court",
+    "message_type": "jury_verdict",
+    "stage": "JURY_DELIBERATION",
+    "claim": "burglary: not_guilty; assault: not_guilty",
+    "argument_ids": [
+     "PR-OPEN-1",
+     "DF-OPEN-1"
+    ],
+    "evidence_ids": [
+     "E001",
+     "E002",
+     "E007"
+    ],
+    "law_ids": [
+     "LAW_104",
+     "P002",
+     "LAW_101",
+     "P004"
+    ],
+    "reasoning": "The prosecution has not proven every element of either charge.",
+    "timestamp": "2026-09-20T08:13:14.350400Z",
+    "metadata": {
+     "changed_charges": []
+    }
+   },
+   "changed_charges": [],
+   "attempts": [
+    {
+     "attempt": 1,
+     "accepted": true,
+     "errors": [],
+     "output": "{\"charge_verdicts\": [{\"charge\": \"burglary\", \"verdict\": \"not_guilty\", \"fact_ids\": [\"F001\"], \"evidence_ids\": [\"E001\", \"E002\"], \"witness_ids\": [], \"rule_ids\": [\"LAW_104\", \"P002\"], \"reasoning\": \"Entry is proven; intent is not.\", \"confidence\": 0.8}, {\"charge\": \"assault\", \"verdict\": \"not_guilty\", \"fact_ids\": [\"F004\"], \"evidence_ids\": [\"E007\"], \"witness_ids\": [\"W001\"], \"rule_ids\": [\"LAW_101\", \"P004\"], \"reasoning\": \"David's account is contradicted by the absence of defensive wounds.\", \"confidence\": 0.7}], \"arguments_considered\": [\"PR-OPEN-1\", \"DF-OPEN-1\"], \"uncertainties\": [\"What Alex intended when he entered.\"], \"reasoning\": \"The prosecution has not proven every element of either charge.\", \"confidence\": 0.75, \"response_to_panel\": \"I weighed the other jurors' points against the record.\"}"
+    }
+   ],
+   "prompt_version": "juror.v1",
+   "provider": "scripted",
+   "model": "scripted-model",
+   "usage": {
+    "input_tokens": 13869,
+    "output_tokens": 197,
+    "cache_read_input_tokens": 0
+   }
+  },
+  {
+   "juror_id": "jury_2",
+   "stage": "JURY_DELIBERATION",
+   "output": {
+    "charge_verdicts": [
+     {
+      "charge": "burglary",
+      "verdict": "not_guilty",
+      "fact_ids": [
+       "F001"
+      ],
+      "evidence_ids": [
+       "E001",
+       "E002"
+      ],
+      "witness_ids": [],
+      "rule_ids": [
+       "LAW_104",
+       "P002"
+      ],
+      "reasoning": "Entry is proven; intent is not.",
+      "confidence": 0.8
+     },
+     {
+      "charge": "assault",
+      "verdict": "not_guilty",
+      "fact_ids": [
+       "F004"
+      ],
+      "evidence_ids": [
+       "E007"
+      ],
+      "witness_ids": [
+       "W001"
+      ],
+      "rule_ids": [
+       "LAW_101",
+       "P004"
+      ],
+      "reasoning": "David's account is contradicted by the absence of defensive wounds.",
+      "confidence": 0.7
+     }
+    ],
+    "arguments_considered": [
+     "PR-OPEN-1",
+     "DF-OPEN-1"
+    ],
+    "uncertainties": [
+     "What Alex intended when he entered."
+    ],
+    "reasoning": "The prosecution has not proven every element of either charge.",
+    "confidence": 0.75
+   },
+   "verdict": {
+    "verdict_id": "V_CASE_001_JURY_2_DELIB",
+    "case_id": "CASE_001",
+    "agent_id": "jury_2",
+    "charges": [
+     "burglary",
+     "assault"
+    ],
+    "decision": "burglary: not_guilty; assault: not_guilty",
+    "reasoning": "The prosecution has not proven every element of either charge.",
+    "evidence_used": [
+     "E001",
+     "E002",
+     "E007"
+    ],
+    "laws_used": [
+     "LAW_104",
+     "P002",
+     "LAW_101",
+     "P004"
+    ],
+    "unresolved_questions": [
+     "What Alex intended when he entered."
+    ],
+    "confidence": 0.75,
+    "timestamp": "2026-09-20T08:13:14.352481Z",
+    "metadata": {
+     "charge_verdicts": [
+      {
+       "charge": "burglary",
+       "verdict": "not_guilty",
+       "fact_ids": [
+        "F001"
+       ],
+       "evidence_ids": [
+        "E001",
+        "E002"
+       ],
+       "witness_ids": [],
+       "rule_ids": [
+        "LAW_104",
+        "P002"
+       ],
+       "reasoning": "Entry is proven; intent is not.",
+       "confidence": 0.8
+      },
+      {
+       "charge": "assault",
+       "verdict": "not_guilty",
+       "fact_ids": [
+        "F004"
+       ],
+       "evidence_ids": [
+        "E007"
+       ],
+       "witness_ids": [
+        "W001"
+       ],
+       "rule_ids": [
+        "LAW_101",
+        "P004"
+       ],
+       "reasoning": "David's account is contradicted by the absence of defensive wounds.",
+       "confidence": 0.7
+      }
+     ],
+     "arguments_considered": [
+      "PR-OPEN-1",
+      "DF-OPEN-1"
+     ],
+     "prompt_version": "juror.v1",
+     "perspective": null
+    }
+   },
+   "message": {
+    "message_id": "MSG-JURY_2-DELIB",
+    "case_id": "CASE_001",
+    "sender": "jury_2",
+    "recipient": "court",
+    "message_type": "jury_verdict",
+    "stage": "JURY_DELIBERATION",
+    "claim": "burglary: not_guilty; assault: not_guilty",
+    "argument_ids": [
+     "PR-OPEN-1",
+     "DF-OPEN-1"
+    ],
+    "evidence_ids": [
+     "E001",
+     "E002",
+     "E007"
+    ],
+    "law_ids": [
+     "LAW_104",
+     "P002",
+     "LAW_101",
+     "P004"
+    ],
+    "reasoning": "The prosecution has not proven every element of either charge.",
+    "timestamp": "2026-09-20T08:13:14.352494Z",
+    "metadata": {
+     "changed_charges": []
+    }
+   },
+   "changed_charges": [],
+   "attempts": [
+    {
+     "attempt": 1,
+     "accepted": true,
+     "errors": [],
+     "output": "{\"charge_verdicts\": [{\"charge\": \"burglary\", \"verdict\": \"not_guilty\", \"fact_ids\": [\"F001\"], \"evidence_ids\": [\"E001\", \"E002\"], \"witness_ids\": [], \"rule_ids\": [\"LAW_104\", \"P002\"], \"reasoning\": \"Entry is proven; intent is not.\", \"confidence\": 0.8}, {\"charge\": \"assault\", \"verdict\": \"not_guilty\", \"fact_ids\": [\"F004\"], \"evidence_ids\": [\"E007\"], \"witness_ids\": [\"W001\"], \"rule_ids\": [\"LAW_101\", \"P004\"], \"reasoning\": \"David's account is contradicted by the absence of defensive wounds.\", \"confidence\": 0.7}], \"arguments_considered\": [\"PR-OPEN-1\", \"DF-OPEN-1\"], \"uncertainties\": [\"What Alex intended when he entered.\"], \"reasoning\": \"The prosecution has not proven every element of either charge.\", \"confidence\": 0.75, \"response_to_panel\": \"I weighed the other jurors' points against the record.\"}"
+    }
+   ],
+   "prompt_version": "juror.v1",
+   "provider": "scripted",
+   "model": "scripted-model",
+   "usage": {
+    "input_tokens": 13869,
+    "output_tokens": 197,
+    "cache_read_input_tokens": 0
+   }
+  },
+  {
+   "juror_id": "jury_3",
+   "stage": "JURY_DELIBERATION",
+   "output": {
+    "charge_verdicts": [
+     {
+      "charge": "burglary",
+      "verdict": "not_guilty",
+      "fact_ids": [
+       "F001"
+      ],
+      "evidence_ids": [
+       "E001",
+       "E002"
+      ],
+      "witness_ids": [],
+      "rule_ids": [
+       "LAW_104",
+       "P002"
+      ],
+      "reasoning": "Entry is proven; intent is not.",
+      "confidence": 0.8
+     },
+     {
+      "charge": "assault",
+      "verdict": "not_guilty",
+      "fact_ids": [
+       "F004"
+      ],
+      "evidence_ids": [
+       "E007"
+      ],
+      "witness_ids": [
+       "W001"
+      ],
+      "rule_ids": [
+       "LAW_101",
+       "P004"
+      ],
+      "reasoning": "David's account is contradicted by the absence of defensive wounds.",
+      "confidence": 0.7
+     }
+    ],
+    "arguments_considered": [
+     "PR-OPEN-1",
+     "DF-OPEN-1"
+    ],
+    "uncertainties": [
+     "What Alex intended when he entered."
+    ],
+    "reasoning": "The prosecution has not proven every element of either charge.",
+    "confidence": 0.75
+   },
+   "verdict": {
+    "verdict_id": "V_CASE_001_JURY_3_DELIB",
+    "case_id": "CASE_001",
+    "agent_id": "jury_3",
+    "charges": [
+     "burglary",
+     "assault"
+    ],
+    "decision": "burglary: not_guilty; assault: not_guilty",
+    "reasoning": "The prosecution has not proven every element of either charge.",
+    "evidence_used": [
+     "E001",
+     "E002",
+     "E007"
+    ],
+    "laws_used": [
+     "LAW_104",
+     "P002",
+     "LAW_101",
+     "P004"
+    ],
+    "unresolved_questions": [
+     "What Alex intended when he entered."
+    ],
+    "confidence": 0.75,
+    "timestamp": "2026-09-20T08:13:14.354605Z",
+    "metadata": {
+     "charge_verdicts": [
+      {
+       "charge": "burglary",
+       "verdict": "not_guilty",
+       "fact_ids": [
+        "F001"
+       ],
+       "evidence_ids": [
+        "E001",
+        "E002"
+       ],
+       "witness_ids": [],
+       "rule_ids": [
+        "LAW_104",
+        "P002"
+       ],
+       "reasoning": "Entry is proven; intent is not.",
+       "confidence": 0.8
+      },
+      {
+       "charge": "assault",
+       "verdict": "not_guilty",
+       "fact_ids": [
+        "F004"
+       ],
+       "evidence_ids": [
+        "E007"
+       ],
+       "witness_ids": [
+        "W001"
+       ],
+       "rule_ids": [
+        "LAW_101",
+        "P004"
+       ],
+       "reasoning": "David's account is contradicted by the absence of defensive wounds.",
+       "confidence": 0.7
+      }
+     ],
+     "arguments_considered": [
+      "PR-OPEN-1",
+      "DF-OPEN-1"
+     ],
+     "prompt_version": "juror.v1",
+     "perspective": null
+    }
+   },
+   "message": {
+    "message_id": "MSG-JURY_3-DELIB",
+    "case_id": "CASE_001",
+    "sender": "jury_3",
+    "recipient": "court",
+    "message_type": "jury_verdict",
+    "stage": "JURY_DELIBERATION",
+    "claim": "burglary: not_guilty; assault: not_guilty",
+    "argument_ids": [
+     "PR-OPEN-1",
+     "DF-OPEN-1"
+    ],
+    "evidence_ids": [
+     "E001",
+     "E002",
+     "E007"
+    ],
+    "law_ids": [
+     "LAW_104",
+     "P002",
+     "LAW_101",
+     "P004"
+    ],
+    "reasoning": "The prosecution has not proven every element of either charge.",
+    "timestamp": "2026-09-20T08:13:14.354632Z",
+    "metadata": {
+     "changed_charges": []
+    }
+   },
+   "changed_charges": [],
+   "attempts": [
+    {
+     "attempt": 1,
+     "accepted": true,
+     "errors": [],
+     "output": "{\"charge_verdicts\": [{\"charge\": \"burglary\", \"verdict\": \"not_guilty\", \"fact_ids\": [\"F001\"], \"evidence_ids\": [\"E001\", \"E002\"], \"witness_ids\": [], \"rule_ids\": [\"LAW_104\", \"P002\"], \"reasoning\": \"Entry is proven; intent is not.\", \"confidence\": 0.8}, {\"charge\": \"assault\", \"verdict\": \"not_guilty\", \"fact_ids\": [\"F004\"], \"evidence_ids\": [\"E007\"], \"witness_ids\": [\"W001\"], \"rule_ids\": [\"LAW_101\", \"P004\"], \"reasoning\": \"David's account is contradicted by the absence of defensive wounds.\", \"confidence\": 0.7}], \"arguments_considered\": [\"PR-OPEN-1\", \"DF-OPEN-1\"], \"uncertainties\": [\"What Alex intended when he entered.\"], \"reasoning\": \"The prosecution has not proven every element of either charge.\", \"confidence\": 0.75, \"response_to_panel\": \"I weighed the other jurors' points against the record.\"}"
+    }
+   ],
+   "prompt_version": "juror.v1",
+   "provider": "scripted",
+   "model": "scripted-model",
+   "usage": {
+    "input_tokens": 13869,
+    "output_tokens": 197,
+    "cache_read_input_tokens": 0
+   }
+  }
+ ],
+ "jury_result": {
+  "rule": "unanimous",
+  "jurors": [
+   "jury_1",
+   "jury_2",
+   "jury_3"
+  ],
+  "independent": [
+   {
+    "charge": "burglary",
+    "guilty": [],
+    "not_guilty": [
+     "jury_1",
+     "jury_2",
+     "jury_3"
+    ],
+    "outcome": "not_guilty",
+    "unanimous": true,
+    "agreement": 1.0
+   },
+   {
+    "charge": "assault",
+    "guilty": [],
+    "not_guilty": [
+     "jury_1",
+     "jury_2",
+     "jury_3"
+    ],
+    "outcome": "not_guilty",
+    "unanimous": true,
+    "agreement": 1.0
+   }
+  ],
+  "final": [
+   {
+    "charge": "burglary",
+    "guilty": [],
+    "not_guilty": [
+     "jury_1",
+     "jury_2",
+     "jury_3"
+    ],
+    "outcome": "not_guilty",
+    "unanimous": true,
+    "agreement": 1.0
+   },
+   {
+    "charge": "assault",
+    "guilty": [],
+    "not_guilty": [
+     "jury_1",
+     "jury_2",
+     "jury_3"
+    ],
+    "outcome": "not_guilty",
+    "unanimous": true,
+    "agreement": 1.0
+   }
+  ],
+  "vote_changes": [],
+  "deliberated": true
+ },
+ "judge_jury_agreement": [
+  {
+   "charge": "burglary",
+   "judge": "not_guilty",
+   "jury": "not_guilty",
+   "agrees": true
+  },
+  {
+   "charge": "assault",
+   "judge": "not_guilty",
+   "jury": "not_guilty",
+   "agrees": true
+  }
+ ],
+ "messages": [
+  {
+   "message_id": "MSG-EVIDENCE-ANALYSIS",
+   "case_id": "CASE_001",
+   "sender": "evidence_agent",
+   "recipient": "court",
+   "message_type": "evidence_analysis",
+   "stage": "EVIDENCE_ANALYSIS",
+   "claim": "Entry and David's use of force are established; whether Alex attacked is disputed; nothing speaks to Alex's intent.",
+   "argument_ids": [],
+   "evidence_ids": [
+    "E001",
+    "E002",
+    "E003",
+    "E004",
+    "E005",
+    "E006",
+    "E007",
+    "E008"
+   ],
+   "law_ids": [],
+   "reasoning": "4 claims (2 established, 1 disputed, 1 unsupported); 1 contradictions; 1 missing-evidence items.",
+   "timestamp": "2026-09-20T08:13:14.319423Z",
+   "metadata": {}
+  },
+  {
+   "message_id": "MSG-PR-OPEN",
+   "case_id": "CASE_001",
+   "sender": "prosecution_agent",
+   "recipient": "judge_agent",
+   "message_type": "opening_statement",
+   "stage": "PROSECUTION_OPENING",
+   "claim": "The evidence proves Alex broke into the home and attacked David.",
+   "argument_ids": [
+    "PR-OPEN-1",
+    "PR-OPEN-2"
+   ],
+   "evidence_ids": [
+    "E001",
+    "E002",
+    "E006"
+   ],
+   "law_ids": [
+    "LAW_104",
+    "LAW_101"
+   ],
+   "reasoning": "[PR-OPEN-1] Alex entered David's home without permission through a broken window. [PR-OPEN-2] Alex came at David aggressively inside the house.",
+   "timestamp": "2026-09-20T08:13:14.321687Z",
+   "metadata": {}
+  },
+  {
+   "message_id": "MSG-DF-OPEN",
+   "case_id": "CASE_001",
+   "sender": "defense_agent",
+   "recipient": "judge_agent",
+   "message_type": "opening_statement",
+   "stage": "DEFENSE_OPENING",
+   "claim": "Nothing proves Alex intended a crime, and nothing proves he attacked.",
+   "argument_ids": [
+    "DF-OPEN-1",
+    "DF-OPEN-2"
+   ],
+   "evidence_ids": [
+    "E007"
+   ],
+   "law_ids": [
+    "LAW_104",
+    "P002",
+    "P004",
+    "LAW_101"
+   ],
+   "reasoning": "[DF-OPEN-1] No evidence shows Alex intended to commit an offense inside. [DF-OPEN-2] The absence of defensive wounds contradicts any attack by Alex.",
+   "timestamp": "2026-09-20T08:13:14.323008Z",
+   "metadata": {}
+  },
+  {
+   "message_id": "MSG-PR-ARG",
+   "case_id": "CASE_001",
+   "sender": "prosecution_agent",
+   "recipient": "judge_agent",
+   "message_type": "argument",
+   "stage": "PROSECUTION_ARGUMENT",
+   "claim": "The evidence proves Alex broke into the home and attacked David.",
+   "argument_ids": [
+    "PR-ARG-1",
+    "PR-ARG-2"
+   ],
+   "evidence_ids": [
+    "E001",
+    "E002",
+    "E006"
+   ],
+   "law_ids": [
+    "LAW_104",
+    "LAW_101"
+   ],
+   "reasoning": "[PR-ARG-1] Alex entered David's home without permission through a broken window. [PR-ARG-2] Alex came at David aggressively inside the house.",
+   "timestamp": "2026-09-20T08:13:14.324159Z",
+   "metadata": {}
+  },
+  {
+   "message_id": "MSG-DF-ARG",
+   "case_id": "CASE_001",
+   "sender": "defense_agent",
+   "recipient": "judge_agent",
+   "message_type": "argument",
+   "stage": "DEFENSE_ARGUMENT",
+   "claim": "Nothing proves Alex intended a crime, and nothing proves he attacked.",
+   "argument_ids": [
+    "DF-ARG-1",
+    "DF-ARG-2"
+   ],
+   "evidence_ids": [
+    "E007"
+   ],
+   "law_ids": [
+    "LAW_104",
+    "P002",
+    "P004",
+    "LAW_101"
+   ],
+   "reasoning": "[DF-ARG-1] No evidence shows Alex intended to commit an offense inside. [DF-ARG-2] The absence of defensive wounds contradicts any attack by Alex.",
+   "timestamp": "2026-09-20T08:13:14.325507Z",
+   "metadata": {}
+  },
+  {
+   "message_id": "MSG-PR-CROSS",
+   "case_id": "CASE_001",
+   "sender": "prosecution_agent",
+   "recipient": "judge_agent",
+   "message_type": "cross_examination",
+   "stage": "CROSS_EXAMINATION",
+   "claim": "The evidence proves Alex broke into the home and attacked David.",
+   "argument_ids": [
+    "PR-CROSS-1",
+    "PR-CROSS-2"
+   ],
+   "evidence_ids": [
+    "E001",
+    "E002",
+    "E006"
+   ],
+   "law_ids": [
+    "LAW_104",
+    "LAW_101"
+   ],
+   "reasoning": "[PR-CROSS-1] Alex entered David's home without permission through a broken window. [PR-CROSS-2] Alex came at David aggressively inside the house.",
+   "timestamp": "2026-09-20T08:13:14.326809Z",
+   "metadata": {}
+  },
+  {
+   "message_id": "MSG-DF-CROSS",
+   "case_id": "CASE_001",
+   "sender": "defense_agent",
+   "recipient": "judge_agent",
+   "message_type": "cross_examination",
+   "stage": "CROSS_EXAMINATION",
+   "claim": "Nothing proves Alex intended a crime, and nothing proves he attacked.",
+   "argument_ids": [
+    "DF-CROSS-1",
+    "DF-CROSS-2"
+   ],
+   "evidence_ids": [
+    "E007"
+   ],
+   "law_ids": [
+    "LAW_104",
+    "P002",
+    "P004",
+    "LAW_101"
+   ],
+   "reasoning": "[DF-CROSS-1] No evidence shows Alex intended to commit an offense inside. [DF-CROSS-2] The absence of defensive wounds contradicts any attack by Alex.",
+   "timestamp": "2026-09-20T08:13:14.327541Z",
+   "metadata": {}
+  },
+  {
+   "message_id": "MSG-EVIDENCE-REVIEW",
+   "case_id": "CASE_001",
+   "sender": "evidence_agent",
+   "recipient": "court",
+   "message_type": "evidence_review",
+   "stage": "EVIDENCE_REVIEW",
+   "claim": "Arguments reviewed against their citations.",
+   "argument_ids": [
+    "PR-OPEN-1",
+    "PR-OPEN-2",
+    "DF-OPEN-1",
+    "DF-OPEN-2",
+    "PR-ARG-1",
+    "PR-ARG-2",
+    "DF-ARG-1",
+    "DF-ARG-2",
+    "PR-CROSS-1",
+    "PR-CROSS-2",
+    "DF-CROSS-1",
+    "DF-CROSS-2"
+   ],
+   "evidence_ids": [],
+   "law_ids": [],
+   "reasoning": "11 supported, 0 partially supported, 1 unsupported.",
+   "timestamp": "2026-09-20T08:13:14.328991Z",
+   "metadata": {}
+  },
+  {
+   "message_id": "MSG-JUDGE-QUESTIONS1",
+   "case_id": "CASE_001",
+   "sender": "judge_agent",
+   "recipient": "parties",
+   "message_type": "judge_question",
+   "stage": "JUDGE_QUESTIONS",
+   "claim": "1 question(s) to the parties",
+   "argument_ids": [
+    "PR-OPEN-2"
+   ],
+   "evidence_ids": [],
+   "law_ids": [],
+   "reasoning": "[JQ1-1 -> prosecution_agent] What in the record supports PR-OPEN-2?",
+   "timestamp": "2026-09-20T08:13:14.330898Z",
+   "metadata": {}
+  },
+  {
+   "message_id": "MSG-PR-ANS1",
+   "case_id": "CASE_001",
+   "sender": "prosecution_agent",
+   "recipient": "judge_agent",
+   "message_type": "answer",
+   "stage": "JUDGE_QUESTIONS",
+   "claim": "The evidence proves Alex broke into the home and attacked David.",
+   "argument_ids": [
+    "PR-ANS1-1",
+    "PR-ANS1-2"
+   ],
+   "evidence_ids": [
+    "E001",
+    "E002",
+    "E006"
+   ],
+   "law_ids": [
+    "LAW_104",
+    "LAW_101"
+   ],
+   "reasoning": "[PR-ANS1-1] Alex entered David's home without permission through a broken window. [PR-ANS1-2] Alex came at David aggressively inside the house.",
+   "timestamp": "2026-09-20T08:13:14.332366Z",
+   "metadata": {}
+  },
+  {
+   "message_id": "MSG-EVIDENCE-REVIEW-ANS1",
+   "case_id": "CASE_001",
+   "sender": "evidence_agent",
+   "recipient": "court",
+   "message_type": "evidence_review",
+   "stage": "EVIDENCE_REVIEW",
+   "claim": "Arguments reviewed against their citations.",
+   "argument_ids": [
+    "PR-ANS1-1",
+    "PR-ANS1-2"
+   ],
+   "evidence_ids": [],
+   "law_ids": [],
+   "reasoning": "2 supported, 0 partially supported, 0 unsupported.",
+   "timestamp": "2026-09-20T08:13:14.333466Z",
+   "metadata": {}
+  },
+  {
+   "message_id": "MSG-PR-REB",
+   "case_id": "CASE_001",
+   "sender": "prosecution_agent",
+   "recipient": "judge_agent",
+   "message_type": "rebuttal",
+   "stage": "PROSECUTION_REBUTTAL",
+   "claim": "The evidence proves Alex broke into the home and attacked David.",
+   "argument_ids": [
+    "PR-REB-1",
+    "PR-REB-2"
+   ],
+   "evidence_ids": [
+    "E001",
+    "E002",
+    "E006"
+   ],
+   "law_ids": [
+    "LAW_104",
+    "LAW_101"
+   ],
+   "reasoning": "[PR-REB-1] Alex entered David's home without permission through a broken window. [PR-REB-2] Alex came at David aggressively inside the house.",
+   "timestamp": "2026-09-20T08:13:14.334764Z",
+   "metadata": {}
+  },
+  {
+   "message_id": "MSG-DF-REB",
+   "case_id": "CASE_001",
+   "sender": "defense_agent",
+   "recipient": "judge_agent",
+   "message_type": "rebuttal",
+   "stage": "DEFENSE_REBUTTAL",
+   "claim": "Nothing proves Alex intended a crime, and nothing proves he attacked.",
+   "argument_ids": [
+    "DF-REB-1",
+    "DF-REB-2"
+   ],
+   "evidence_ids": [
+    "E007"
+   ],
+   "law_ids": [
+    "LAW_104",
+    "P002",
+    "P004",
+    "LAW_101"
+   ],
+   "reasoning": "[DF-REB-1] No evidence shows Alex intended to commit an offense inside. [DF-REB-2] The absence of defensive wounds contradicts any attack by Alex.",
+   "timestamp": "2026-09-20T08:13:14.336056Z",
+   "metadata": {}
+  },
+  {
+   "message_id": "MSG-PR-CLOSE",
+   "case_id": "CASE_001",
+   "sender": "prosecution_agent",
+   "recipient": "judge_agent",
+   "message_type": "closing_statement",
+   "stage": "CLOSING_ARGUMENTS",
+   "claim": "The evidence proves Alex broke into the home and attacked David.",
+   "argument_ids": [
+    "PR-CLOSE-1",
+    "PR-CLOSE-2"
+   ],
+   "evidence_ids": [
+    "E001",
+    "E002",
+    "E006"
+   ],
+   "law_ids": [
+    "LAW_104",
+    "LAW_101"
+   ],
+   "reasoning": "[PR-CLOSE-1] Alex entered David's home without permission through a broken window. [PR-CLOSE-2] Alex came at David aggressively inside the house.",
+   "timestamp": "2026-09-20T08:13:14.337310Z",
+   "metadata": {}
+  },
+  {
+   "message_id": "MSG-DF-CLOSE",
+   "case_id": "CASE_001",
+   "sender": "defense_agent",
+   "recipient": "judge_agent",
+   "message_type": "closing_statement",
+   "stage": "CLOSING_ARGUMENTS",
+   "claim": "Nothing proves Alex intended a crime, and nothing proves he attacked.",
+   "argument_ids": [
+    "DF-CLOSE-1",
+    "DF-CLOSE-2"
+   ],
+   "evidence_ids": [
+    "E007"
+   ],
+   "law_ids": [
+    "LAW_104",
+    "P002",
+    "P004",
+    "LAW_101"
+   ],
+   "reasoning": "[DF-CLOSE-1] No evidence shows Alex intended to commit an offense inside. [DF-CLOSE-2] The absence of defensive wounds contradicts any attack by Alex.",
+   "timestamp": "2026-09-20T08:13:14.338413Z",
+   "metadata": {}
+  },
+  {
+   "message_id": "MSG-JURY_1-IND",
+   "case_id": "CASE_001",
+   "sender": "jury_1",
+   "recipient": "court",
+   "message_type": "jury_verdict",
+   "stage": "JURY_INDEPENDENT_DELIBERATION",
+   "claim": "burglary: not_guilty; assault: not_guilty",
+   "argument_ids": [
+    "PR-OPEN-1",
+    "DF-OPEN-1"
+   ],
+   "evidence_ids": [
+    "E001",
+    "E002",
+    "E007"
+   ],
+   "law_ids": [
+    "LAW_104",
+    "P002",
+    "LAW_101",
+    "P004"
+   ],
+   "reasoning": "The prosecution has not proven every element of either charge.",
+   "timestamp": "2026-09-20T08:13:14.342303Z",
+   "metadata": {}
+  },
+  {
+   "message_id": "MSG-JURY_2-IND",
+   "case_id": "CASE_001",
+   "sender": "jury_2",
+   "recipient": "court",
+   "message_type": "jury_verdict",
+   "stage": "JURY_INDEPENDENT_DELIBERATION",
+   "claim": "burglary: not_guilty; assault: not_guilty",
+   "argument_ids": [
+    "PR-OPEN-1",
+    "DF-OPEN-1"
+   ],
+   "evidence_ids": [
+    "E001",
+    "E002",
+    "E007"
+   ],
+   "law_ids": [
+    "LAW_104",
+    "P002",
+    "LAW_101",
+    "P004"
+   ],
+   "reasoning": "The prosecution has not proven every element of either charge.",
+   "timestamp": "2026-09-20T08:13:14.344583Z",
+   "metadata": {}
+  },
+  {
+   "message_id": "MSG-JURY_3-IND",
+   "case_id": "CASE_001",
+   "sender": "jury_3",
+   "recipient": "court",
+   "message_type": "jury_verdict",
+   "stage": "JURY_INDEPENDENT_DELIBERATION",
+   "claim": "burglary: not_guilty; assault: not_guilty",
+   "argument_ids": [
+    "PR-OPEN-1",
+    "DF-OPEN-1"
+   ],
+   "evidence_ids": [
+    "E001",
+    "E002",
+    "E007"
+   ],
+   "law_ids": [
+    "LAW_104",
+    "P002",
+    "LAW_101",
+    "P004"
+   ],
+   "reasoning": "The prosecution has not proven every element of either charge.",
+   "timestamp": "2026-09-20T08:13:14.346749Z",
+   "metadata": {}
+  },
+  {
+   "message_id": "MSG-JURY_1-DELIB",
+   "case_id": "CASE_001",
+   "sender": "jury_1",
+   "recipient": "court",
+   "message_type": "jury_verdict",
+   "stage": "JURY_DELIBERATION",
+   "claim": "burglary: not_guilty; assault: not_guilty",
+   "argument_ids": [
+    "PR-OPEN-1",
+    "DF-OPEN-1"
+   ],
+   "evidence_ids": [
+    "E001",
+    "E002",
+    "E007"
+   ],
+   "law_ids": [
+    "LAW_104",
+    "P002",
+    "LAW_101",
+    "P004"
+   ],
+   "reasoning": "The prosecution has not proven every element of either charge.",
+   "timestamp": "2026-09-20T08:13:14.350400Z",
+   "metadata": {
+    "changed_charges": []
+   }
+  },
+  {
+   "message_id": "MSG-JURY_2-DELIB",
+   "case_id": "CASE_001",
+   "sender": "jury_2",
+   "recipient": "court",
+   "message_type": "jury_verdict",
+   "stage": "JURY_DELIBERATION",
+   "claim": "burglary: not_guilty; assault: not_guilty",
+   "argument_ids": [
+    "PR-OPEN-1",
+    "DF-OPEN-1"
+   ],
+   "evidence_ids": [
+    "E001",
+    "E002",
+    "E007"
+   ],
+   "law_ids": [
+    "LAW_104",
+    "P002",
+    "LAW_101",
+    "P004"
+   ],
+   "reasoning": "The prosecution has not proven every element of either charge.",
+   "timestamp": "2026-09-20T08:13:14.352494Z",
+   "metadata": {
+    "changed_charges": []
+   }
+  },
+  {
+   "message_id": "MSG-JURY_3-DELIB",
+   "case_id": "CASE_001",
+   "sender": "jury_3",
+   "recipient": "court",
+   "message_type": "jury_verdict",
+   "stage": "JURY_DELIBERATION",
+   "claim": "burglary: not_guilty; assault: not_guilty",
+   "argument_ids": [
+    "PR-OPEN-1",
+    "DF-OPEN-1"
+   ],
+   "evidence_ids": [
+    "E001",
+    "E002",
+    "E007"
+   ],
+   "law_ids": [
+    "LAW_104",
+    "P002",
+    "LAW_101",
+    "P004"
+   ],
+   "reasoning": "The prosecution has not proven every element of either charge.",
+   "timestamp": "2026-09-20T08:13:14.354632Z",
+   "metadata": {
+    "changed_charges": []
+   }
+  },
+  {
+   "message_id": "MSG-JUDGE-DECISION",
+   "case_id": "CASE_001",
+   "sender": "judge_agent",
+   "recipient": "court",
+   "message_type": "decision",
+   "stage": "JUDGE_DECISION",
+   "claim": "burglary: not_guilty; assault: not_guilty",
+   "argument_ids": [
+    "PR-OPEN-1",
+    "DF-OPEN-1"
+   ],
+   "evidence_ids": [
+    "E001",
+    "E002",
+    "E003",
+    "E006",
+    "E007"
+   ],
+   "law_ids": [
+    "LAW_104",
+    "LAW_101",
+    "P004"
+   ],
+   "reasoning": "Entry is proven; intent is not. The alleged attack rests on disputed F004.",
+   "timestamp": "2026-09-20T08:13:14.357420Z",
+   "metadata": {}
+  },
+  {
+   "message_id": "MSG-AUDIT-REPORT",
+   "case_id": "CASE_001",
+   "sender": "auditor_agent",
+   "recipient": "court",
+   "message_type": "audit_report",
+   "stage": "LEGAL_PROCESS_AUDIT",
+   "claim": "The trial followed procedure; one minor reasoning issue.",
+   "argument_ids": [],
+   "evidence_ids": [],
+   "law_ids": [],
+   "reasoning": "Overall status: minor_issues",
+   "timestamp": "2026-09-20T08:13:14.364225Z",
+   "metadata": {}
+  }
+ ],
+ "judgment": {
+  "verdict": {
+   "verdict_id": "V_CASE_001_JUDGE",
+   "case_id": "CASE_001",
+   "agent_id": "judge_agent",
+   "charges": [
+    "burglary",
+    "assault"
+   ],
+   "decision": "burglary: not_guilty; assault: not_guilty",
+   "reasoning": "Entry is proven; intent is not. The alleged attack rests on disputed F004.\n\nburglary (LAW_104): The intent element of LAW_104 is not proven.\n\nassault (LAW_101): Force and contact are not proven beyond reasonable doubt.",
+   "evidence_used": [
+    "E001",
+    "E002",
+    "E003",
+    "E006",
+    "E007"
+   ],
+   "laws_used": [
+    "LAW_104",
+    "LAW_101",
+    "P004"
+   ],
+   "unresolved_questions": [
+    "What did Alex intend when he entered the house?"
+   ],
+   "confidence": 0.8,
+   "timestamp": "2026-09-20T08:13:14.357384Z",
+   "metadata": {
+    "charge_decisions": [
+     {
+      "charge": "burglary",
+      "rule_id": "LAW_104",
+      "elements": [
+       {
+        "condition_id": "C1",
+        "assessment": "established",
+        "fact_ids": [
+         "F001",
+         "F002"
+        ],
+        "evidence_ids": [
+         "E001",
+         "E002"
+        ],
+        "reasoning": "Broken window and footprints show unauthorized entry."
+       },
+       {
+        "condition_id": "C2",
+        "assessment": "not_established",
+        "fact_ids": [],
+        "evidence_ids": [],
+        "reasoning": "Nothing in the record speaks to intent to commit an offense."
+       }
+      ],
+      "defenses_considered": [],
+      "decision": "not_guilty",
+      "reasoning": "The intent element of LAW_104 is not proven.",
+      "confidence": 0.85
+     },
+     {
+      "charge": "assault",
+      "rule_id": "LAW_101",
+      "elements": [
+       {
+        "condition_id": "C1",
+        "assessment": "doubtful",
+        "fact_ids": [
+         "F004"
+        ],
+        "evidence_ids": [
+         "E006",
+         "E007"
+        ],
+        "reasoning": "Only David's disputed account supports it; E007 contradicts it."
+       },
+       {
+        "condition_id": "C2",
+        "assessment": "doubtful",
+        "fact_ids": [
+         "F004"
+        ],
+        "evidence_ids": [
+         "E007"
+        ],
+        "reasoning": "No physical evidence of contact by Alex."
+       },
+       {
+        "condition_id": "C3",
+        "assessment": "established",
+        "fact_ids": [
+         "F001"
+        ],
+        "evidence_ids": [
+         "E001"
+        ],
+        "reasoning": "Any force by an unlawful intruder would be unlawful."
+       }
+      ],
+      "defenses_considered": [],
+      "decision": "not_guilty",
+      "reasoning": "Force and contact are not proven beyond reasonable doubt.",
+      "confidence": 0.75
+     }
+    ],
+    "prompt_version": "judge.v4",
+    "provider": "scripted",
+    "model": "scripted-model",
+    "attempts": 1,
+    "engine_divergences": [],
+    "disclaimer": "Research simulation only. This system does not provide legal advice or determine real legal rights or obligations."
+   }
+  },
+  "decision": {
+   "established_facts": [
+    {
+     "fact_id": "F001",
+     "finding": "Alex entered David's house at 11:45 PM without permission.",
+     "evidence_ids": [
+      "E001",
+      "E002"
+     ]
+    },
+    {
+     "fact_id": "F005",
+     "finding": "David struck Alex with a metal baseball bat.",
+     "evidence_ids": [
+      "E003"
+     ]
+    }
+   ],
+   "disputed_facts": [
+    {
+     "fact_id": "F004",
+     "issue": "Whether Alex physically attacked David.",
+     "supporting_evidence_ids": [
+      "E006"
+     ],
+     "contradicting_evidence_ids": [
+      "E007"
+     ],
+     "resolution": "Not established: no defensive wounds and only indirect testimony."
+    }
+   ],
+   "applicable_rules": [
+    {
+     "rule_id": "LAW_104",
+     "relevance": "Burglary charge."
+    },
+    {
+     "rule_id": "LAW_101",
+     "relevance": "Assault charge."
+    },
+    {
+     "rule_id": "P004",
+     "relevance": "Doubt on an element requires acquittal."
+    }
+   ],
+   "arguments_considered": [
+    "PR-OPEN-1",
+    "DF-OPEN-1"
+   ],
+   "analysis": "Entry is proven; intent is not. The alleged attack rests on disputed F004.",
+   "charge_decisions": [
+    {
+     "charge": "burglary",
+     "rule_id": "LAW_104",
+     "elements": [
+      {
+       "condition_id": "C1",
+       "assessment": "established",
+       "fact_ids": [
+        "F001",
+        "F002"
+       ],
+       "evidence_ids": [
+        "E001",
+        "E002"
+       ],
+       "reasoning": "Broken window and footprints show unauthorized entry."
+      },
+      {
+       "condition_id": "C2",
+       "assessment": "not_established",
+       "fact_ids": [],
+       "evidence_ids": [],
+       "reasoning": "Nothing in the record speaks to intent to commit an offense."
+      }
+     ],
+     "defenses_considered": [],
+     "decision": "not_guilty",
+     "reasoning": "The intent element of LAW_104 is not proven.",
+     "confidence": 0.85
+    },
+    {
+     "charge": "assault",
+     "rule_id": "LAW_101",
+     "elements": [
+      {
+       "condition_id": "C1",
+       "assessment": "doubtful",
+       "fact_ids": [
+        "F004"
+       ],
+       "evidence_ids": [
+        "E006",
+        "E007"
+       ],
+       "reasoning": "Only David's disputed account supports it; E007 contradicts it."
+      },
+      {
+       "condition_id": "C2",
+       "assessment": "doubtful",
+       "fact_ids": [
+        "F004"
+       ],
+       "evidence_ids": [
+        "E007"
+       ],
+       "reasoning": "No physical evidence of contact by Alex."
+      },
+      {
+       "condition_id": "C3",
+       "assessment": "established",
+       "fact_ids": [
+        "F001"
+       ],
+       "evidence_ids": [
+        "E001"
+       ],
+       "reasoning": "Any force by an unlawful intruder would be unlawful."
+      }
+     ],
+     "defenses_considered": [],
+     "decision": "not_guilty",
+     "reasoning": "Force and contact are not proven beyond reasonable doubt.",
+     "confidence": 0.75
+    }
+   ],
+   "unresolved_questions": [
+    "What did Alex intend when he entered the house?"
+   ],
+   "overall_confidence": 0.8
+  },
+  "divergences": [],
+  "attempts": [
+   {
+    "attempt": 1,
+    "accepted": true,
+    "errors": [],
+    "output": "{\"established_facts\": [{\"fact_id\": \"F001\", \"finding\": \"Alex entered David's house at 11:45 PM without permission.\", \"evidence_ids\": [\"E001\", \"E002\"]}, {\"fact_id\": \"F005\", \"finding\": \"David struck Alex with a metal baseball bat.\", \"evidence_ids\": [\"E003\"]}], \"disputed_facts\": [{\"fact_id\": \"F004\", \"issue\": \"Whether Alex physically attacked David.\", \"supporting_evidence_ids\": [\"E006\"], \"contradicting_evidence_ids\": [\"E007\"], \"resolution\": \"Not established: no defensive wounds and only indirect testimony.\"}], \"applicable_rules\": [{\"rule_id\": \"LAW_104\", \"relevance\": \"Burglary charge.\"}, {\"rule_id\": \"LAW_101\", \"relevance\": \"Assault charge.\"}, {\"rule_id\": \"P004\", \"relevance\": \"Doubt on an element requires acquittal.\"}], \"arguments_considered\": [\"PR-OPEN-1\", \"DF-OPEN-1\"], \"analysis\": \"Entry is proven; intent is not. The alleged attack rests on disputed F004.\", \"charge_decisions\": [{\"charge\": \"burglary\", \"rule_id\": \"LAW_104\", \"elements\": [{\"condition_id\": \"C1\", \"assessment\": \"established\", \"fact_ids\": [\"F001\", \"F002\"], \"evidence_ids\": [\"E001\", \"E002\"], \"reasoning\": \"Broken window and footprints show unauthorized entry.\"}, {\"condition_id\": \"C2\", \"assessment\": \"not_established\", \"fact_ids\": [], \"evidence_ids\": [], \"reasoning\": \"Nothing in the record speaks to intent to commit an offense.\"}], \"defenses_considered\": [], \"decision\": \"not_guilty\", \"reasoning\": \"The intent element of LAW_104 is not proven.\", \"confidence\": 0.85}, {\"charge\": \"assault\", \"rule_id\": \"LAW_101\", \"elements\": [{\"condition_id\": \"C1\", \"assessment\": \"doubtful\", \"fact_ids\": [\"F004\"], \"evidence_ids\": [\"E006\", \"E007\"], \"reasoning\": \"Only David's disputed account supports it; E007 contradicts it.\"}, {\"condition_id\": \"C2\", \"assessment\": \"doubtful\", \"fact_ids\": [\"F004\"], \"evidence_ids\": [\"E007\"], \"reasoning\": \"No physical evidence of contact by Alex.\"}, {\"condition_id\": \"C3\", \"assessment\": \"established\", \"fact_ids\": [\"F001\"], \"evidence_ids\": [\"E001\"], \"reasoning\": \"Any force by an unlawful intruder would be unlawful.\"}], \"defenses_considered\": [], \"decision\": \"not_guilty\", \"reasoning\": \"Force and contact are not proven beyond reasonable doubt.\", \"confidence\": 0.75}], \"unresolved_questions\": [\"What did Alex intend when he entered the house?\"], \"overall_confidence\": 0.8}"
+   }
+  ],
+  "prompt_version": "judge.v4",
+  "provider": "scripted",
+  "model": "scripted-model",
+  "usage": {
+   "input_tokens": 13152,
+   "output_tokens": 564,
+   "cache_read_input_tokens": 0
+  }
+ },
+ "audit": {
+  "findings": [
+   {
+    "finding_id": "AUD-D-001",
+    "category": "evidence",
+    "severity": "minor",
+    "check": "unsupported_argument",
+    "agent_id": "prosecution_agent",
+    "stage": "EVIDENCE_REVIEW",
+    "description": "The Evidence Agent found PR-OPEN-2 unsupported: not supported by what it cites",
+    "references": [
+     "PR-OPEN-2"
+    ],
+    "source": "deterministic"
+   }
+  ],
+  "report": {
+   "audit_id": "AUD_CASE_001",
+   "case_id": "CASE_001",
+   "evidence_violations": [
+    {
+     "finding_id": "AUD-D-001",
+     "category": "evidence",
+     "severity": "minor",
+     "check": "unsupported_argument",
+     "agent_id": "prosecution_agent",
+     "stage": "EVIDENCE_REVIEW",
+     "description": "The Evidence Agent found PR-OPEN-2 unsupported: not supported by what it cites",
+     "references": [
+      "PR-OPEN-2"
+     ],
+     "source": "deterministic"
+    }
+   ],
+   "legal_violations": [],
+   "procedural_violations": [],
+   "reasoning_issues": [],
+   "hallucinations": [],
+   "final_assessment": "The trial followed procedure; one minor reasoning issue.",
+   "timestamp": "2026-09-20T08:13:14.364181Z",
+   "metadata": {
+    "overall_status": "minor_issues",
+    "severity_counts": {
+     "info": 0,
+     "minor": 1,
+     "major": 0,
+     "critical": 0
+    },
+    "sources": {
+     "deterministic": 1,
+     "auditor_agent": 0
+    },
+    "deterministic_only": false,
+    "decision_chain": [
+     {
+      "link": "facts_to_evidence",
+      "rating": "sound",
+      "note": "Cited and consistent."
+     },
+     {
+      "link": "evidence_to_law",
+      "rating": "sound",
+      "note": "Cited and consistent."
+     },
+     {
+      "link": "law_to_analysis",
+      "rating": "sound",
+      "note": "Cited and consistent."
+     },
+     {
+      "link": "analysis_to_decision",
+      "rating": "sound",
+      "note": "Cited and consistent."
+     }
+    ],
+    "auditor_model": "scripted-model"
+   }
+  },
+  "auditor": {
+   "output": {
+    "findings": [],
+    "decision_chain": [
+     {
+      "link": "facts_to_evidence",
+      "rating": "sound",
+      "note": "Cited and consistent."
+     },
+     {
+      "link": "evidence_to_law",
+      "rating": "sound",
+      "note": "Cited and consistent."
+     },
+     {
+      "link": "law_to_analysis",
+      "rating": "sound",
+      "note": "Cited and consistent."
+     },
+     {
+      "link": "analysis_to_decision",
+      "rating": "sound",
+      "note": "Cited and consistent."
+     }
+    ],
+    "final_assessment": "The trial followed procedure; one minor reasoning issue."
+   },
+   "findings": [],
+   "attempts": [
+    {
+     "attempt": 1,
+     "accepted": true,
+     "errors": [],
+     "output": "{\"findings\": [], \"decision_chain\": [{\"link\": \"facts_to_evidence\", \"rating\": \"sound\", \"note\": \"Cited and consistent.\"}, {\"link\": \"evidence_to_law\", \"rating\": \"sound\", \"note\": \"Cited and consistent.\"}, {\"link\": \"law_to_analysis\", \"rating\": \"sound\", \"note\": \"Cited and consistent.\"}, {\"link\": \"analysis_to_decision\", \"rating\": \"sound\", \"note\": \"Cited and consistent.\"}], \"final_assessment\": \"The trial followed procedure; one minor reasoning issue.\"}"
+    }
+   ],
+   "prompt_version": "auditor.v1",
+   "provider": "scripted",
+   "model": "scripted-model",
+   "usage": {
+    "input_tokens": 18048,
+    "output_tokens": 111,
+    "cache_read_input_tokens": 0
+   }
+  }
+ },
+ "event_history": [
+  {
+   "stage": "CASE_INITIALIZATION",
+   "event_type": "CASE_LOADED",
+   "timestamp": "2026-09-20T08:13:14.261643+00:00",
+   "case_id": "CASE_001",
+   "facts": 8,
+   "evidence": 8,
+   "witnesses": 3,
+   "charges": [
+    "burglary",
+    "assault"
+   ]
+  },
+  {
+   "stage": "RULE_EVALUATION",
+   "event_type": "RULES_EVALUATED",
+   "timestamp": "2026-09-20T08:13:14.263326+00:00",
+   "bindings": 18,
+   "rules": {
+    "LAW_101/Alex Johnson": "not_satisfied",
+    "LAW_101/David Thompson": "indeterminate",
+    "LAW_102/David Thompson": "indeterminate",
+    "LAW_104/Alex Johnson": "indeterminate",
+    "LAW_201/David Thompson": "not_satisfied",
+    "LAW_202/David Thompson": "indeterminate",
+    "P001/case": "unconditional",
+    "P002/case": "unconditional",
+    "P003/case": "unconditional",
+    "P004/case": "unconditional",
+    "P005/case": "unconditional"
+   },
+   "unevaluated_rules": []
+  },
+  {
+   "stage": "EVIDENCE_ANALYSIS",
+   "event_type": "AGENT_STARTED",
+   "timestamp": "2026-09-20T08:13:14.314770+00:00",
+   "agent_id": "evidence_agent"
+  },
+  {
+   "stage": "EVIDENCE_ANALYSIS",
+   "event_type": "EVIDENCE_ANALYZED",
+   "timestamp": "2026-09-20T08:13:14.319585+00:00",
+   "agent_id": "evidence_agent",
+   "claims": {
+    "established": 2,
+    "disputed": 1,
+    "unsupported": 1
+   },
+   "contradictions": 1,
+   "missing_evidence": 1,
+   "flags": 0,
+   "attempts": 1,
+   "rejected_attempts": 0
+  },
+  {
+   "stage": "PROSECUTION_OPENING",
+   "event_type": "AGENT_STARTED",
+   "timestamp": "2026-09-20T08:13:14.320613+00:00",
+   "agent_id": "prosecution_agent"
+  },
+  {
+   "stage": "PROSECUTION_OPENING",
+   "event_type": "AGENT_ARGUMENT",
+   "timestamp": "2026-09-20T08:13:14.321717+00:00",
+   "agent_id": "prosecution_agent",
+   "message_id": "MSG-PR-OPEN",
+   "argument_ids": [
+    "PR-OPEN-1",
+    "PR-OPEN-2"
+   ],
+   "responds_to": [],
+   "flags": 0,
+   "attempts": 1,
+   "rejected_attempts": 0
+  },
+  {
+   "stage": "DEFENSE_OPENING",
+   "event_type": "AGENT_STARTED",
+   "timestamp": "2026-09-20T08:13:14.322307+00:00",
+   "agent_id": "defense_agent"
+  },
+  {
+   "stage": "DEFENSE_OPENING",
+   "event_type": "AGENT_ARGUMENT",
+   "timestamp": "2026-09-20T08:13:14.323030+00:00",
+   "agent_id": "defense_agent",
+   "message_id": "MSG-DF-OPEN",
+   "argument_ids": [
+    "DF-OPEN-1",
+    "DF-OPEN-2"
+   ],
+   "responds_to": [],
+   "flags": 0,
+   "attempts": 1,
+   "rejected_attempts": 0
+  },
+  {
+   "stage": "PROSECUTION_ARGUMENT",
+   "event_type": "AGENT_STARTED",
+   "timestamp": "2026-09-20T08:13:14.323505+00:00",
+   "agent_id": "prosecution_agent"
+  },
+  {
+   "stage": "PROSECUTION_ARGUMENT",
+   "event_type": "AGENT_ARGUMENT",
+   "timestamp": "2026-09-20T08:13:14.324176+00:00",
+   "agent_id": "prosecution_agent",
+   "message_id": "MSG-PR-ARG",
+   "argument_ids": [
+    "PR-ARG-1",
+    "PR-ARG-2"
+   ],
+   "responds_to": [],
+   "flags": 0,
+   "attempts": 1,
+   "rejected_attempts": 0
+  },
+  {
+   "stage": "DEFENSE_ARGUMENT",
+   "event_type": "AGENT_STARTED",
+   "timestamp": "2026-09-20T08:13:14.324753+00:00",
+   "agent_id": "defense_agent"
+  },
+  {
+   "stage": "DEFENSE_ARGUMENT",
+   "event_type": "AGENT_ARGUMENT",
+   "timestamp": "2026-09-20T08:13:14.325527+00:00",
+   "agent_id": "defense_agent",
+   "message_id": "MSG-DF-ARG",
+   "argument_ids": [
+    "DF-ARG-1",
+    "DF-ARG-2"
+   ],
+   "responds_to": [],
+   "flags": 0,
+   "attempts": 1,
+   "rejected_attempts": 0
+  },
+  {
+   "stage": "CROSS_EXAMINATION",
+   "event_type": "AGENT_STARTED",
+   "timestamp": "2026-09-20T08:13:14.326094+00:00",
+   "agent_id": "prosecution_agent"
+  },
+  {
+   "stage": "CROSS_EXAMINATION",
+   "event_type": "AGENT_ARGUMENT",
+   "timestamp": "2026-09-20T08:13:14.326831+00:00",
+   "agent_id": "prosecution_agent",
+   "message_id": "MSG-PR-CROSS",
+   "argument_ids": [
+    "PR-CROSS-1",
+    "PR-CROSS-2"
+   ],
+   "responds_to": [],
+   "flags": 0,
+   "attempts": 1,
+   "rejected_attempts": 0
+  },
+  {
+   "stage": "CROSS_EXAMINATION",
+   "event_type": "AGENT_STARTED",
+   "timestamp": "2026-09-20T08:13:14.326885+00:00",
+   "agent_id": "defense_agent"
+  },
+  {
+   "stage": "CROSS_EXAMINATION",
+   "event_type": "AGENT_ARGUMENT",
+   "timestamp": "2026-09-20T08:13:14.327559+00:00",
+   "agent_id": "defense_agent",
+   "message_id": "MSG-DF-CROSS",
+   "argument_ids": [
+    "DF-CROSS-1",
+    "DF-CROSS-2"
+   ],
+   "responds_to": [],
+   "flags": 0,
+   "attempts": 1,
+   "rejected_attempts": 0
+  },
+  {
+   "stage": "EVIDENCE_REVIEW",
+   "event_type": "AGENT_STARTED",
+   "timestamp": "2026-09-20T08:13:14.328140+00:00",
+   "agent_id": "evidence_agent"
+  },
+  {
+   "stage": "EVIDENCE_REVIEW",
+   "event_type": "EVIDENCE_REVIEWED",
+   "timestamp": "2026-09-20T08:13:14.329012+00:00",
+   "agent_id": "evidence_agent",
+   "reviewed": [
+    "PR-OPEN-1",
+    "PR-OPEN-2",
+    "DF-OPEN-1",
+    "DF-OPEN-2",
+    "PR-ARG-1",
+    "PR-ARG-2",
+    "DF-ARG-1",
+    "DF-ARG-2",
+    "PR-CROSS-1",
+    "PR-CROSS-2",
+    "DF-CROSS-1",
+    "DF-CROSS-2"
+   ],
+   "unsupported": [
+    "PR-OPEN-2"
+   ],
+   "flags": 0,
+   "attempts": 1,
+   "rejected_attempts": 0
+  },
+  {
+   "stage": "JUDGE_QUESTIONS",
+   "event_type": "AGENT_STARTED",
+   "timestamp": "2026-09-20T08:13:14.329617+00:00",
+   "agent_id": "judge_agent"
+  },
+  {
+   "stage": "JUDGE_QUESTIONS",
+   "event_type": "JUDGE_QUESTION",
+   "timestamp": "2026-09-20T08:13:14.330916+00:00",
+   "agent_id": "judge_agent",
+   "round": 1,
+   "flagged": [
+    "PR-OPEN-2"
+   ],
+   "questions": {
+    "JQ1-1": "prosecution_agent"
+   },
+   "attempts": 1,
+   "rejected_attempts": 0
+  },
+  {
+   "stage": "JUDGE_QUESTIONS",
+   "event_type": "AGENT_STARTED",
+   "timestamp": "2026-09-20T08:13:14.331345+00:00",
+   "agent_id": "prosecution_agent"
+  },
+  {
+   "stage": "JUDGE_QUESTIONS",
+   "event_type": "AGENT_RESPONSE",
+   "timestamp": "2026-09-20T08:13:14.332386+00:00",
+   "agent_id": "prosecution_agent",
+   "message_id": "MSG-PR-ANS1",
+   "argument_ids": [
+    "PR-ANS1-1",
+    "PR-ANS1-2"
+   ],
+   "responds_to": [
+    "JQ1-1"
+   ],
+   "flags": 0,
+   "attempts": 1,
+   "rejected_attempts": 0,
+   "answered": [
+    "JQ1-1"
+   ]
+  },
+  {
+   "stage": "EVIDENCE_REVIEW",
+   "event_type": "AGENT_STARTED",
+   "timestamp": "2026-09-20T08:13:14.332811+00:00",
+   "agent_id": "evidence_agent"
+  },
+  {
+   "stage": "EVIDENCE_REVIEW",
+   "event_type": "EVIDENCE_REVIEWED",
+   "timestamp": "2026-09-20T08:13:14.333484+00:00",
+   "agent_id": "evidence_agent",
+   "reviewed": [
+    "PR-ANS1-1",
+    "PR-ANS1-2"
+   ],
+   "unsupported": [],
+   "flags": 0,
+   "attempts": 1,
+   "rejected_attempts": 0
+  },
+  {
+   "stage": "PROSECUTION_REBUTTAL",
+   "event_type": "AGENT_STARTED",
+   "timestamp": "2026-09-20T08:13:14.334044+00:00",
+   "agent_id": "prosecution_agent"
+  },
+  {
+   "stage": "PROSECUTION_REBUTTAL",
+   "event_type": "AGENT_ARGUMENT",
+   "timestamp": "2026-09-20T08:13:14.334788+00:00",
+   "agent_id": "prosecution_agent",
+   "message_id": "MSG-PR-REB",
+   "argument_ids": [
+    "PR-REB-1",
+    "PR-REB-2"
+   ],
+   "responds_to": [
+    "DF-ARG-1"
+   ],
+   "flags": 0,
+   "attempts": 1,
+   "rejected_attempts": 0
+  },
+  {
+   "stage": "DEFENSE_REBUTTAL",
+   "event_type": "AGENT_STARTED",
+   "timestamp": "2026-09-20T08:13:14.335285+00:00",
+   "agent_id": "defense_agent"
+  },
+  {
+   "stage": "DEFENSE_REBUTTAL",
+   "event_type": "AGENT_ARGUMENT",
+   "timestamp": "2026-09-20T08:13:14.336075+00:00",
+   "agent_id": "defense_agent",
+   "message_id": "MSG-DF-REB",
+   "argument_ids": [
+    "DF-REB-1",
+    "DF-REB-2"
+   ],
+   "responds_to": [
+    "PR-REB-1"
+   ],
+   "flags": 0,
+   "attempts": 1,
+   "rejected_attempts": 0
+  },
+  {
+   "stage": "CLOSING_ARGUMENTS",
+   "event_type": "AGENT_STARTED",
+   "timestamp": "2026-09-20T08:13:14.336478+00:00",
+   "agent_id": "prosecution_agent"
+  },
+  {
+   "stage": "CLOSING_ARGUMENTS",
+   "event_type": "AGENT_ARGUMENT",
+   "timestamp": "2026-09-20T08:13:14.337356+00:00",
+   "agent_id": "prosecution_agent",
+   "message_id": "MSG-PR-CLOSE",
+   "argument_ids": [
+    "PR-CLOSE-1",
+    "PR-CLOSE-2"
+   ],
+   "responds_to": [],
+   "flags": 0,
+   "attempts": 1,
+   "rejected_attempts": 0
+  },
+  {
+   "stage": "CLOSING_ARGUMENTS",
+   "event_type": "AGENT_STARTED",
+   "timestamp": "2026-09-20T08:13:14.337498+00:00",
+   "agent_id": "defense_agent"
+  },
+  {
+   "stage": "CLOSING_ARGUMENTS",
+   "event_type": "AGENT_ARGUMENT",
+   "timestamp": "2026-09-20T08:13:14.338429+00:00",
+   "agent_id": "defense_agent",
+   "message_id": "MSG-DF-CLOSE",
+   "argument_ids": [
+    "DF-CLOSE-1",
+    "DF-CLOSE-2"
+   ],
+   "responds_to": [],
+   "flags": 0,
+   "attempts": 1,
+   "rejected_attempts": 0
+  },
+  {
+   "stage": "JURY_INDEPENDENT_DELIBERATION",
+   "event_type": "AGENT_STARTED",
+   "timestamp": "2026-09-20T08:13:14.339098+00:00",
+   "agent_id": "jury_1"
+  },
+  {
+   "stage": "JURY_INDEPENDENT_DELIBERATION",
+   "event_type": "JURY_DECISION",
+   "timestamp": "2026-09-20T08:13:14.342622+00:00",
+   "agent_id": "jury_1",
+   "round": "independent",
+   "decision": "burglary: not_guilty; assault: not_guilty",
+   "confidence": 0.75,
+   "attempts": 1,
+   "rejected_attempts": 0
+  },
+  {
+   "stage": "JURY_INDEPENDENT_DELIBERATION",
+   "event_type": "AGENT_STARTED",
+   "timestamp": "2026-09-20T08:13:14.342632+00:00",
+   "agent_id": "jury_2"
+  },
+  {
+   "stage": "JURY_INDEPENDENT_DELIBERATION",
+   "event_type": "JURY_DECISION",
+   "timestamp": "2026-09-20T08:13:14.344614+00:00",
+   "agent_id": "jury_2",
+   "round": "independent",
+   "decision": "burglary: not_guilty; assault: not_guilty",
+   "confidence": 0.75,
+   "attempts": 1,
+   "rejected_attempts": 0
+  },
+  {
+   "stage": "JURY_INDEPENDENT_DELIBERATION",
+   "event_type": "AGENT_STARTED",
+   "timestamp": "2026-09-20T08:13:14.344622+00:00",
+   "agent_id": "jury_3"
+  },
+  {
+   "stage": "JURY_INDEPENDENT_DELIBERATION",
+   "event_type": "JURY_DECISION",
+   "timestamp": "2026-09-20T08:13:14.346772+00:00",
+   "agent_id": "jury_3",
+   "round": "independent",
+   "decision": "burglary: not_guilty; assault: not_guilty",
+   "confidence": 0.75,
+   "attempts": 1,
+   "rejected_attempts": 0
+  },
+  {
+   "stage": "JURY_DELIBERATION",
+   "event_type": "AGENT_STARTED",
+   "timestamp": "2026-09-20T08:13:14.347780+00:00",
+   "agent_id": "jury_1"
+  },
+  {
+   "stage": "JURY_DELIBERATION",
+   "event_type": "JURY_DECISION",
+   "timestamp": "2026-09-20T08:13:14.350434+00:00",
+   "agent_id": "jury_1",
+   "round": "deliberation",
+   "decision": "burglary: not_guilty; assault: not_guilty",
+   "changed_charges": [],
+   "attempts": 1,
+   "rejected_attempts": 0
+  },
+  {
+   "stage": "JURY_DELIBERATION",
+   "event_type": "AGENT_STARTED",
+   "timestamp": "2026-09-20T08:13:14.350443+00:00",
+   "agent_id": "jury_2"
+  },
+  {
+   "stage": "JURY_DELIBERATION",
+   "event_type": "JURY_DECISION",
+   "timestamp": "2026-09-20T08:13:14.352516+00:00",
+   "agent_id": "jury_2",
+   "round": "deliberation",
+   "decision": "burglary: not_guilty; assault: not_guilty",
+   "changed_charges": [],
+   "attempts": 1,
+   "rejected_attempts": 0
+  },
+  {
+   "stage": "JURY_DELIBERATION",
+   "event_type": "AGENT_STARTED",
+   "timestamp": "2026-09-20T08:13:14.352521+00:00",
+   "agent_id": "jury_3"
+  },
+  {
+   "stage": "JURY_DELIBERATION",
+   "event_type": "JURY_DECISION",
+   "timestamp": "2026-09-20T08:13:14.354666+00:00",
+   "agent_id": "jury_3",
+   "round": "deliberation",
+   "decision": "burglary: not_guilty; assault: not_guilty",
+   "changed_charges": [],
+   "attempts": 1,
+   "rejected_attempts": 0
+  },
+  {
+   "stage": "JURY_DELIBERATION",
+   "event_type": "JURY_VERDICT",
+   "timestamp": "2026-09-20T08:13:14.355550+00:00",
+   "rule": "unanimous",
+   "verdicts": {
+    "burglary": "not_guilty",
+    "assault": "not_guilty"
+   },
+   "independent_agreement": 1.0,
+   "final_agreement": 1.0,
+   "vote_changes": 0
+  },
+  {
+   "stage": "JUDGE_DECISION",
+   "event_type": "AGENT_STARTED",
+   "timestamp": "2026-09-20T08:13:14.356069+00:00",
+   "agent_id": "judge_agent"
+  },
+  {
+   "stage": "JUDGE_DECISION",
+   "event_type": "JUDGE_DECISION",
+   "timestamp": "2026-09-20T08:13:14.357430+00:00",
+   "agent_id": "judge_agent",
+   "verdict_id": "V_CASE_001_JUDGE",
+   "decision": "burglary: not_guilty; assault: not_guilty",
+   "arguments_considered": [
+    "PR-OPEN-1",
+    "DF-OPEN-1"
+   ],
+   "attempts": 1,
+   "rejected_attempts": 0,
+   "divergences": 0,
+   "agrees_with_jury": {
+    "burglary": true,
+    "assault": true
+   }
+  },
+  {
+   "stage": "LEGAL_PROCESS_AUDIT",
+   "event_type": "AGENT_STARTED",
+   "timestamp": "2026-09-20T08:13:14.358491+00:00",
+   "agent_id": "auditor_agent"
+  },
+  {
+   "stage": "LEGAL_PROCESS_AUDIT",
+   "event_type": "AUDIT_COMPLETED",
+   "timestamp": "2026-09-20T08:13:14.364230+00:00",
+   "agent_id": "auditor_agent",
+   "audit_id": "AUD_CASE_001",
+   "overall_status": "minor_issues",
+   "severity_counts": {
+    "info": 0,
+    "minor": 1,
+    "major": 0,
+    "critical": 0
+   },
+   "findings": 1,
+   "deterministic_only": false
+  },
+  {
+   "stage": "CASE_COMPLETE",
+   "event_type": "CASE_COMPLETE",
+   "timestamp": "2026-09-20T08:13:14.364826+00:00",
+   "case_id": "CASE_001"
+  }
+ ]
+}

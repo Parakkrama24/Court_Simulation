@@ -388,25 +388,40 @@ endpoint, including a full trial, without a network or an API key.
 
 ### Layer 8: Frontend Layer
 
-**Location**: `frontend/` (Future)
+**Location**: `frontend/` (implemented in Phase 10)
 
-**Purpose**: Visual courtroom simulation
+**Purpose**: The visual courtroom dashboard (spec section 20)
 
-**Components**:
-- Case selection page
-- Courtroom layout with agent visualization
-- Timeline showing procedure stages
-- Evidence panel
-- Debate panel (prosecution vs defense)
-- Jury panel
-- Judge decision panel
-- Audit panel
+**Structure**:
+- `app/` - App Router pages: case selection, the case record, the live run,
+  the run list, and the legal rules
+- `components/` - the courtroom bench, the timeline, the live event feed, and
+  `panels/` for evidence, legal rules, debate, jury, judge decision, and audit
+- `hooks/useRunStream.ts` - one run, followed live
+- `lib/` - the typed API client, the API contract in TypeScript, and the
+  derivation of court state from the event stream
 
-**Technology**:
-- Next.js 14 with App Router
-- TypeScript for type safety
-- Tailwind CSS for styling
-- Real-time updates via WebSocket
+**Everything runs in the browser.** The backend allows the dashboard's origin
+through CORS and the stream is an `EventSource`, so there is no reason to
+proxy reads through the Next.js server. That keeps one source of truth: the
+API.
+
+**Two sources of state, kept apart**:
+- while a run is going, every panel is derived from the event stream alone
+  (`lib/runState.ts`), because that is all the backend has published;
+- once the run is terminal, the dashboard reads `/api/runs/{id}` and renders
+  the full result.
+
+A panel that cannot yet show something says so rather than inventing a
+placeholder - the same rule the agents work under.
+
+**Streaming** subscribes to each court event type by name (spec section 21).
+If the browser cannot keep the stream open, the hook falls back to polling
+`/api/runs/{id}/events?after=N`. The backend numbers events and a stream
+always replays from the first one, so a reconnect loses and repeats nothing.
+
+**Technology**: Next.js 16 (App Router), TypeScript, Tailwind CSS 4, tested
+with Vitest and Testing Library.
 
 ## Data Flow
 
@@ -497,7 +512,7 @@ def validate_argument(argument: Argument, case: Case) -> ValidationResult:
 
 ## Scalability Considerations
 
-### Current Phase (Phase 9)
+### Current Phase (Phase 10)
 - In-memory case data and evaluations
 - No database required
 - Single-threaded, deterministic execution

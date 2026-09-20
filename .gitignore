@@ -181,3 +181,13 @@ cython_debug/
 .cursorindexingignore
 # LLM interaction logs (may contain full prompts and outputs)
 logs/
+
+# Frontend (Next.js)
+# 'lib/' above is a Python build directory; the frontend's source lib is not one
+!frontend/src/lib/
+node_modules/
+.next/
+out/
+next-env.d.ts
+*.tsbuildinfo
+.env.local
