@@ -237,8 +237,20 @@ class TestFactory:
             create_provider("local")
 
     def test_unknown_provider(self):
-        with pytest.raises(LLMConfigurationError, match="Unknown LLM provider"):
+        with pytest.raises(LLMConfigurationError, match="Unknown LLM provider 'mystery'"):
             create_provider("mystery")
+
+    @pytest.mark.parametrize(
+        "pasted",
+        ["sk-proj-" + "x" * 40, "sk-ant-api03-" + "y" * 40, "z" * 60],
+    )
+    def test_an_api_key_in_the_provider_field_is_never_echoed(self, pasted):
+        with pytest.raises(LLMConfigurationError) as caught:
+            create_provider(pasted)
+        message = str(caught.value)
+        assert pasted not in message
+        assert "looks like an API key" in message
+        assert "OPENAI_API_KEY" in message
 
     def test_from_settings(self, monkeypatch):
         captured = {}

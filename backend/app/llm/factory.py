@@ -50,9 +50,26 @@ def create_provider(
             **options,
         )
 
-    raise LLMConfigurationError(
-        f"Unknown LLM provider '{provider}'. Supported: {', '.join(SUPPORTED_PROVIDERS)}"
-    )
+    raise LLMConfigurationError(_unknown_provider_message(provider))
+
+
+def _unknown_provider_message(provider: str) -> str:
+    """Why a provider name was refused - without ever repeating a secret
+
+    The provider name reaches here from the CLI, .env, and the HTTP API, and
+    this message goes back to all of them. A value that looks like an API key
+    is someone pasting the key into the wrong field, so it is described rather
+    than quoted: echoing it would put the key in a UI, a response, and a log.
+    """
+    supported = ", ".join(SUPPORTED_PROVIDERS)
+    value = provider.strip()
+    if value.lower().startswith("sk-") or len(value) > 32:
+        return (
+            f"The LLM provider must be one of: {supported}. The value given looks like an "
+            "API key; keys belong in .env as OPENAI_API_KEY or ANTHROPIC_API_KEY, not in "
+            "the provider setting."
+        )
+    return f"Unknown LLM provider '{value}'. Supported: {supported}"
 
 
 def provider_from_settings(settings: Any) -> LLMProvider:

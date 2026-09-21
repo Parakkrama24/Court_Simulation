@@ -34,6 +34,14 @@ const DEFAULTS: SimulationRequest = {
   strict_engine_alignment: false,
 };
 
+/** The backend's SUPPORTED_PROVIDERS; "" leaves the choice to the server */
+const PROVIDERS = [
+  { value: "", label: "Server default (LLM_PROVIDER in .env)" },
+  { value: "openai", label: "OpenAI" },
+  { value: "anthropic", label: "Anthropic" },
+  { value: "local", label: "Local (OpenAI-compatible server)" },
+];
+
 const MODES: { id: RunMode; label: string; description: string }[] = [
   {
     id: "court",
@@ -217,17 +225,28 @@ export function SimulationForm({
         <summary className="cursor-pointer text-sm text-slate-300">
           Provider and model
         </summary>
+        <p className="mt-2 text-xs text-slate-500">
+          API keys never go here. The server reads them from{" "}
+          <code className="text-slate-400">.env</code> (
+          <code className="text-slate-400">OPENAI_API_KEY</code> or{" "}
+          <code className="text-slate-400">ANTHROPIC_API_KEY</code>) - restart
+          the backend after adding one.
+        </p>
         <div className="mt-3 grid gap-3 sm:grid-cols-2">
           <label className="text-sm">
-            <span className="block text-xs text-slate-500">
-              Provider (blank = the server&apos;s default)
-            </span>
-            <input
+            <span className="block text-xs text-slate-500">Provider</span>
+            {/* A fixed list, not a text box: a pasted API key has nowhere to go. */}
+            <select
               value={options.provider ?? ""}
-              onChange={(e) => set("provider", e.target.value)}
-              placeholder="anthropic, openai, local"
+              onChange={(e) => set("provider", e.target.value || null)}
               className="mt-1 w-full rounded-md border border-slate-700 bg-slate-900 px-2 py-1.5 text-sm text-slate-200"
-            />
+            >
+              {PROVIDERS.map((provider) => (
+                <option key={provider.value} value={provider.value}>
+                  {provider.label}
+                </option>
+              ))}
+            </select>
           </label>
           <label className="text-sm">
             <span className="block text-xs text-slate-500">Model</span>

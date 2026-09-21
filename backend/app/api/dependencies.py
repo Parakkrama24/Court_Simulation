@@ -26,19 +26,28 @@ def get_settings() -> Optional[Any]:
 
 
 def build_provider(name: Optional[str] = None, model: Optional[str] = None) -> LLMProvider:
-    """The server's provider, or the one the request asked for"""
+    """The server's provider, or the one the request asked for
+
+    A request may choose the provider, but its API key, base URL, and default
+    model always come from the server's settings. Building a named provider
+    without them would ignore the key in .env: .env fills the settings, not the
+    process environment the vendor SDKs fall back to.
+    """
     settings = get_settings()
-    if name is None:
-        if settings is None:
+    if settings is None:
+        if name is None:
             raise LLMConfigurationError(
                 "No LLM provider is configured. Install pydantic-settings and set "
                 "LLM_PROVIDER, or name a provider in the request."
             )
-        provider = provider_from_settings(settings)
-        if model:
-            provider.model = model
-        return provider
-    return create_provider(name, model=model)
+        return create_provider(name, model=model)
+
+    if name is not None:
+        settings = settings.model_copy(update={"llm_provider": name})
+    provider = provider_from_settings(settings)
+    if model:
+        provider.model = model
+    return provider
 
 
 def get_provider_factory() -> ProviderFactory:
